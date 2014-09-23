@@ -18,7 +18,7 @@ class FuncLister(ast.NodeVisitor):
         print(node.name) #Print the name of def since it requires a name
         #=======================================================================
         # This would print the docstring of the node 
-        # print(ast.get_docstring(node))
+        print(ast.get_docstring(node))
         #=======================================================================
         self.generic_visit(node) #Visit all the children nodes
         
