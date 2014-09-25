@@ -54,10 +54,10 @@ def main():
         fileCont = f.read()
     #parser.expr(fileCont, "aFile", 'eval')
     tree = ast.parse(fileCont, aFile)
-    print (ast.dump(tree))
+    print ((ast.dump(tree)))
     traveler = MyVisitor(tree)
-    #while traveler.getChild():
-     #   print(ast.dump(traveler.currentNode))
+    while traveler.getChild():
+        print(ast.dump(traveler.currentNode))
 
 
 if __name__ == '__main__':
