@@ -4,7 +4,7 @@ Created on Oct 14, 2014
 @author: Jake Albee
 '''
 import re
-def parseDocString(self,docString):
+def parseDocString(docString):
     """Takes in a doc string and prints out the types found inside it
     Returns a dictionary with key being the variable name, values being the type
     @docString:string
@@ -17,11 +17,10 @@ def parseDocString(self,docString):
     finalList = {}
     for i in lineList:
         current = i[1:] #Remove the @
-        current.replace(" ","") #Remove all spaces for easier parsing
+        current = current.replace(" ","") #Remove all spaces for easier parsing
         current = current.split(':')
         variables = current[0].split(',')
         currentType = current[1]
-        #print(current[0].split(','))
         for key in variables:
             finalList[key] = currentType
     return finalList
