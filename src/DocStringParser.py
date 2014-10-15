@@ -16,7 +16,8 @@ def parseDocString(self,docString):
             lineList.remove(i)
     finalList = {}
     for i in lineList:
-        current = i[1:] #remove the @
+        current = i[1:] #Remove the @
+        current.replace(" ","") #Remove all spaces for easier parsing
         current = current.split(':')
         variables = current[0].split(',')
         currentType = current[1]
