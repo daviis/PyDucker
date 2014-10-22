@@ -5,7 +5,7 @@ Created on Sep 19, 2014
 '''
 import ast
   
-from SecondWalkerAttempt import Walker
+from SecondWalkerAttempt import InitialWalker, ClassDefWalker, FunDefWalker
         
 
 def main():
@@ -19,9 +19,21 @@ def main():
     #parser.expr(fileCont, "aFile", 'eval')
     tree = ast.parse(fileCont, aFile)
     print ((ast.dump(tree)))
-    aWalker = Walker(tree)
-    print("made wakler")
-    aWalker.checkResults()
+    firstWalker = InitialWalker(tree)
+    print("made firstwakler")
+    firstWalker.checkResults()
+    if not firstWalker.classes and not firstWalker.funs:
+        funWalker = FunDefWalker(tree)
+        print("no classes or functions")
+        funWalker.checkResults()
+    for aClass in firstWalker.classes:
+        classWalker = ClassDefWalker(aClass)
+        print("\none class")
+        classWalker.checkResults()
+    for aFun in firstWalker.funs:
+        funWalker = ClassDefWalker(aFun)
+        print("\none fun")
+        funWalker.checkResults()
 
 if __name__ == '__main__':
     main()

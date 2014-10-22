@@ -5,7 +5,7 @@ Created on Oct 13, 2014
 '''
 import ast
 
-class Walker(ast.NodeVisitor):
+class InitialWalker(ast.NodeVisitor):
     def __init__(self, astNode):
         """
         #! astNode:ast.AST
@@ -20,9 +20,14 @@ class Walker(ast.NodeVisitor):
         self.generic_visit(self.root)
         
 #     def generic_visit(self, node):
+#         """
+#         This function is to identify what type of visits should be made. 
+#         The type(node).__name__ returns the word to append to visit_ 
+#         to make a visitor
+#         """
 #         print (type(node).__name__)
 #         ast.NodeVisitor.generic_visit(self, node)
-#         
+         
     def visit_ClassDef(self, node):
         """
         #! node:ast.AST
@@ -35,6 +40,9 @@ class Walker(ast.NodeVisitor):
         """
         self.funs.append(node)
         
+    def visit_Assign(self, node):
+        self.globals.append(node)
+        
     def checkResults(self):
         for cla in self.classes:
             print(ast.dump(cla))
@@ -42,3 +50,18 @@ class Walker(ast.NodeVisitor):
             print(ast.dump(fun))
         for glob in self.globals:
             print(ast.dump(glob))
+            
+class ClassDefWalker(InitialWalker):
+    def __init__(self):
+        pass
+    
+    def createClassBean(self):
+        pass
+    
+    
+class FunDefWalker(InitialWalker):
+    def __init__(self):
+        pass
+    
+    def createFunBean(self):
+        pass
