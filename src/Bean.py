@@ -69,7 +69,7 @@ class LevelBean(GenericBean):
         """
         return self.vars[item.name]
     
-    def __conains__(self, item):
+    def __contains__(self, item):
         """
         @item:VarBean
         @!bool
