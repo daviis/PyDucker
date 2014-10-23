@@ -32,7 +32,7 @@ class FunDefBean(GenericBean):
     
     def __init__(self, paramsTypes, returntype, fundefname):
         """
-        @paramsTypes:VarBean*
+        @paramsTypes:*VarBean
         @returnType:VarBean
         @fundefname:str
         """
@@ -55,14 +55,13 @@ class VarBean(GenericBean):
 
 class LevelBean(GenericBean):
     
-    def __inti__(self, incomingVars = None):
+    def __init__(self, incomingVars = []):
         """
-        
+        @incomingVars:*VarBean
         """
         self.vars = {} #key will be the varName, value will be the VarBeanReference 
-        if incomingVars:
-            for var in incomingVars:
-                self.append(var)
+        for var in incomingVars:
+            self.append(var)
         
     def __getitem__(self, item):
         """
@@ -73,6 +72,7 @@ class LevelBean(GenericBean):
     def __conains__(self, item):
         """
         @item:VarBean
+        @!bool
         """
         return item.name in self.vars
         
