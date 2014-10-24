@@ -4,6 +4,7 @@ Created on Oct 13, 2014
 @author: daviis01
 '''
 import ast
+import bean
 
 class InitialWalker(ast.NodeVisitor):
     def __init__(self, astNode):
@@ -52,16 +53,42 @@ class InitialWalker(ast.NodeVisitor):
             print(ast.dump(glob))
             
 class ClassDefWalker(InitialWalker):
-    def __init__(self):
-        pass
+    
+    def __init__(self, classRoot):
+        """
+        @classRoot:ast.ast
+        """
+        self.root = classRoot
+        self.initFun = None
+        self.funs = []
+        self.name = classRoot.name
+        self.generic_visit(self.root)
+        
+    def visit_FunctionDef(self, node):
+        """
+        @node:ast.ast
+        """
+        self.funs.append(node)
+        if(node.name == '__init__'):
+            self.initFun = node
     
     def createClassBean(self):
-        pass
-    
+        bean = bean.ClassBean
+#         stuff about making the bean
+        return bean
     
 class FunDefWalker(InitialWalker):
-    def __init__(self):
-        pass
+    def __init__(self, funRoot, scopeLevel):
+        """
+        @funRoot:ast.ast
+        @scopeLevel:bean.LevelBean
+        """
+        self.name = funRoot.name
+        self.root = funRoot
+        self.retType = None
+        self.scope = scopeLevel
     
     def createFunBean(self):
-        pass
+        bean = bean.FunDefBean
+#         stuff about making the bean
+        return bean

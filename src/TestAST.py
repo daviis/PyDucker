@@ -21,7 +21,11 @@ def main():
     print ((ast.dump(tree)))
     firstWalker = InitialWalker(tree)
     print("made firstwakler")
-    firstWalker.checkResults()
+#     firstWalker.checkResults()
+    
+#     nameSpace = LevelBean()
+    
+    #the interrupt work should be around here
     if not firstWalker.classes and not firstWalker.funs:
         funWalker = FunDefWalker(tree)
         print("no classes or functions")
@@ -29,7 +33,7 @@ def main():
     for aClass in firstWalker.classes:
         classWalker = ClassDefWalker(aClass)
         print("\none class")
-        classWalker.checkResults()
+#         classWalker.checkResults()
     for aFun in firstWalker.funs:
         funWalker = ClassDefWalker(aFun)
         print("\none fun")
