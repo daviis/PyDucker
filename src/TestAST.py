@@ -2,6 +2,8 @@
 Created on Sep 19, 2014
 
 @author: daviis01
+
+This file is where the command line option parser should direct to for the heavy lifting of static analysis. It will also be used for testing.
 '''
 import ast
   
@@ -30,14 +32,20 @@ def main():
         funWalker = FunDefWalker(tree)
         print("no classes or functions")
         funWalker.checkResults()
+        
     for aClass in firstWalker.classes:
         classWalker = ClassDefWalker(aClass)
+        firstWalker.nameSpace.put(classWalker.name, classWalker.createClassBean())
         print("\none class")
 #         classWalker.checkResults()
+        
     for aFun in firstWalker.funs:
-        funWalker = ClassDefWalker(aFun)
+        funWalker = FunDefWalker(aFun, firstWalker.nameSpace)
+        firstWalker.nameSpace.put(funWalker.name, funWalker.createFunBean())
         print("\none fun")
-        funWalker.checkResults()
+#         funWalker.checkResults()
+        
+    print("out")
 
 if __name__ == '__main__':
     main()
