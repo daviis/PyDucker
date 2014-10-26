@@ -76,6 +76,9 @@ class ScopeLevelBean(GenericBean):
         """
         return item.name in self.vars
         
+    def __iter__(self):
+        return iter(self.vars)
+        
     def append(self, item):
         """
         @item:VarBean

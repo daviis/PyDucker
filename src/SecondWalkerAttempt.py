@@ -17,9 +17,8 @@ class InitialWalker(ast.NodeVisitor):
         self.funs = []
         self.globals = []
         self.nameSpace = Bean.NameSpaceBean()
-        self._initalPass()
         
-    def _initalPass(self):
+    def initalPass(self):
         self.generic_visit(self.root)
         
 #     def generic_visit(self, node):
@@ -69,19 +68,21 @@ class ClassDefWalker(InitialWalker):
         self.funs = Bean.NameSpaceBean()
         self.selfVars = Bean.ScopeLevelBean()
         self.name = classRoot.name
+       
+    def walk(self):
         #first call should be a quick walk to snag all of the fun names and self var names
-        self.first_visit(self.root)
+        self._first_visit(self.root)
         #second walk call should be to actually do the checking  
-        self.second_visit(self.root)
+        self._second_visit(self.root)
         
-    def first_visit(self, node):
+    def _first_visit(self, node):
         """
         @node:ast.ast
         """
         #todo initial pass
         self.generic_visit(node)
         
-    def second_visit(self, node):
+    def _second_visit(self, node):
         """
         @node:ast.ast
         """
@@ -112,10 +113,13 @@ class FunDefWalker(InitialWalker):
         self.retType = None
         self.scope = scopeLevel
         
+    def walk(self):
+        pass
+        
     def _findParamTypes(self):
         scopeObject = parseDocString(ast.get_docstring(self.root))
     
     def createFunBean(self):
-        bean = Bean.FunDefBean(self.scope, self.retType, self.name)
+        bean = Bean.FunDefBean(list(self.scope), self.retType, self.name)
 #         stuff about making the bean
         return bean

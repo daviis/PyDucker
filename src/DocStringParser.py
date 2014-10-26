@@ -4,7 +4,7 @@ Updated: 10/27/14
 @author: Jake Albee
 '''
 import re
-from src.Bean import VarBean
+from Bean import VarBean
 #from src.Bean import LevelBean
 
 def parseDocString(docString):

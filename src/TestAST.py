@@ -22,10 +22,10 @@ def main():
     tree = ast.parse(fileCont, aFile)
     print ((ast.dump(tree)))
     firstWalker = InitialWalker(tree)
+    firstWalker.initalPass()
     print("made firstwakler")
 #     firstWalker.checkResults()
     
-#     nameSpace = LevelBean()
     
     #the interrupt work should be around here
     if not firstWalker.classes and not firstWalker.funs:
@@ -35,12 +35,14 @@ def main():
         
     for aClass in firstWalker.classes:
         classWalker = ClassDefWalker(aClass)
+        classWalker.walk()
         firstWalker.nameSpace.put(classWalker.name, classWalker.createClassBean())
         print("\none class")
 #         classWalker.checkResults()
         
     for aFun in firstWalker.funs:
         funWalker = FunDefWalker(aFun, firstWalker.nameSpace)
+        funWalker.walk
         firstWalker.nameSpace.put(funWalker.name, funWalker.createFunBean())
         print("\none fun")
 #         funWalker.checkResults()
@@ -49,4 +51,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    print("out")
+    print("out main")
