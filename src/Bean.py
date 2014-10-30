@@ -44,7 +44,7 @@ class FunDefBean(GenericBean):
 
 class VarBean(GenericBean):
     
-    def __inti__(self, name, aType):
+    def __init__(self, name, aType):
         """
         @name:str
         @aType:str
