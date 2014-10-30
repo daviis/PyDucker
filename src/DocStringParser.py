@@ -5,7 +5,7 @@ Updated: 10/27/14
 '''
 import re
 from src.Bean import VarBean
-#from src.Bean import LevelBean
+from src.Bean import ScopeLevelBean
 
 def parseDocString(docString,returnList = True):
     """Takes in a doc string in the form of a string and returns a list of VarBeans
@@ -37,4 +37,5 @@ def parseDocString(docString,returnList = True):
         return finalList
     else:
         #Returning a ScopeLevelBean
-        return finalList
+        slb = ScopeLevelBean(finalList)
+        return slb
