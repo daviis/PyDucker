@@ -7,6 +7,7 @@ import re
 from src.Bean import VarBean
 from src.Bean import ScopeLevelBean
 
+
 def parseDocString(docString,returnList = True):
     """Takes in a doc string in the form of a string and returns a list of VarBeans
     or a ScopeLevelBean. Defaults to returning a list of VarBeans
