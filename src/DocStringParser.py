@@ -6,6 +6,7 @@ Updated: 10/30/14
 import re
 from src.Bean import VarBean
 from src.Bean import ScopeLevelBean
+import sys
 
 
 def parseDocString(docString,returnList = True):
@@ -31,13 +32,13 @@ def parseDocString(docString,returnList = True):
         
         if re.search(matchPattern,currentType):
             if currentType[1] == '*':
-                currentType= dictWarn +  currentType
+                print(dictWarn, file=sys.stderr)
             elif currentType[0] == '*':
-                currentType= listWarn +  currentType
+                print(listWarn, file=sys.stderr)
             elif currentType[-2] == '*':
-                currentType= dictWarn +  currentType
+                print(dictWarn, file=sys.stderr)
             elif currentType[-1] == '*':
-                currentType= listWarn +  currentType
+                print(listWarn, file=sys.stderr)
                 
         for key in variables:
             finalList.append(VarBean(key,currentType))
