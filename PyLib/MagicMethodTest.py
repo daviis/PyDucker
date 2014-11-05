@@ -7,12 +7,15 @@ commented out part of info method taken from : http://www.diveintopython.net/pow
 @created: 2014-11-02
 """
 import inspect
+import datetime
 
 def info(object, spacing=10, collapse=1): 
     """
     Print methods and doc strings. Takes module, class, list, dictionary, or string.
     """
-    aFile = open("./BuiltIn/" + type(object).__name__ + ".py", "w")
+    aFile = open("./BuiltIn/" + type(object).__name__ + ".py", "w")   #open a file with the name of the class.py
+    
+    aFile.write('"""\nA python implementation of built in classes for looking at method signatures.\n\nModified on ' + str(datetime.date.today()) + '\n"""\n\n')
     aFile.write("class " + type(object).__name__ + "():\n")
     stuffList =  inspect.getmembers(object)
     for member in stuffList:

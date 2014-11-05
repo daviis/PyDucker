@@ -1,3 +1,9 @@
+"""
+A python implementation of built in classes for looking at method signatures.
+
+Modified on 2014-11-05
+"""
+
 class str():
 	def __add__(???):
 		"""
