@@ -21,10 +21,10 @@ class ClassDefBean(GenericBean):
     def __init__(self, classname, selfVars):
         """
         @className:str
-        @selfVars:VarBean*
+        @selfVars:ScopeLevelBean
         """
         self.name = classname
-        self.varinfo = LevelBean(selfVars)
+        self.varinfo = selfVars
         self.FunDefArr = {} #of key = Fundef.name, FunDefBean for faster look up
 
 
@@ -36,7 +36,7 @@ class FunDefBean(GenericBean):
         @returnType:VarBean
         @fundefname:str
         """
-        self.typesparams = LevelBean(paramsTypes)
+        self.typesparams = paramsTypes
         self.returnType = returntype
         self.name = fundefname
         self.numparams = len(paramsTypes) # this should be assigned after creation to be length of self.typesparams
@@ -44,7 +44,7 @@ class FunDefBean(GenericBean):
 
 class VarBean(GenericBean):
     
-    def __inti__(self, name, aType):
+    def __init__(self, name, aType):
         """
         @name:str
         @aType:str
@@ -53,7 +53,7 @@ class VarBean(GenericBean):
         self.vartype = aType
 
 
-class LevelBean(GenericBean):
+class ScopeLevelBean(GenericBean):
     
     def __init__(self, incomingVars = []):
         """
@@ -76,6 +76,9 @@ class LevelBean(GenericBean):
         """
         return item.name in self.vars
         
+    def __iter__(self):
+        return iter(self.vars)
+        
     def append(self, item):
         """
         @item:VarBean
@@ -84,4 +87,17 @@ class LevelBean(GenericBean):
             print("reassign of " + item.name, file=sys.stderr)
         self.vars[item.name] = item
         
+class NameSpaceBean(ScopeLevelBean):
+    """
+    This variation of ScopeLevelBean will wrap a dictionary where the key will be a string of the class/fun name
+    and the value will be a ClassBean or FunDefBean. The look up will be different because if it hits on a value 
+    in the dict that is initialized with None then it will attempt to make a bean.
+    """
+     
+    def put(self, name, bean=None):
+        """
+        @name:str
+        @bean:GenericBean
+        """
+        self.vars[name] = bean
         

@@ -2,10 +2,12 @@
 Created on Sep 19, 2014
 
 @author: daviis01
+
+This file is where the command line option parser should direct to for the heavy lifting of static analysis. It will also be used for testing.
 '''
 import ast
   
-from SecondWalkerAttempt import Walker
+from SecondWalkerAttempt import InitialWalker, ClassDefWalker, FunDefWalker
         
 
 def main():
@@ -19,10 +21,34 @@ def main():
     #parser.expr(fileCont, "aFile", 'eval')
     tree = ast.parse(fileCont, aFile)
     print ((ast.dump(tree)))
-    aWalker = Walker(tree)
-    print("made wakler")
-    aWalker.checkResults()
+    firstWalker = InitialWalker(tree)
+    firstWalker.initalPass()
+    print("made firstwakler")
+#     firstWalker.checkResults()
+    
+    
+    #the interrupt work should be around here
+    if not firstWalker.classes and not firstWalker.funs:
+        funWalker = FunDefWalker(tree)
+        print("no classes or functions")
+        funWalker.checkResults()
+        
+    for aClass in firstWalker.classes:
+        classWalker = ClassDefWalker(aClass)
+        classWalker.walk()
+        firstWalker.nameSpace.put(classWalker.name, classWalker.createClassBean())
+        print("\none class")
+#         classWalker.checkResults()
+        
+    for aFun in firstWalker.funs:
+        funWalker = FunDefWalker(aFun, firstWalker.nameSpace)
+        funWalker.walk
+        firstWalker.nameSpace.put(funWalker.name, funWalker.createFunBean())
+        print("\none fun")
+#         funWalker.checkResults()
+        
+    print("out")
 
 if __name__ == '__main__':
     main()
-    print("out")
+    print("out main")
