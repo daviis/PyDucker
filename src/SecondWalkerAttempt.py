@@ -18,7 +18,10 @@ class InitialWalker(ast.NodeVisitor):
         self.globals = []
         self.nameSpace = Bean.NameSpaceBean()
         
-    def initalPass(self):
+    def walk(self):
+        self._first_visit()
+        
+    def _first_visit(self):
         self.generic_visit(self.root)
         
 #     def generic_visit(self, node):

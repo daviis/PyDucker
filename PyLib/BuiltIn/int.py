@@ -1,36 +1,36 @@
 """
 A python implementation of built in classes for looking at method signatures.
 
-Modified on 2014-11-05
+Modified on 2014-11-06
 """
 
 class int():
-	def __abs__(???):
+	def __abs__(self, ???):
 		"""
 		abs(self)
 		"""
 
-	def __add__(???):
+	def __add__(self, ???):
 		"""
 		Return self+value.
 		"""
 
-	def __and__(???):
+	def __and__(self, ???):
 		"""
 		Return self&value.
 		"""
 
-	def __bool__(???):
+	def __bool__(self, ???):
 		"""
 		self != 0
 		"""
 
-	def __ceil__(???):
+	def __ceil__(self, ???):
 		"""
 		Ceiling of an Integral returns itself.
 		"""
 
-	def __class__(???):
+	def __class__(self, ???):
 		"""
 		int(x=0) -> integer
 		int(x, base=10) -> integer
@@ -48,23 +48,23 @@ class int():
 		4
 		"""
 
-	def __delattr__(???):
+	def __delattr__(self, ???):
 		"""
 		Implement delattr(self, name).
 		"""
 
-	def __dir__(???):
+	def __dir__(self, ???):
 		"""
 		__dir__() -> list
 		default dir() implementation
 		"""
 
-	def __divmod__(???):
+	def __divmod__(self, ???):
 		"""
 		Return divmod(self, value).
 		"""
 
-	def __doc__(???):
+	def __doc__(self, ???):
 		"""
 		str(object='') -> str
 		str(bytes_or_buffer[, encoding[, errors]]) -> str
@@ -78,243 +78,243 @@ class int():
 		errors defaults to 'strict'.
 		"""
 
-	def __eq__(???):
+	def __eq__(self, ???):
 		"""
 		Return self==value.
 		"""
 
-	def __float__(???):
+	def __float__(self, ???):
 		"""
 		float(self)
 		"""
 
-	def __floor__(???):
+	def __floor__(self, ???):
 		"""
 		Flooring an Integral returns itself.
 		"""
 
-	def __floordiv__(???):
+	def __floordiv__(self, ???):
 		"""
 		Return self//value.
 		"""
 
-	def __format__(???):
+	def __format__(self, ???):
 		"""
 		None
 		"""
 
-	def __ge__(???):
+	def __ge__(self, ???):
 		"""
 		Return self>=value.
 		"""
 
-	def __getattribute__(???):
+	def __getattribute__(self, ???):
 		"""
 		Return getattr(self, name).
 		"""
 
-	def __getnewargs__(???):
+	def __getnewargs__(self, ???):
 		"""
 		None
 		"""
 
-	def __gt__(???):
+	def __gt__(self, ???):
 		"""
 		Return self>value.
 		"""
 
-	def __hash__(???):
+	def __hash__(self, ???):
 		"""
 		Return hash(self).
 		"""
 
-	def __index__(???):
+	def __index__(self, ???):
 		"""
 		Return self converted to an integer, if self is suitable for use as an index into a list.
 		"""
 
-	def __init__(???):
+	def __init__(self, ???):
 		"""
 		Initialize self.  See help(type(self)) for accurate signature.
 		"""
 
-	def __int__(???):
+	def __int__(self, ???):
 		"""
 		int(self)
 		"""
 
-	def __invert__(???):
+	def __invert__(self, ???):
 		"""
 		~self
 		"""
 
-	def __le__(???):
+	def __le__(self, ???):
 		"""
 		Return self<=value.
 		"""
 
-	def __lshift__(???):
+	def __lshift__(self, ???):
 		"""
 		Return self<<value.
 		"""
 
-	def __lt__(???):
+	def __lt__(self, ???):
 		"""
 		Return self<value.
 		"""
 
-	def __mod__(???):
+	def __mod__(self, ???):
 		"""
 		Return self%value.
 		"""
 
-	def __mul__(???):
+	def __mul__(self, ???):
 		"""
 		Return self*value.
 		"""
 
-	def __ne__(???):
+	def __ne__(self, ???):
 		"""
 		Return self!=value.
 		"""
 
-	def __neg__(???):
+	def __neg__(self, ???):
 		"""
 		-self
 		"""
 
-	def __new__(???):
+	def __new__(self, ???):
 		"""
 		Create and return a new object.  See help(type) for accurate signature.
 		"""
 
-	def __or__(???):
+	def __or__(self, ???):
 		"""
 		Return self|value.
 		"""
 
-	def __pos__(???):
+	def __pos__(self, ???):
 		"""
 		+self
 		"""
 
-	def __pow__(???):
+	def __pow__(self, ???):
 		"""
 		Return pow(self, value, mod).
 		"""
 
-	def __radd__(???):
+	def __radd__(self, ???):
 		"""
 		Return value+self.
 		"""
 
-	def __rand__(???):
+	def __rand__(self, ???):
 		"""
 		Return value&self.
 		"""
 
-	def __rdivmod__(???):
+	def __rdivmod__(self, ???):
 		"""
 		Return divmod(value, self).
 		"""
 
-	def __reduce__(???):
+	def __reduce__(self, ???):
 		"""
 		helper for pickle
 		"""
 
-	def __reduce_ex__(???):
+	def __reduce_ex__(self, ???):
 		"""
 		helper for pickle
 		"""
 
-	def __repr__(???):
+	def __repr__(self, ???):
 		"""
 		Return repr(self).
 		"""
 
-	def __rfloordiv__(???):
+	def __rfloordiv__(self, ???):
 		"""
 		Return value//self.
 		"""
 
-	def __rlshift__(???):
+	def __rlshift__(self, ???):
 		"""
 		Return value<<self.
 		"""
 
-	def __rmod__(???):
+	def __rmod__(self, ???):
 		"""
 		Return value%self.
 		"""
 
-	def __rmul__(???):
+	def __rmul__(self, ???):
 		"""
 		Return value*self.
 		"""
 
-	def __ror__(???):
+	def __ror__(self, ???):
 		"""
 		Return value|self.
 		"""
 
-	def __round__(???):
+	def __round__(self, ???):
 		"""
 		Rounding an Integral returns itself.
 		Rounding with an ndigits argument also returns an integer.
 		"""
 
-	def __rpow__(???):
+	def __rpow__(self, ???):
 		"""
 		Return pow(value, self, mod).
 		"""
 
-	def __rrshift__(???):
+	def __rrshift__(self, ???):
 		"""
 		Return value>>self.
 		"""
 
-	def __rshift__(???):
+	def __rshift__(self, ???):
 		"""
 		Return self>>value.
 		"""
 
-	def __rsub__(???):
+	def __rsub__(self, ???):
 		"""
 		Return value-self.
 		"""
 
-	def __rtruediv__(???):
+	def __rtruediv__(self, ???):
 		"""
 		Return value/self.
 		"""
 
-	def __rxor__(???):
+	def __rxor__(self, ???):
 		"""
 		Return value^self.
 		"""
 
-	def __setattr__(???):
+	def __setattr__(self, ???):
 		"""
 		Implement setattr(self, name, value).
 		"""
 
-	def __sizeof__(???):
+	def __sizeof__(self, ???):
 		"""
 		Returns size in memory, in bytes
 		"""
 
-	def __str__(???):
+	def __str__(self, ???):
 		"""
 		Return str(self).
 		"""
 
-	def __sub__(???):
+	def __sub__(self, ???):
 		"""
 		Return self-value.
 		"""
 
-	def __subclasshook__(???):
+	def __subclasshook__(self, ???):
 		"""
 		Abstract classes can override this to customize issubclass().
 		
@@ -325,22 +325,22 @@ class int():
 		
 		"""
 
-	def __truediv__(???):
+	def __truediv__(self, ???):
 		"""
 		Return self/value.
 		"""
 
-	def __trunc__(???):
+	def __trunc__(self, ???):
 		"""
 		Truncating an Integral returns itself.
 		"""
 
-	def __xor__(???):
+	def __xor__(self, ???):
 		"""
 		Return self^value.
 		"""
 
-	def bit_length(???):
+	def bit_length(self, ???):
 		"""
 		int.bit_length() -> int
 		
@@ -351,12 +351,12 @@ class int():
 		6
 		"""
 
-	def conjugate(???):
+	def conjugate(self, ???):
 		"""
 		Returns self, the complex conjugate of any int.
 		"""
 
-	def denominator(???):
+	def denominator(self, ???):
 		"""
 		int(x=0) -> integer
 		int(x, base=10) -> integer
@@ -374,7 +374,7 @@ class int():
 		4
 		"""
 
-	def from_bytes(???):
+	def from_bytes(self, ???):
 		"""
 		int.from_bytes(bytes, byteorder, *, signed=False) -> int
 		
@@ -394,7 +394,7 @@ class int():
 		used to represent the integer.
 		"""
 
-	def imag(???):
+	def imag(self, ???):
 		"""
 		int(x=0) -> integer
 		int(x, base=10) -> integer
@@ -412,7 +412,7 @@ class int():
 		4
 		"""
 
-	def numerator(???):
+	def numerator(self, ???):
 		"""
 		int(x=0) -> integer
 		int(x, base=10) -> integer
@@ -430,7 +430,7 @@ class int():
 		4
 		"""
 
-	def real(???):
+	def real(self, ???):
 		"""
 		int(x=0) -> integer
 		int(x, base=10) -> integer
@@ -448,7 +448,7 @@ class int():
 		4
 		"""
 
-	def to_bytes(???):
+	def to_bytes(self, ???):
 		"""
 		int.to_bytes(length, byteorder, *, signed=False) -> bytes
 		

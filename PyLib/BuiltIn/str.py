@@ -1,16 +1,16 @@
 """
 A python implementation of built in classes for looking at method signatures.
 
-Modified on 2014-11-05
+Modified on 2014-11-06
 """
 
 class str():
-	def __add__(???):
+	def __add__(self, ???):
 		"""
 		Return self+value.
 		"""
 
-	def __class__(???):
+	def __class__(self, ???):
 		"""
 		str(object='') -> str
 		str(bytes_or_buffer[, encoding[, errors]]) -> str
@@ -24,23 +24,23 @@ class str():
 		errors defaults to 'strict'.
 		"""
 
-	def __contains__(???):
+	def __contains__(self, ???):
 		"""
 		Return key in self.
 		"""
 
-	def __delattr__(???):
+	def __delattr__(self, ???):
 		"""
 		Implement delattr(self, name).
 		"""
 
-	def __dir__(???):
+	def __dir__(self, ???):
 		"""
 		__dir__() -> list
 		default dir() implementation
 		"""
 
-	def __doc__(???):
+	def __doc__(self, ???):
 		"""
 		str(object='') -> str
 		str(bytes_or_buffer[, encoding[, errors]]) -> str
@@ -54,134 +54,134 @@ class str():
 		errors defaults to 'strict'.
 		"""
 
-	def __eq__(???):
+	def __eq__(self, ???):
 		"""
 		Return self==value.
 		"""
 
-	def __format__(???):
+	def __format__(self, ???):
 		"""
 		S.__format__(format_spec) -> str
 		
 		Return a formatted version of S as described by format_spec.
 		"""
 
-	def __ge__(???):
+	def __ge__(self, ???):
 		"""
 		Return self>=value.
 		"""
 
-	def __getattribute__(???):
+	def __getattribute__(self, ???):
 		"""
 		Return getattr(self, name).
 		"""
 
-	def __getitem__(???):
+	def __getitem__(self, ???):
 		"""
 		Return self[key].
 		"""
 
-	def __getnewargs__(???):
+	def __getnewargs__(self, ???):
 		"""
 		None
 		"""
 
-	def __gt__(???):
+	def __gt__(self, ???):
 		"""
 		Return self>value.
 		"""
 
-	def __hash__(???):
+	def __hash__(self, ???):
 		"""
 		Return hash(self).
 		"""
 
-	def __init__(???):
+	def __init__(self, ???):
 		"""
 		Initialize self.  See help(type(self)) for accurate signature.
 		"""
 
-	def __iter__(???):
+	def __iter__(self, ???):
 		"""
 		Implement iter(self).
 		"""
 
-	def __le__(???):
+	def __le__(self, ???):
 		"""
 		Return self<=value.
 		"""
 
-	def __len__(???):
+	def __len__(self, ???):
 		"""
 		Return len(self).
 		"""
 
-	def __lt__(???):
+	def __lt__(self, ???):
 		"""
 		Return self<value.
 		"""
 
-	def __mod__(???):
+	def __mod__(self, ???):
 		"""
 		Return self%value.
 		"""
 
-	def __mul__(???):
+	def __mul__(self, ???):
 		"""
 		Return self*value.n
 		"""
 
-	def __ne__(???):
+	def __ne__(self, ???):
 		"""
 		Return self!=value.
 		"""
 
-	def __new__(???):
+	def __new__(self, ???):
 		"""
 		Create and return a new object.  See help(type) for accurate signature.
 		"""
 
-	def __reduce__(???):
+	def __reduce__(self, ???):
 		"""
 		helper for pickle
 		"""
 
-	def __reduce_ex__(???):
+	def __reduce_ex__(self, ???):
 		"""
 		helper for pickle
 		"""
 
-	def __repr__(???):
+	def __repr__(self, ???):
 		"""
 		Return repr(self).
 		"""
 
-	def __rmod__(???):
+	def __rmod__(self, ???):
 		"""
 		Return value%self.
 		"""
 
-	def __rmul__(???):
+	def __rmul__(self, ???):
 		"""
 		Return self*value.
 		"""
 
-	def __setattr__(???):
+	def __setattr__(self, ???):
 		"""
 		Implement setattr(self, name, value).
 		"""
 
-	def __sizeof__(???):
+	def __sizeof__(self, ???):
 		"""
 		S.__sizeof__() -> size of S in memory, in bytes
 		"""
 
-	def __str__(???):
+	def __str__(self, ???):
 		"""
 		Return str(self).
 		"""
 
-	def __subclasshook__(???):
+	def __subclasshook__(self, ???):
 		"""
 		Abstract classes can override this to customize issubclass().
 		
@@ -192,7 +192,7 @@ class str():
 		
 		"""
 
-	def capitalize(???):
+	def capitalize(self, ???):
 		"""
 		S.capitalize() -> str
 		
@@ -200,14 +200,14 @@ class str():
 		have upper case and the rest lower case.
 		"""
 
-	def casefold(???):
+	def casefold(self, ???):
 		"""
 		S.casefold() -> str
 		
 		Return a version of S suitable for caseless comparisons.
 		"""
 
-	def center(???):
+	def center(self, ???):
 		"""
 		S.center(width[, fillchar]) -> str
 		
@@ -215,7 +215,7 @@ class str():
 		done using the specified fill character (default is a space)
 		"""
 
-	def count(???):
+	def count(self, ???):
 		"""
 		S.count(sub[, start[, end]]) -> int
 		
@@ -224,7 +224,7 @@ class str():
 		interpreted as in slice notation.
 		"""
 
-	def encode(???):
+	def encode(self, ???):
 		"""
 		S.encode(encoding='utf-8', errors='strict') -> bytes
 		
@@ -236,7 +236,7 @@ class str():
 		codecs.register_error that can handle UnicodeEncodeErrors.
 		"""
 
-	def endswith(???):
+	def endswith(self, ???):
 		"""
 		S.endswith(suffix[, start[, end]]) -> bool
 		
@@ -246,7 +246,7 @@ class str():
 		suffix can also be a tuple of strings to try.
 		"""
 
-	def expandtabs(???):
+	def expandtabs(self, ???):
 		"""
 		S.expandtabs(tabsize=8) -> str
 		
@@ -254,7 +254,7 @@ class str():
 		If tabsize is not given, a tab size of 8 characters is assumed.
 		"""
 
-	def find(???):
+	def find(self, ???):
 		"""
 		S.find(sub[, start[, end]]) -> int
 		
@@ -265,7 +265,7 @@ class str():
 		Return -1 on failure.
 		"""
 
-	def format(???):
+	def format(self, ???):
 		"""
 		S.format(*args, **kwargs) -> str
 		
@@ -273,7 +273,7 @@ class str():
 		The substitutions are identified by braces ('{' and '}').
 		"""
 
-	def format_map(???):
+	def format_map(self, ???):
 		"""
 		S.format_map(mapping) -> str
 		
@@ -281,14 +281,14 @@ class str():
 		The substitutions are identified by braces ('{' and '}').
 		"""
 
-	def index(???):
+	def index(self, ???):
 		"""
 		S.index(sub[, start[, end]]) -> int
 		
 		Like S.find() but raise ValueError when the substring is not found.
 		"""
 
-	def isalnum(???):
+	def isalnum(self, ???):
 		"""
 		S.isalnum() -> bool
 		
@@ -296,7 +296,7 @@ class str():
 		and there is at least one character in S, False otherwise.
 		"""
 
-	def isalpha(???):
+	def isalpha(self, ???):
 		"""
 		S.isalpha() -> bool
 		
@@ -304,7 +304,7 @@ class str():
 		and there is at least one character in S, False otherwise.
 		"""
 
-	def isdecimal(???):
+	def isdecimal(self, ???):
 		"""
 		S.isdecimal() -> bool
 		
@@ -312,7 +312,7 @@ class str():
 		False otherwise.
 		"""
 
-	def isdigit(???):
+	def isdigit(self, ???):
 		"""
 		S.isdigit() -> bool
 		
@@ -320,7 +320,7 @@ class str():
 		and there is at least one character in S, False otherwise.
 		"""
 
-	def isidentifier(???):
+	def isidentifier(self, ???):
 		"""
 		S.isidentifier() -> bool
 		
@@ -332,7 +332,7 @@ class str():
 		
 		"""
 
-	def islower(???):
+	def islower(self, ???):
 		"""
 		S.islower() -> bool
 		
@@ -340,7 +340,7 @@ class str():
 		at least one cased character in S, False otherwise.
 		"""
 
-	def isnumeric(???):
+	def isnumeric(self, ???):
 		"""
 		S.isnumeric() -> bool
 		
@@ -348,7 +348,7 @@ class str():
 		False otherwise.
 		"""
 
-	def isprintable(???):
+	def isprintable(self, ???):
 		"""
 		S.isprintable() -> bool
 		
@@ -356,7 +356,7 @@ class str():
 		printable in repr() or S is empty, False otherwise.
 		"""
 
-	def isspace(???):
+	def isspace(self, ???):
 		"""
 		S.isspace() -> bool
 		
@@ -364,7 +364,7 @@ class str():
 		and there is at least one character in S, False otherwise.
 		"""
 
-	def istitle(???):
+	def istitle(self, ???):
 		"""
 		S.istitle() -> bool
 		
@@ -374,7 +374,7 @@ class str():
 		Return False otherwise.
 		"""
 
-	def isupper(???):
+	def isupper(self, ???):
 		"""
 		S.isupper() -> bool
 		
@@ -382,7 +382,7 @@ class str():
 		at least one cased character in S, False otherwise.
 		"""
 
-	def join(???):
+	def join(self, ???):
 		"""
 		S.join(iterable) -> str
 		
@@ -390,7 +390,7 @@ class str():
 		iterable.  The separator between elements is S.
 		"""
 
-	def ljust(???):
+	def ljust(self, ???):
 		"""
 		S.ljust(width[, fillchar]) -> str
 		
@@ -398,14 +398,14 @@ class str():
 		done using the specified fill character (default is a space).
 		"""
 
-	def lower(???):
+	def lower(self, ???):
 		"""
 		S.lower() -> str
 		
 		Return a copy of the string S converted to lowercase.
 		"""
 
-	def lstrip(???):
+	def lstrip(self, ???):
 		"""
 		S.lstrip([chars]) -> str
 		
@@ -413,7 +413,7 @@ class str():
 		If chars is given and not None, remove characters in chars instead.
 		"""
 
-	def maketrans(???):
+	def maketrans(self, ???):
 		"""
 		Return a translation table usable for str.translate().
 		
@@ -426,7 +426,7 @@ class str():
 		must be a string, whose characters will be mapped to None in the result.
 		"""
 
-	def partition(???):
+	def partition(self, ???):
 		"""
 		S.partition(sep) -> (head, sep, tail)
 		
@@ -435,7 +435,7 @@ class str():
 		found, return S and two empty strings.
 		"""
 
-	def replace(???):
+	def replace(self, ???):
 		"""
 		S.replace(old, new[, count]) -> str
 		
@@ -444,7 +444,7 @@ class str():
 		given, only the first count occurrences are replaced.
 		"""
 
-	def rfind(???):
+	def rfind(self, ???):
 		"""
 		S.rfind(sub[, start[, end]]) -> int
 		
@@ -455,14 +455,14 @@ class str():
 		Return -1 on failure.
 		"""
 
-	def rindex(???):
+	def rindex(self, ???):
 		"""
 		S.rindex(sub[, start[, end]]) -> int
 		
 		Like S.rfind() but raise ValueError when the substring is not found.
 		"""
 
-	def rjust(???):
+	def rjust(self, ???):
 		"""
 		S.rjust(width[, fillchar]) -> str
 		
@@ -470,7 +470,7 @@ class str():
 		done using the specified fill character (default is a space).
 		"""
 
-	def rpartition(???):
+	def rpartition(self, ???):
 		"""
 		S.rpartition(sep) -> (head, sep, tail)
 		
@@ -479,7 +479,7 @@ class str():
 		separator is not found, return two empty strings and S.
 		"""
 
-	def rsplit(???):
+	def rsplit(self, ???):
 		"""
 		S.rsplit(sep=None, maxsplit=-1) -> list of strings
 		
@@ -490,7 +490,7 @@ class str():
 		is a separator.
 		"""
 
-	def rstrip(???):
+	def rstrip(self, ???):
 		"""
 		S.rstrip([chars]) -> str
 		
@@ -498,7 +498,7 @@ class str():
 		If chars is given and not None, remove characters in chars instead.
 		"""
 
-	def split(???):
+	def split(self, ???):
 		"""
 		S.split(sep=None, maxsplit=-1) -> list of strings
 		
@@ -509,7 +509,7 @@ class str():
 		removed from the result.
 		"""
 
-	def splitlines(???):
+	def splitlines(self, ???):
 		"""
 		S.splitlines([keepends]) -> list of strings
 		
@@ -518,7 +518,7 @@ class str():
 		is given and true.
 		"""
 
-	def startswith(???):
+	def startswith(self, ???):
 		"""
 		S.startswith(prefix[, start[, end]]) -> bool
 		
@@ -528,7 +528,7 @@ class str():
 		prefix can also be a tuple of strings to try.
 		"""
 
-	def strip(???):
+	def strip(self, ???):
 		"""
 		S.strip([chars]) -> str
 		
@@ -537,7 +537,7 @@ class str():
 		If chars is given and not None, remove characters in chars instead.
 		"""
 
-	def swapcase(???):
+	def swapcase(self, ???):
 		"""
 		S.swapcase() -> str
 		
@@ -545,7 +545,7 @@ class str():
 		and vice versa.
 		"""
 
-	def title(???):
+	def title(self, ???):
 		"""
 		S.title() -> str
 		
@@ -553,7 +553,7 @@ class str():
 		characters, all remaining cased characters have lower case.
 		"""
 
-	def translate(???):
+	def translate(self, ???):
 		"""
 		S.translate(table) -> str
 		
@@ -564,14 +564,14 @@ class str():
 		are deleted.
 		"""
 
-	def upper(???):
+	def upper(self, ???):
 		"""
 		S.upper() -> str
 		
 		Return a copy of S converted to uppercase.
 		"""
 
-	def zfill(???):
+	def zfill(self, ???):
 		"""
 		S.zfill(width) -> str
 		

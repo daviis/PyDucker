@@ -19,7 +19,7 @@ def info(object, spacing=10, collapse=1):
     aFile.write("class " + type(object).__name__ + "():\n")
     stuffList =  inspect.getmembers(object)
     for member in stuffList:
-        aFile.write("\tdef " + str(member[0]) + "(???):\n")
+        aFile.write("\tdef " + str(member[0]) + "(self, ???):\n")
         
         aFile.write('\t\t"""\n')
         for aLine in str(getattr(object, member[0]).__doc__).split('\n'):
@@ -35,7 +35,7 @@ def info(object, spacing=10, collapse=1):
 #                      for method in methodList]))
 
 def main():
-    objs = [1, 'a', [], (), {}]
+    objs = [1, 'a', [], (), {}, 1.0]
     for obj in objs:
         print(type(obj))
         info(obj)
