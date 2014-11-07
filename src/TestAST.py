@@ -21,6 +21,9 @@ def main():
     #parser.expr(fileCont, "aFile", 'eval')
     tree = ast.parse(fileCont, aFile)
     print ((ast.dump(tree)))
+    
+    
+    
     firstWalker = InitialWalker(tree)
     firstWalker.initalPass()
     print("made firstwakler")

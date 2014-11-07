@@ -8,6 +8,7 @@ commented out part of info method taken from : http://www.diveintopython.net/pow
 """
 import inspect
 import datetime
+import sys
 
 def info(object, spacing=10, collapse=1): 
     """
@@ -34,12 +35,19 @@ def info(object, spacing=10, collapse=1):
 #                        processFunc(str(getattr(object, method).__doc__)))
 #                      for method in methodList]))
 
+def info_help(object):
+    aFile = open("./HelpTest/" + type(object).__name__ + ".py", "w")   #open a file with the name of the class.py
+    sys.stdout = aFile
+    help(object)
+    aFile.close()
+    sys.stdout = sys.__stdout__
+
 def main():
     objs = [1, 'a', [], (), {}, 1.0]
     for obj in objs:
         print(type(obj))
-        info(obj)
-        print('\n')
+        info_help(obj)
+        #print('\n')
     
 if __name__ == '__main__':
     main()
