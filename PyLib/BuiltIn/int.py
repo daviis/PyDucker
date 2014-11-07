@@ -8,11 +8,13 @@ class int():
 	def __abs__(self, ???):
 		"""
 		abs(self)
+		@returntype:int
 		"""
 
 	def __add__(self, ???):
 		"""
 		Return self+value.
+		@returntype:int
 		"""
 
 	def __and__(self, ???):
@@ -23,6 +25,7 @@ class int():
 	def __bool__(self, ???):
 		"""
 		self != 0
+		@returntype:bool
 		"""
 
 	def __ceil__(self, ???):
@@ -81,11 +84,13 @@ class int():
 	def __eq__(self, ???):
 		"""
 		Return self==value.
+		@returntype:int
 		"""
 
 	def __float__(self, ???):
 		"""
 		float(self)
+		@returntype:float
 		"""
 
 	def __floor__(self, ???):
@@ -106,6 +111,7 @@ class int():
 	def __ge__(self, ???):
 		"""
 		Return self>=value.
+		@returntype:bool
 		"""
 
 	def __getattribute__(self, ???):
@@ -121,6 +127,7 @@ class int():
 	def __gt__(self, ???):
 		"""
 		Return self>value.
+		@returntype:bool
 		"""
 
 	def __hash__(self, ???):
@@ -136,21 +143,25 @@ class int():
 	def __init__(self, ???):
 		"""
 		Initialize self.  See help(type(self)) for accurate signature.
+		@returntype:int
 		"""
 
 	def __int__(self, ???):
 		"""
 		int(self)
+		@returntype:int
 		"""
 
 	def __invert__(self, ???):
 		"""
 		~self
+		@returntype:int
 		"""
-
+		
 	def __le__(self, ???):
 		"""
 		Return self<=value.
+		@returntype:bool
 		"""
 
 	def __lshift__(self, ???):
@@ -161,6 +172,7 @@ class int():
 	def __lt__(self, ???):
 		"""
 		Return self<value.
+		@returntype:bool
 		"""
 
 	def __mod__(self, ???):
@@ -171,16 +183,19 @@ class int():
 	def __mul__(self, ???):
 		"""
 		Return self*value.
+		@returntype:int
 		"""
 
 	def __ne__(self, ???):
 		"""
 		Return self!=value.
+		@returntype:bool
 		"""
 
 	def __neg__(self, ???):
 		"""
 		-self
+		@returntype:int
 		"""
 
 	def __new__(self, ???):
@@ -191,31 +206,37 @@ class int():
 	def __or__(self, ???):
 		"""
 		Return self|value.
+		@returntype:int
 		"""
 
 	def __pos__(self, ???):
 		"""
 		+self
+		@returntype:int
 		"""
 
 	def __pow__(self, ???):
 		"""
 		Return pow(self, value, mod).
+		@returntype:int
 		"""
 
 	def __radd__(self, ???):
 		"""
 		Return value+self.
+		@returntype:int
 		"""
 
 	def __rand__(self, ???):
 		"""
 		Return value&self.
+		@returntype:int
 		"""
 
 	def __rdivmod__(self, ???):
 		"""
 		Return divmod(value, self).
+		@returntype:tuple
 		"""
 
 	def __reduce__(self, ???):
@@ -236,6 +257,7 @@ class int():
 	def __rfloordiv__(self, ???):
 		"""
 		Return value//self.
+		@returntype:int
 		"""
 
 	def __rlshift__(self, ???):
@@ -251,6 +273,7 @@ class int():
 	def __rmul__(self, ???):
 		"""
 		Return value*self.
+		@returntype:int
 		"""
 
 	def __ror__(self, ???):
@@ -282,16 +305,19 @@ class int():
 	def __rsub__(self, ???):
 		"""
 		Return value-self.
+		@returntype:int
 		"""
 
 	def __rtruediv__(self, ???):
 		"""
 		Return value/self.
+		@returntype:float
 		"""
 
 	def __rxor__(self, ???):
 		"""
 		Return value^self.
+		@returntype:int
 		"""
 
 	def __setattr__(self, ???):
@@ -307,11 +333,13 @@ class int():
 	def __str__(self, ???):
 		"""
 		Return str(self).
+		@returntype:str
 		"""
 
 	def __sub__(self, ???):
 		"""
 		Return self-value.
+		@returntype:int
 		"""
 
 	def __subclasshook__(self, ???):
@@ -328,6 +356,7 @@ class int():
 	def __truediv__(self, ???):
 		"""
 		Return self/value.
+		@returntype:float
 		"""
 
 	def __trunc__(self, ???):
@@ -338,6 +367,7 @@ class int():
 	def __xor__(self, ???):
 		"""
 		Return self^value.
+		@returntype:int
 		"""
 
 	def bit_length(self, ???):

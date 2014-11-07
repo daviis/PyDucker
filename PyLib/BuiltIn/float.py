@@ -8,16 +8,19 @@ class float():
 	def __abs__(self, ???):
 		"""
 		abs(self)
+		@returntype:float
 		"""
 
 	def __add__(self, ???):
 		"""
 		Return self+value.
+		@returntype:float
 		"""
 
 	def __bool__(self, ???):
 		"""
 		self != 0
+		@returntype:bool
 		"""
 
 	def __class__(self, ???):
@@ -60,16 +63,19 @@ class float():
 	def __eq__(self, ???):
 		"""
 		Return self==value.
+		@returntype:float
 		"""
 
 	def __float__(self, ???):
 		"""
 		float(self)
+		@returntype:float
 		"""
 
 	def __floordiv__(self, ???):
 		"""
 		Return self//value.
+		@returntype:float
 		"""
 
 	def __format__(self, ???):
@@ -82,6 +88,7 @@ class float():
 	def __ge__(self, ???):
 		"""
 		Return self>=value.
+		@returntype:bool
 		"""
 
 	def __getattribute__(self, ???):
@@ -109,6 +116,7 @@ class float():
 	def __gt__(self, ???):
 		"""
 		Return self>value.
+		@returntype:bool
 		"""
 
 	def __hash__(self, ???):
@@ -124,16 +132,19 @@ class float():
 	def __int__(self, ???):
 		"""
 		int(self)
+		@returntype:int
 		"""
 
 	def __le__(self, ???):
 		"""
 		Return self<=value.
+		@returntype:bool
 		"""
 
 	def __lt__(self, ???):
 		"""
 		Return self<value.
+		@returntype:bool
 		"""
 
 	def __mod__(self, ???):
@@ -144,16 +155,19 @@ class float():
 	def __mul__(self, ???):
 		"""
 		Return self*value.
+		@returntype:float
 		"""
 
 	def __ne__(self, ???):
 		"""
 		Return self!=value.
+		@returntype:bool
 		"""
 
 	def __neg__(self, ???):
 		"""
 		-self
+		@returntype:float
 		"""
 
 	def __new__(self, ???):
@@ -164,6 +178,7 @@ class float():
 	def __pos__(self, ???):
 		"""
 		+self
+		@returntype:float
 		"""
 
 	def __pow__(self, ???):
@@ -174,6 +189,7 @@ class float():
 	def __radd__(self, ???):
 		"""
 		Return value+self.
+		@returntype:float
 		"""
 
 	def __rdivmod__(self, ???):
@@ -204,17 +220,20 @@ class float():
 	def __rmod__(self, ???):
 		"""
 		Return value%self.
+		@returntype:float
 		"""
 
 	def __rmul__(self, ???):
 		"""
 		Return value*self.
+		@returntype:float
 		"""
 
 	def __round__(self, ???):
 		"""
 		Return the Integral closest to x, rounding half toward even.
 		When an argument is passed, work like built-in round(x, ndigits).
+		@returntype:int
 		"""
 
 	def __rpow__(self, ???):
@@ -225,11 +244,13 @@ class float():
 	def __rsub__(self, ???):
 		"""
 		Return value-self.
+		@returntype:float
 		"""
 
 	def __rtruediv__(self, ???):
 		"""
 		Return value/self.
+		@returntype:float
 		"""
 
 	def __setattr__(self, ???):
@@ -261,11 +282,13 @@ class float():
 	def __str__(self, ???):
 		"""
 		Return str(self).
+		@returntype:str
 		"""
 
 	def __sub__(self, ???):
 		"""
 		Return self-value.
+		@returntype:float
 		"""
 
 	def __subclasshook__(self, ???):
@@ -282,6 +305,7 @@ class float():
 	def __truediv__(self, ???):
 		"""
 		Return self/value.
+		@returntype:float
 		"""
 
 	def __trunc__(self, ???):

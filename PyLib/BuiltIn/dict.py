@@ -16,27 +16,32 @@ class dict():
 		        d[k] = v
 		dict(**kwargs) -> new dictionary initialized with the name=value pairs
 		    in the keyword argument list.  For example:  dict(one=1, two=2)
+		@returntype:dict
 		"""
 
 	def __contains__(self, ???):
 		"""
 		True if D has a key k, else False.
+		@returntype:bool
 		"""
 
 	def __delattr__(self, ???):
 		"""
 		Implement delattr(self, name).
+		
 		"""
 
 	def __delitem__(self, ???):
 		"""
 		Delete self[key].
+		@returntype:None
 		"""
 
 	def __dir__(self, ???):
 		"""
 		__dir__() -> list
 		default dir() implementation
+		@returntype:list
 		"""
 
 	def __doc__(self, ???):
@@ -56,6 +61,7 @@ class dict():
 	def __eq__(self, ???):
 		"""
 		Return self==value.
+		@returntype:bool
 		"""
 
 	def __format__(self, ???):
@@ -66,6 +72,7 @@ class dict():
 	def __ge__(self, ???):
 		"""
 		Return self>=value.
+		@returntype:bool
 		"""
 
 	def __getattribute__(self, ???):
@@ -81,6 +88,7 @@ class dict():
 	def __gt__(self, ???):
 		"""
 		Return self>value.
+		@returntype:bool
 		"""
 
 	def __hash__(self, ???):
@@ -101,11 +109,13 @@ class dict():
 	def __le__(self, ???):
 		"""
 		Return self<=value.
+		@returntype:bool
 		"""
 
 	def __len__(self, ???):
 		"""
-		Return len(self).
+		Return len(self)
+		@returntype:int.
 		"""
 
 	def __lt__(self, ???):
@@ -116,6 +126,7 @@ class dict():
 	def __ne__(self, ???):
 		"""
 		Return self!=value.
+		@returntype:bool
 		"""
 
 	def __new__(self, ???):
@@ -156,6 +167,7 @@ class dict():
 	def __str__(self, ???):
 		"""
 		Return str(self).
+		@returntype:str
 		"""
 
 	def __subclasshook__(self, ???):

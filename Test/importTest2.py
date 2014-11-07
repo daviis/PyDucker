@@ -1,6 +1,9 @@
 from importTest3 import randnum
 
 def sqrr(b):
+    '''
+    @b:float
+    '''
     c =b**2
     return c
 
