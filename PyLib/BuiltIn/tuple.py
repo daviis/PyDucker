@@ -188,10 +188,11 @@ class tuple(object):
 		"""
 		return
 
-	def __sizeof__(self, ???):
+	def __sizeof__(self):
 		"""
 		T.__sizeof__() -- size of T in memory, in bytes
 		"""
+		return 1
 
 	def __str__(self):
 		"""

@@ -4,8 +4,8 @@ Updated: 10/30/14
 @author: Jake Albee
 '''
 import re
-from src.Bean import VarBean
-from src.Bean import ScopeLevelBean
+from Bean import VarBean
+from Bean import ScopeLevelBean
 
 
 def parseDocString(docString,returnList = True):
