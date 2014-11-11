@@ -20,6 +20,7 @@ class int():
 	def __and__(self, ???):
 		"""
 		Return self&value.
+		@returntype:int
 		"""
 
 	def __bool__(self, ???):
@@ -31,6 +32,7 @@ class int():
 	def __ceil__(self, ???):
 		"""
 		Ceiling of an Integral returns itself.
+		@returntype:int
 		"""
 
 	def __class__(self, ???):
@@ -49,22 +51,26 @@ class int():
 		Base 0 means to interpret the base from the string as an integer literal.
 		>>> int('0b100', base=0)
 		4
+		@returntype:int
 		"""
 
 	def __delattr__(self, ???):
 		"""
 		Implement delattr(self, name).
+		
 		"""
 
 	def __dir__(self, ???):
 		"""
 		__dir__() -> list
 		default dir() implementation
+		@returntype:list
 		"""
 
 	def __divmod__(self, ???):
 		"""
 		Return divmod(self, value).
+		@returntype:tuple
 		"""
 
 	def __doc__(self, ???):
@@ -79,6 +85,7 @@ class int():
 		or repr(object).
 		encoding defaults to sys.getdefaultencoding().
 		errors defaults to 'strict'.
+		@returntype:str
 		"""
 
 	def __eq__(self, ???):
@@ -96,16 +103,19 @@ class int():
 	def __floor__(self, ???):
 		"""
 		Flooring an Integral returns itself.
+		@returntype:int
 		"""
 
 	def __floordiv__(self, ???):
 		"""
 		Return self//value.
+		@returntype:in
 		"""
 
 	def __format__(self, ???):
 		"""
 		None
+		@returntype:str
 		"""
 
 	def __ge__(self, ???):
@@ -122,6 +132,7 @@ class int():
 	def __getnewargs__(self, ???):
 		"""
 		None
+		@returntype:tuple
 		"""
 
 	def __gt__(self, ???):
@@ -133,11 +144,13 @@ class int():
 	def __hash__(self, ???):
 		"""
 		Return hash(self).
+		@returntype:int
 		"""
 
 	def __index__(self, ???):
 		"""
 		Return self converted to an integer, if self is suitable for use as an index into a list.
+		@returntype:int
 		"""
 
 	def __init__(self, ???):
@@ -167,6 +180,7 @@ class int():
 	def __lshift__(self, ???):
 		"""
 		Return self<<value.
+		@returntype:int
 		"""
 
 	def __lt__(self, ???):
@@ -178,6 +192,7 @@ class int():
 	def __mod__(self, ???):
 		"""
 		Return self%value.
+		@returntype:int
 		"""
 
 	def __mul__(self, ???):
@@ -252,6 +267,7 @@ class int():
 	def __repr__(self, ???):
 		"""
 		Return repr(self).
+		@returntype:str
 		"""
 
 	def __rfloordiv__(self, ???):
@@ -263,11 +279,13 @@ class int():
 	def __rlshift__(self, ???):
 		"""
 		Return value<<self.
+		@returntype:int
 		"""
 
 	def __rmod__(self, ???):
 		"""
 		Return value%self.
+		@returntype:int
 		"""
 
 	def __rmul__(self, ???):
@@ -279,27 +297,32 @@ class int():
 	def __ror__(self, ???):
 		"""
 		Return value|self.
+		@returntype:int
 		"""
 
 	def __round__(self, ???):
 		"""
 		Rounding an Integral returns itself.
 		Rounding with an ndigits argument also returns an integer.
+		@returntype:int
 		"""
 
 	def __rpow__(self, ???):
 		"""
 		Return pow(value, self, mod).
+		@returntype:int
 		"""
 
 	def __rrshift__(self, ???):
 		"""
 		Return value>>self.
+		@returntype:int
 		"""
 
 	def __rshift__(self, ???):
 		"""
 		Return self>>value.
+		@returntype:int
 		"""
 
 	def __rsub__(self, ???):
@@ -328,6 +351,8 @@ class int():
 	def __sizeof__(self, ???):
 		"""
 		Returns size in memory, in bytes
+		@returntype:int
+		
 		"""
 
 	def __str__(self, ???):
@@ -362,6 +387,7 @@ class int():
 	def __trunc__(self, ???):
 		"""
 		Truncating an Integral returns itself.
+		@returntype:int
 		"""
 
 	def __xor__(self, ???):
@@ -379,11 +405,13 @@ class int():
 		'0b100101'
 		>>> (37).bit_length()
 		6
+		@returntype:int
 		"""
 
 	def conjugate(self, ???):
 		"""
 		Returns self, the complex conjugate of any int.
+		@returntype:int
 		"""
 
 	def denominator(self, ???):
@@ -402,6 +430,7 @@ class int():
 		Base 0 means to interpret the base from the string as an integer literal.
 		>>> int('0b100', base=0)
 		4
+		@returntype:int
 		"""
 
 	def from_bytes(self, ???):
@@ -422,6 +451,7 @@ class int():
 		
 		The signed keyword-only argument indicates whether two's complement is
 		used to represent the integer.
+		@returntype:int
 		"""
 
 	def imag(self, ???):
@@ -440,6 +470,7 @@ class int():
 		Base 0 means to interpret the base from the string as an integer literal.
 		>>> int('0b100', base=0)
 		4
+		@returntype:int
 		"""
 
 	def numerator(self, ???):
@@ -458,6 +489,7 @@ class int():
 		Base 0 means to interpret the base from the string as an integer literal.
 		>>> int('0b100', base=0)
 		4
+		@returntype:int
 		"""
 
 	def real(self, ???):
@@ -476,6 +508,7 @@ class int():
 		Base 0 means to interpret the base from the string as an integer literal.
 		>>> int('0b100', base=0)
 		4
+		@returntype:int
 		"""
 
 	def to_bytes(self, ???):
@@ -497,5 +530,6 @@ class int():
 		The signed keyword-only argument determines whether two's complement is
 		used to represent the integer.  If signed is False and a negative integer
 		is given, an OverflowError is raised.
+		@returntype:bytes
 		"""
 
