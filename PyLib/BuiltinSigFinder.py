@@ -14,7 +14,7 @@ def info(object, spacing=10, collapse=1):
     """
     Print methods and doc strings. Takes module, class, list, dictionary, or string.
     """
-    aFile = open("./BuiltIn/" + type(object).__name__ + ".py", "w")   #open a file with the name of the class.py
+    aFile = open("./BuiltIn/" + type(object).__name__ + ".py", "x")   #open a file with the name of the class.py
     
     aFile.write('"""\nA python implementation of built in classes for looking at method signatures.\n\nModified on ' + str(datetime.date.today()) + '\n"""\n\n')
     aFile.write("class " + type(object).__name__ + "():\n")
@@ -36,17 +36,18 @@ def info(object, spacing=10, collapse=1):
 #                      for method in methodList]))
 
 def info_help_class(object):
-    aFile = open("./Builtin2/" + type(object).__name__ + ".py", "w")   #open a file with the name of the class.py
+    aFile = open("./Builtin/" + type(object).__name__ + ".py", "w")   #open a file with the name of the class.py
     sys.stdout = aFile
     help(object)
     aFile.close()
     sys.stdout = sys.__stdout__
 
 def main_class():
-    objs = [1, 'a', [], (), {}, 1.0]
+#     objs = [1, 'a', [], (), {}, 1.0]
+    objs = [True]
     for obj in objs:
         print(type(obj))
-        info_help_class(obj)
+        info(obj)
         #print('\n')
 
 def main_fun():
@@ -60,7 +61,7 @@ def main_fun():
     sys.stdout = sys.__stdout__    
         
 def main():
-    main_fun()
+    main_class()
     
 if __name__ == '__main__':
     main()

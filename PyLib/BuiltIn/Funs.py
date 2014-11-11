@@ -2,7 +2,7 @@ def abs(num):
     """
     @num:float
     """
-    return num
+    return 1
     
 def dict(kwarg):
     """
@@ -10,21 +10,26 @@ def dict(kwarg):
     """
     return {}
     
-def help(obj):
-    """
-    @obj:object*
-    """
+# def help(obj):
+#     """
+#     @obj:object*
+#     """
     
     
-def min(): 
+def min(iterable, key=None): 
     """
+    @iterable:*
+    @key:fun
+    """ 
+    return object  
     
-    """   
-    
-def setattr():
+def setattr(object, name, value):
     """
-    
+    @object:object
+    @name:str
+    @value:object
     """
+    return
     
 def all(iter): 
     """
@@ -32,105 +37,131 @@ def all(iter):
     """
     return True  
 
-def dir():   
+def dir(objectArr):   
     """
-    
+    @objectArr:*
     """
+    return []
     
-def hex();
+def hex(aNum):
     """
-    
+    @aNum:int
     """  
+    return ""
 
-def next():
+def next(iterator, default=None):
     """
-    
+    @iterator:iterator
+    @default:object
     """  
+    return object
 
-def slice():
-    """
-    
-    """
+# def slice(): #is an obj/
+#     """
+#     
+#     """
 
-def any():
+def any(iterable):
     """
+    @iterable:iterale
+    """
+    return True
     
+def divmod(x, y):
     """
-    
-def divmod():
-    """
-    
-    """    
-
-def id():
-    """
-    
-    """
-
-def object():
-    """
-    
+    @x:float
+    @y:int
     """   
+    return 1 
 
-def sorted():
+def id(obj):
     """
-    
+    @obj:object
     """
-    
-def ascii():
-    """
-    
-    """
-    
-def enumerate():
-    """
-    
-    """    
-    
-def input():
-    """
-    
-    """    
-    
-def oct():
-    """
-    
-    """
+    return 1
 
-def staticmethod():
+# def object(): #is a class
+#     """
+#     
+#     """   
+
+def sorted(iterable, key=None, reverse=False):
     """
+    @iterable:iterable
+    @key:object
+    @reverse:bool
+    """
+    return []
     
+def ascii(obj):
     """
+    @obj:object
+    """
+    return ""
+    
+# def enumerate(): #object
+#     """
+#     
+#     """    
+    
+def input(prompt=""):
+    """
+    @prompt:str
+    """    
+    return ""
+    
+def oct(aNum):
+    """
+    @aNum:int
+    """
+    return str
+
+# def staticmethod(): #class
+#     """
+#     
+#     """
         
-def bin():    
+def bin(aNum):    
     """
+    @aNum:int
+    """
+    return ""
     
+def eval(source, globals=None, locals=None):
     """
-    
-def eval():
+    @source:str
+    @globals:lst
+    @locals:lst
     """
-    
-    """
+    return 
        
-def int():
-    """
-    
-    """
+# def int(): #class
+#     """
+#     
+#     """
    
-def open():
+def open(file, mode='r', buffering=-1, encoding=None, errors=None,  newline=None, closefd=True, opener=None):
     """
+    @file:str
+    @mode:str
+    @buffering:int
+    @encoding:str
+    @errors:str
+    @newline:str
+    @closefd:bool
+    @opener:callable
+    """
+    return stream 
     
-    """
-    
-def str():
-    """
-    
-    """
+# def str(): #class
+#     """
+#     
+#     """
        
-def bool():
-    """
-    
-    """
+# def bool(): #class
+#     """
+#     
+#     """
    
 def exec():
     """
