@@ -113,10 +113,11 @@ class str():
 		"""
 		return True
 
-	def __hash__(self, ???):
+	def __hash__(self):
 		"""
 		Return hash(self).
 		"""
+		return 1
 
 # 	def __init__(self):
 		"""
@@ -130,9 +131,11 @@ class str():
 		"""
 		return iterator
 
-	def __le__(self, ???):
+	def __le__(self, value):
 		"""
 		Return self<=value.
+		
+		@value:str
 		"""
 		return True
 
@@ -218,7 +221,7 @@ class str():
 		"""
 		return 
 
-	def __sizeof__(self:
+	def __sizeof__(self):
 		"""
 		S.__sizeof__() -> size of S in memory, in bytes
 		"""
