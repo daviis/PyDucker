@@ -35,19 +35,32 @@ def info(object, spacing=10, collapse=1):
 #                        processFunc(str(getattr(object, method).__doc__)))
 #                      for method in methodList]))
 
-def info_help(object):
-    aFile = open("./HelpTest/" + type(object).__name__ + ".py", "w")   #open a file with the name of the class.py
+def info_help_class(object):
+    aFile = open("./Builtin2/" + type(object).__name__ + ".py", "w")   #open a file with the name of the class.py
     sys.stdout = aFile
     help(object)
     aFile.close()
     sys.stdout = sys.__stdout__
 
-def main():
+def main_class():
     objs = [1, 'a', [], (), {}, 1.0]
     for obj in objs:
         print(type(obj))
-        info_help(obj)
+        info_help_class(obj)
         #print('\n')
+
+def main_fun():
+    aFile = open("./HelpTest/fun.py", "w")   #open a file with the name of the class.py
+    sys.stdout = aFile
+    funs = [__import__, abs, all, any, ascii, bin, bool, bytearray, bytes, callable, chr, classmethod, compile, complex, delattr, dict, dir, divmod, enumerate, eval, exec, filter, float, format, frozenset, getattr, globals, hasattr, hash, help, hex, id, input, int, isinstance, issubclass, iter, len, list, locals, map, max, memoryview, min, next, object, oct, open, ord, pow, print, property, range, repr, reversed, round, set, setattr, slice, sorted, staticmethod, str, sum, super, tuple, type, vars, zip]
+    for fun in funs:
+        print(fun)
+        help(fun)
+    aFile.close()
+    sys.stdout = sys.__stdout__    
+        
+def main():
+    main_fun()
     
 if __name__ == '__main__':
     main()
