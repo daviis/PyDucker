@@ -8,7 +8,7 @@ import sys
 
 class GenericBean():
     
-    def __inti__(self, name, initialize):
+    def __init__(self, name, initialize):
         """
         @name:str
         @initalize:bool

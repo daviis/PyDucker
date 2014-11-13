@@ -4,8 +4,8 @@ Created on Oct 13, 2014
 @author: daviis01
 '''
 import ast
-import Bean
-from DocStringParser import parseDocString
+import src.Bean
+from src.DocStringParser import parseDocString
 
 class InitialWalker(ast.NodeVisitor):
     def __init__(self, astNode):
