@@ -1,13 +1,13 @@
 """
 A python implementation of built in classes for looking at method signatures.
 
-Modified on 2014-11-06
+Modified on 2014-11-14
 """
 
 class tuple():
 	def __add__(self, ???):
 		"""
-		Return self+value.
+		Return self+value
 		"""
 
 	def __class__(self, ???):
@@ -28,20 +28,14 @@ class tuple():
 		Implement delattr(self, name).
 		"""
 
-	def __dir__(self, ???):
-		"""
-		__dir__() -> list
-		default dir() implementation
-		"""
-
 	def __doc__(self, ???):
 		"""
-		str(object='') -> str
+		str(object='') -> string
 		str(bytes_or_buffer[, encoding[, errors]]) -> str
 		
 		Create a new string object from the given object. If encoding or
-		errors is specified, then the object must expose a data buffer
-		that will be decoded using the given encoding and error handler.
+		errors is specified, then the object msut expose a data buffer
+		that will be decoded using the given encoding and eror handler.
 		Otherwise, returns the result of object.__str__() (if defined)
 		or repr(object).
 		encoding defaults to sys.getdefaultencoding().
@@ -90,7 +84,7 @@ class tuple():
 
 	def __init__(self, ???):
 		"""
-		Initialize self.  See help(type(self)) for accurate signature.
+		Initialize self. see help(type(x)) for signature
 		"""
 
 	def __iter__(self, ???):
@@ -105,7 +99,7 @@ class tuple():
 
 	def __len__(self, ???):
 		"""
-		Return len(self).
+		Return len(self)
 		"""
 
 	def __lt__(self, ???):
@@ -120,12 +114,12 @@ class tuple():
 
 	def __ne__(self, ???):
 		"""
-		Return self!=value.
+		Retur self!=value.
 		"""
 
 	def __new__(self, ???):
 		"""
-		Create and return a new object.  See help(type) for accurate signature.
+		Create and return a new object. See help(type) for accurate signature.
 		"""
 
 	def __reduce__(self, ???):

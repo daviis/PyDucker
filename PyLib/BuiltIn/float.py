@@ -5,51 +5,48 @@ Modified on 2014-11-06
 """
 
 class float():
-	def __abs__(self, ???):
+	def __abs__(self):
 		"""
 		abs(self)
-		@returntype:float
 		"""
+		return 1.0
 
-	def __add__(self, ???):
+	def __add__(self, value):
 		"""
-		Return self+value.
-		@returntype:float
+		return self+value
+		@value: float
 		"""
+		return 1.0
 
-	def __bool__(self, ???):
-		"""
-		self != 0
-		@returntype:bool
-		"""
-
-	def __class__(self, ???):
+#	def __class__(self, ???):
 		"""
 		float(x) -> floating point number
 		
 		Convert a string or number to a floating point number, if possible.
-		@returntype:float
 		"""
 
-	def __delattr__(self, ???):
+
+#	def __delattr__(self, ???):
 		"""
 		Implement delattr(self, name).
 		"""
 
-	def __dir__(self, ???):
+	def __dir__(self):
 		"""
 		__dir__() -> list
 		default dir() implementation
-		@returntype:list
 		"""
+		return []
+	
 
-	def __divmod__(self, ???):
+	def __divmod__(self, value):
 		"""
-		Return divmod(self, value).
-		@returntype:tuple
+		Return divmod(self, value)
+		@value:float
 		"""
+		return 1.0
 
-	def __doc__(self, ???):
+	#def __doc__(self, ???):
 		"""
 		str(object='') -> str
 		str(bytes_or_buffer[, encoding[, errors]]) -> str
@@ -60,48 +57,52 @@ class float():
 		Otherwise, returns the result of object.__str__() (if defined)
 		or repr(object).
 		encoding defaults to sys.getdefaultencoding().
-		errors defaults to 'strict'.
-		@returntype:str
+		errors defaults to 'strict'.	
 		"""
 
-	def __eq__(self, ???):
+	def __eq__(self, value):
 		"""
 		Return self==value.
-		@returntype:float
+		@value: float
 		"""
+		return 1.0
 
-	def __float__(self, ???):
+	def __float__(self):
 		"""
 		float(self)
-		@returntype:float
 		"""
+		return 1.0
 
-	def __floordiv__(self, ???):
+	def __floordiv__(self, value):
 		"""
 		Return self//value.
-		@returntype:float
+		@value:float
 		"""
+		return 1.0
 
-	def __format__(self, ???):
+	def __format__(self, value):
 		"""
 		float.__format__(format_spec) -> string
 		
 		Formats the float according to format_spec.
-		@returntype:str
+		@value:str
 		"""
+		return str
+		
 
-	def __ge__(self, ???):
+	def __ge__(self, value):
 		"""
 		Return self>=value.
-		@returntype:bool
+		@value:float
 		"""
+		return True
 
-	def __getattribute__(self, ???):
+	#def __getattribute__(self, ???):
 		"""
 		Return getattr(self, name).
 		"""
 
-	def __getformat__(self, ???):
+	#def __getformat__(self, ???):
 		"""
 		float.__getformat__(typestr) -> string
 		
@@ -111,169 +112,183 @@ class float():
 		typestr must be 'double' or 'float'.  This function returns whichever of
 		'unknown', 'IEEE, big-endian' or 'IEEE, little-endian' best describes the
 		format of floating point numbers used by the C type named by typestr.
-		@returntype:str
 		"""
 
-	def __getnewargs__(self, ???):
+	def __getnewargs__(self):
 		"""
 		None
-		@returntype:tuple
+		"""
+		return ()
+
+	def __gt__(self, value):
+		"""
+		Retrun self>value
+		@value:float
+		"""
+		return True
+
+	def __hash__(self):
+		"""
+		Return hash(self)
+		"""
+		return 1
+
+#	def __init__(self, ???):
+		"""
+		Initialize self. See help(type(self)) for signature
 		"""
 
-	def __gt__(self, ???):
-		"""
-		Return self>value.
-		@returntype:bool
-		"""
-
-	def __hash__(self, ???):
-		"""
-		Return hash(self).
-		@returntype:int
-		"""
-
-	def __init__(self, ???):
-		"""
-		Initialize self.  See help(type(self)) for accurate signature.
-		@returntype:None
-		"""
-
-	def __int__(self, ???):
+#	def __int__(self):
 		"""
 		int(self)
-		@returntype:int
 		"""
 
-	def __le__(self, ???):
+	def __le__(self, value):
 		"""
-		Return self<=value.
-		@returntype:bool
+		Return self<=value
+		@value:float
 		"""
+		return True
 
-	def __lt__(self, ???):
-		"""
-		Return self<value.
-		@returntype:bool
-		"""
 
-	def __mod__(self, ???):
+	def __lt__(self, value):
 		"""
-		Return self%value.
-		@returntype:float
+		Return self<value
+		@value:float
 		"""
+		return True
 
-	def __mul__(self, ???):
+	def __mod__(self, value):
 		"""
-		Return self*value.
-		@returntype:float
+		Return self%value
+		@value:float
 		"""
+		return 1.0
 
-	def __ne__(self, ???):
+	def __mul__(self, value):
+		"""
+		Return self*value
+		@value:float
+		"""
+		return 1.0
+
+	def __ne__(self, value):
 		"""
 		Return self!=value.
-		@returntype:bool
+		@value:float
 		"""
+		return True
 
-	def __neg__(self, ???):
+	def __neg__(self):
 		"""
 		-self
-		@returntype:float
+		"""
+		return 1.0
+
+#	def __new__(self, ???):
+		"""
+		Create and return a new object. See help(type) for accurate signature.
 		"""
 
-	def __new__(self, ???):
-		"""
-		Create and return a new object.  See help(type) for accurate signature.
-		"""
-
-	def __pos__(self, ???):
+	def __pos__(self):
 		"""
 		+self
-		@returntype:float
 		"""
+		return 1.0
 
-	def __pow__(self, ???):
+	def __pow__(self, value):
 		"""
-		Return pow(self, value, mod).
-		@returntype:float
+		Return  pow(self, value, mod):
+		@value:float
 		"""
+		#mod not used unless all values our intiger
+		return float
+	
+	def __radd__(self, value):
+		"""
+		Return value+self
+		@value:float
+		"""
+		return float
 
-	def __radd__(self, ???):
+	def __rdivmod__(self, value):
 		"""
-		Return value+self.
-		@returntype:float
+		Return divmod(value, self)
+		@value:float
 		"""
+		return float
 
-	def __rdivmod__(self, ???):
-		"""
-		Return divmod(value, self).
-		@returntype:float
-		"""
-
-	def __reduce__(self, ???):
+#	def __reduce__(self, ???):
 		"""
 		helper for pickle
 		"""
 
-	def __reduce_ex__(self, ???):
+#	def __reduce_ex__(self, ???):
 		"""
 		helper for pickle
 		"""
 
-	def __repr__(self, ???):
+	def __repr__(self):
 		"""
-		Return repr(self).
-		@returntype:str
+		Return repr(self)
 		"""
+		return str
 
-	def __rfloordiv__(self, ???):
+	def __rfloordiv__(self, value):
 		"""
-		Return value//self.
-		@returntype:float
+		Return value//self
+		@value:float
 		"""
+		return float
 
-	def __rmod__(self, ???):
+	def __rmod__(self, value):
 		"""
-		Return value%self.
-		@returntype:float
+		Return value%self
+		@value:float
 		"""
+		return float
 
-	def __rmul__(self, ???):
+	def __rmul__(self, value):
 		"""
-		Return value*self.
-		@returntype:float
+		Return value*self
+		@value:float
 		"""
-
-	def __round__(self, ???):
-		"""
+		return float
+	
+	def __round__(self):
+		'''
 		Return the Integral closest to x, rounding half toward even.
-		When an argument is passed, work like built-in round(x, ndigits).
-		@returntype:int
-		"""
+		When an argument is passed, work like built-in round(x, ndigits)
+		'''
+		return 1.0
 
-	def __rpow__(self, ???):
+	def __rpow__(self, value):
 		"""
 		Return pow(value, self, mod).
-		@returntype:float
 		"""
+		#mod not used unleas all values are intigers
+		return float
+	
+	def __rsub__(self, value):
+		"""
+		Return value-self
+		@value:float
+		"""
+		return float
 
-	def __rsub__(self, ???):
-		"""
-		Return value-self.
-		@returntype:float
-		"""
-
-	def __rtruediv__(self, ???):
+	def __rtruediv__(self, flaot):
 		"""
 		Return value/self.
-		@returntype:float
+		@value:float
+		"""
+		return flaot
+	
+#	def __setattr__(self, ???):
+		"""
+		Implement setattr(self, name, value
 		"""
 
-	def __setattr__(self, ???):
-		"""
-		Implement setattr(self, name, value).
-		"""
-
-	def __setformat__(self, ???):
+#	def __setformat__(self, ???):
 		"""
 		float.__setformat__(typestr, fmt) -> None
 		
@@ -288,26 +303,27 @@ class float():
 		This affects how floats are converted to and from binary strings.
 		"""
 
-	def __sizeof__(self, ???):
+	def __sizeof__(self):
 		"""
 		__sizeof__() -> int
 		size of object in memory, in bytes
-		@returntype:int
 		"""
+		return 1
 
-	def __str__(self, ???):
+	def __str__(self):
 		"""
-		Return str(self).
-		@returntype:str
+		Return str(self)
 		"""
+		return ''
 
-	def __sub__(self, ???):
+	def __sub__(self, value):
 		"""
 		Return self-value.
-		@returntype:float
+		@value:flaot
 		"""
+		return 1.0
 
-	def __subclasshook__(self, ???):
+#	def __subclasshook__(self, ???):
 		"""
 		Abstract classes can override this to customize issubclass().
 		
@@ -318,19 +334,20 @@ class float():
 		
 		"""
 
-	def __truediv__(self, ???):
+	def __truediv__(self, value):
 		"""
 		Return self/value.
-		@returntype:float
+		@value:float
 		"""
+		return float
 
-	def __trunc__(self, ???):
+	def __trunc__(self):
 		"""
 		Return the Integral closest to x between 0 and x.
-		@returntype:int
 		"""
+		return 1
 
-	def as_integer_ratio(self, ???):
+	def as_integer_ratio(self):
 		"""
 		float.as_integer_ratio() -> (int, int)
 		
@@ -344,16 +361,15 @@ class float():
 		(0, 1)
 		>>> (-.25).as_integer_ratio()
 		(-1, 4)
-		@returntype:tuple
 		"""
-
-	def conjugate(self, ???):
+		return ()
+	
+#	def conjugate(self, ???):
 		"""
 		Return self, the complex conjugate of any float.
-		@returntype:float
 		"""
 
-	def fromhex(self, ???):
+#	def fromhex(self, ???):
 		"""
 		float.fromhex(string) -> float
 		
@@ -361,11 +377,10 @@ class float():
 		>>> float.fromhex('0x1.ffffp10')
 		2047.984375
 		>>> float.fromhex('-0x1p-1074')
-		-5e-324
-		@returntype:float
+		-4.9406564584124654e-324
 		"""
 
-	def hex(self, ???):
+	def hex(self):
 		"""
 		float.hex() -> string
 		
@@ -374,28 +389,26 @@ class float():
 		'-0x1.999999999999ap-4'
 		>>> 3.14159.hex()
 		'0x1.921f9f01b866ep+1'
-		@returntype:str
 		"""
+		return ''
 
-	def imag(self, ???):
+	#def imag(self, ???):
 		"""
 		float(x) -> floating point number
 		
 		Convert a string or number to a floating point number, if possible.
-		@returntype:float
 		"""
 
-	def is_integer(self, ???):
+	def is_integer(self):
 		"""
 		Return True if the float is an integer.
-		@returntype:bool
 		"""
+		return True
 
-	def real(self, ???):
+	#def real(self, ???):
 		"""
 		float(x) -> floating point number
 		
 		Convert a string or number to a floating point number, if possible.
-		@returntype:float
 		"""
-
+		

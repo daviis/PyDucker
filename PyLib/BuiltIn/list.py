@@ -23,7 +23,7 @@ class list():
 
 	def __delattr__(self, ???):
 		"""
-		Implement delattr(self, name).
+		Implement delattr(self, name)
 		"""
 
 	def __delitem__(self, ???):
@@ -31,15 +31,15 @@ class list():
 		Delete self[key].
 		"""
 
-	def __dir__(self, ???):
-		"""
+	def __dir__(self):
+		'''
 		__dir__() -> list
 		default dir() implementation
-		"""
+		'''
 
 	def __doc__(self, ???):
 		"""
-		str(object='') -> str
+		str(object='') -> string
 		str(bytes_or_buffer[, encoding[, errors]]) -> str
 		
 		Create a new string object from the given object. If encoding or
@@ -48,7 +48,7 @@ class list():
 		Otherwise, returns the result of object.__str__() (if defined)
 		or repr(object).
 		encoding defaults to sys.getdefaultencoding().
-		errors defaults to 'strict'.
+		errors defaults to 'strict'
 		"""
 
 	def __eq__(self, ???):
@@ -88,7 +88,7 @@ class list():
 
 	def __iadd__(self, ???):
 		"""
-		Implement self+=value.
+		Implement self+=
 		"""
 
 	def __imul__(self, ???):
@@ -98,7 +98,7 @@ class list():
 
 	def __init__(self, ???):
 		"""
-		Initialize self.  See help(type(self)) for accurate signature.
+		Initialize self. See help(type(self)) for accurate signature.
 		"""
 
 	def __iter__(self, ???):
@@ -128,12 +128,12 @@ class list():
 
 	def __ne__(self, ???):
 		"""
-		Return self!=value.
+		Reutrn self!-value.
 		"""
 
 	def __new__(self, ???):
 		"""
-		Create and return a new object.  See help(type) for accurate signature.
+		Create and return a new object. See help(type) for accurte signature.
 		"""
 
 	def __reduce__(self, ???):
@@ -196,16 +196,16 @@ class list():
 		"""
 		L.append(object) -> None -- append object to end
 		"""
-
-	def clear(self, ???):
+		
+	def clear(self):
 		"""
 		L.clear() -> None -- remove all items from L
 		"""
-
-	def copy(self, ???):
+		
+	def copyt(self):
 		"""
-		L.copy() -> list -- a shallow copy of L
-		"""
+		L.copy() -> -- a shallow copyt of L
+		"""	
 
 	def count(self, ???):
 		"""
@@ -214,7 +214,7 @@ class list():
 
 	def extend(self, ???):
 		"""
-		L.extend(iterable) -> None -- extend list by appending elements from the iterable
+		L.extend(iterable) -- extend list by appending elements from the iterable
 		"""
 
 	def index(self, ???):
@@ -236,7 +236,7 @@ class list():
 
 	def remove(self, ???):
 		"""
-		L.remove(value) -> None -- remove first occurrence of value.
+		L.remove(value) -- remove first occurrence of value.
 		Raises ValueError if the value is not present.
 		"""
 
@@ -247,6 +247,7 @@ class list():
 
 	def sort(self, ???):
 		"""
-		L.sort(key=None, reverse=False) -> None -- stable sort *IN PLACE*
+		L.sort(key=None, reverse=False) -- stable sort *IN PLACE*;
+		cmp(x, y) -> -1, 0, 1
 		"""
 

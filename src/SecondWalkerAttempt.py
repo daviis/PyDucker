@@ -10,7 +10,7 @@ from DocStringParser import parseDocString
 class InitialWalker(ast.NodeVisitor):
     def __init__(self, astNode):
         """
-        #! astNode:ast.AST
+        @astNode:ast.AST
         """
         self.root = astNode
         self.classes = []
@@ -35,14 +35,14 @@ class InitialWalker(ast.NodeVisitor):
          
     def visit_ClassDef(self, node):
         """
-        #! node:ast.AST
+        @node:ast.AST
         """
         self.nameSpace.put(node.name)
         self.classes.append(node)
         
     def visit_FunctionDef(self, node):
         """
-        #! node:ast.AST
+        @node:ast.AST
         """
         self.nameSpace.put(node.name)
         self.funs.append(node)

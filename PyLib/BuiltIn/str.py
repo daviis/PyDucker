@@ -12,8 +12,8 @@ class str():
 
 	def __class__(self, ???):
 		"""
-		str(object='') -> str
-		str(bytes_or_buffer[, encoding[, errors]]) -> str
+		str(object='') -> string
+		str(bytes_or_buffer[, encoding{, errors]]) -> str
 		
 		Create a new string object from the given object. If encoding or
 		errors is specified, then the object must expose a data buffer
@@ -22,6 +22,7 @@ class str():
 		or repr(object).
 		encoding defaults to sys.getdefaultencoding().
 		errors defaults to 'strict'.
+		
 		"""
 
 	def __contains__(self, ???):
@@ -33,8 +34,8 @@ class str():
 		"""
 		Implement delattr(self, name).
 		"""
-
-	def __dir__(self, ???):
+		
+	def __dir__(self):
 		"""
 		__dir__() -> list
 		default dir() implementation
@@ -42,26 +43,26 @@ class str():
 
 	def __doc__(self, ???):
 		"""
-		str(object='') -> str
+		str(object='') -> string
 		str(bytes_or_buffer[, encoding[, errors]]) -> str
-		
+	
 		Create a new string object from the given object. If encoding or
 		errors is specified, then the object must expose a data buffer
 		that will be decoded using the given encoding and error handler.
 		Otherwise, returns the result of object.__str__() (if defined)
 		or repr(object).
-		encoding defaults to sys.getdefaultencoding().
+		encoding defaults to sys.getdefaultencoing().
 		errors defaults to 'strict'.
 		"""
 
 	def __eq__(self, ???):
 		"""
-		Return self==value.
+		Return self===value.
 		"""
 
 	def __format__(self, ???):
 		"""
-		S.__format__(format_spec) -> str
+		S.__format__(format_spec) -> string
 		
 		Return a formatted version of S as described by format_spec.
 		"""
@@ -98,10 +99,10 @@ class str():
 
 	def __init__(self, ???):
 		"""
-		Initialize self.  See help(type(self)) for accurate signature.
+		Initialize self. see help(type(x)) for signature
 		"""
-
-	def __iter__(self, ???):
+		
+	def __iter__(self):
 		"""
 		Implement iter(self).
 		"""
@@ -128,7 +129,7 @@ class str():
 
 	def __mul__(self, ???):
 		"""
-		Return self*value.n
+		Reutrn self*value.n
 		"""
 
 	def __ne__(self, ???):
@@ -138,7 +139,7 @@ class str():
 
 	def __new__(self, ???):
 		"""
-		Create and return a new object.  See help(type) for accurate signature.
+		Create and return a new object. See help(type) for accurate signature.
 		"""
 
 	def __reduce__(self, ???):
@@ -163,7 +164,7 @@ class str():
 
 	def __rmul__(self, ???):
 		"""
-		Return self*value.
+		REturn self*value.
 		"""
 
 	def __setattr__(self, ???):
@@ -190,26 +191,19 @@ class str():
 		NotImplemented, the normal algorithm is used.  Otherwise, it
 		overrides the normal algorithm (and the outcome is cached).
 		
-		"""
+		"""	
 
 	def capitalize(self, ???):
 		"""
-		S.capitalize() -> str
+		S.capitalize() -> string
 		
-		Return a capitalized version of S, i.e. make the first character
-		have upper case and the rest lower case.
-		"""
-
-	def casefold(self, ???):
-		"""
-		S.casefold() -> str
-		
-		Return a version of S suitable for caseless comparisons.
+		Return a copy of the string S with only its first character
+		capitalized.
 		"""
 
 	def center(self, ???):
 		"""
-		S.center(width[, fillchar]) -> str
+		S.center(width[, fillchar]) -> string
 		
 		Return S centered in a string of length width. Padding is
 		done using the specified fill character (default is a space)
@@ -220,20 +214,32 @@ class str():
 		S.count(sub[, start[, end]]) -> int
 		
 		Return the number of non-overlapping occurrences of substring sub in
-		string S[start:end].  Optional arguments start and end are
-		interpreted as in slice notation.
+		string S[start:end].  Optional arguments start and end are interpreted
+		as in slice notation.
+		"""
+
+	def decode(self, ???):
+		"""
+		S.decode([encoding[,errors]]) -> object
+		
+		Decodes S using the codec registered for encoding. encoding defaults
+		to the default encoding. errors may be given to set a different error
+		handling scheme. Default is 'strict' meaning that encoding errors raise
+		a UnicodeDecodeError. Other possible values are 'ignore' and 'replace'
+		as well as any other name registered with codecs.register_error that is
+		able to handle UnicodeDecodeErrors.
 		"""
 
 	def encode(self, ???):
 		"""
-		S.encode(encoding='utf-8', errors='strict') -> bytes
+		S.encode([encoding[,errors]]) -> object
 		
-		Encode S using the codec registered for encoding. Default encoding
-		is 'utf-8'. errors may be given to set a different error
+		Encodes S using the codec registered for encoding. encoding defaults
+		to the default encoding. errors may be given to set a different error
 		handling scheme. Default is 'strict' meaning that encoding errors raise
 		a UnicodeEncodeError. Other possible values are 'ignore', 'replace' and
 		'xmlcharrefreplace' as well as any other name registered with
-		codecs.register_error that can handle UnicodeEncodeErrors.
+		codecs.register_error that is able to handle UnicodeEncodeErrors.
 		"""
 
 	def endswith(self, ???):
@@ -248,7 +254,7 @@ class str():
 
 	def expandtabs(self, ???):
 		"""
-		S.expandtabs(tabsize=8) -> str
+		S.expandtabs([tabsize]) -> string
 		
 		Return a copy of S where all tab characters are expanded using spaces.
 		If tabsize is not given, a tab size of 8 characters is assumed.
@@ -256,7 +262,7 @@ class str():
 
 	def find(self, ???):
 		"""
-		S.find(sub[, start[, end]]) -> int
+		S.find(sub [,start [,end]]) -> int
 		
 		Return the lowest index in S where substring sub is found,
 		such that sub is contained within S[start:end].  Optional
@@ -267,23 +273,15 @@ class str():
 
 	def format(self, ???):
 		"""
-		S.format(*args, **kwargs) -> str
+		S.format(*args, **kwargs) -> string
 		
 		Return a formatted version of S, using substitutions from args and kwargs.
 		The substitutions are identified by braces ('{' and '}').
 		"""
 
-	def format_map(self, ???):
-		"""
-		S.format_map(mapping) -> str
-		
-		Return a formatted version of S, using substitutions from mapping.
-		The substitutions are identified by braces ('{' and '}').
-		"""
-
 	def index(self, ???):
 		"""
-		S.index(sub[, start[, end]]) -> int
+		S.index(sub [,start [,end]]) -> int
 		
 		Like S.find() but raise ValueError when the substring is not found.
 		"""
@@ -304,14 +302,6 @@ class str():
 		and there is at least one character in S, False otherwise.
 		"""
 
-	def isdecimal(self, ???):
-		"""
-		S.isdecimal() -> bool
-		
-		Return True if there are only decimal characters in S,
-		False otherwise.
-		"""
-
 	def isdigit(self, ???):
 		"""
 		S.isdigit() -> bool
@@ -320,40 +310,12 @@ class str():
 		and there is at least one character in S, False otherwise.
 		"""
 
-	def isidentifier(self, ???):
-		"""
-		S.isidentifier() -> bool
-		
-		Return True if S is a valid identifier according
-		to the language definition.
-		
-		Use keyword.iskeyword() to test for reserved identifiers
-		such as "def" and "class".
-		
-		"""
-
 	def islower(self, ???):
 		"""
 		S.islower() -> bool
 		
 		Return True if all cased characters in S are lowercase and there is
 		at least one cased character in S, False otherwise.
-		"""
-
-	def isnumeric(self, ???):
-		"""
-		S.isnumeric() -> bool
-		
-		Return True if there are only numeric characters in S,
-		False otherwise.
-		"""
-
-	def isprintable(self, ???):
-		"""
-		S.isprintable() -> bool
-		
-		Return True if all characters in S are considered
-		printable in repr() or S is empty, False otherwise.
 		"""
 
 	def isspace(self, ???):
@@ -369,9 +331,9 @@ class str():
 		S.istitle() -> bool
 		
 		Return True if S is a titlecased string and there is at least one
-		character in S, i.e. upper- and titlecase characters may only
-		follow uncased characters and lowercase characters only cased ones.
-		Return False otherwise.
+		character in S, i.e. uppercase characters may only follow uncased
+		characters and lowercase characters only cased ones. Return False
+		otherwise.
 		"""
 
 	def isupper(self, ???):
@@ -384,7 +346,7 @@ class str():
 
 	def join(self, ???):
 		"""
-		S.join(iterable) -> str
+		S.join(iterable) -> string
 		
 		Return a string which is the concatenation of the strings in the
 		iterable.  The separator between elements is S.
@@ -392,38 +354,26 @@ class str():
 
 	def ljust(self, ???):
 		"""
-		S.ljust(width[, fillchar]) -> str
+		S.ljust(width[, fillchar]) -> string
 		
-		Return S left-justified in a Unicode string of length width. Padding is
+		Return S left-justified in a string of length width. Padding is
 		done using the specified fill character (default is a space).
 		"""
 
 	def lower(self, ???):
 		"""
-		S.lower() -> str
+		S.lower() -> string
 		
 		Return a copy of the string S converted to lowercase.
 		"""
 
 	def lstrip(self, ???):
 		"""
-		S.lstrip([chars]) -> str
+		S.lstrip([chars]) -> string or unicode
 		
 		Return a copy of the string S with leading whitespace removed.
 		If chars is given and not None, remove characters in chars instead.
-		"""
-
-	def maketrans(self, ???):
-		"""
-		Return a translation table usable for str.translate().
-		
-		If there is only one argument, it must be a dictionary mapping Unicode
-		ordinals (integers) or characters to Unicode ordinals, strings or None.
-		Character keys will be then converted to ordinals.
-		If there are two arguments, they must be strings of equal length, and
-		in the resulting dictionary, each character in x will be mapped to the
-		character at the same position in y. If there is a third argument, it
-		must be a string, whose characters will be mapped to None in the result.
+		If chars is unicode, S will be converted to unicode before stripping
 		"""
 
 	def partition(self, ???):
@@ -437,16 +387,16 @@ class str():
 
 	def replace(self, ???):
 		"""
-		S.replace(old, new[, count]) -> str
+		S.replace(old, new[, count]) -> string
 		
-		Return a copy of S with all occurrences of substring
+		Return a copy of string S with all occurrences of substring
 		old replaced by new.  If the optional argument count is
 		given, only the first count occurrences are replaced.
 		"""
 
 	def rfind(self, ???):
 		"""
-		S.rfind(sub[, start[, end]]) -> int
+		S.rfind(sub [,start [,end]]) -> int
 		
 		Return the highest index in S where substring sub is found,
 		such that sub is contained within S[start:end].  Optional
@@ -457,17 +407,17 @@ class str():
 
 	def rindex(self, ???):
 		"""
-		S.rindex(sub[, start[, end]]) -> int
+		S.rindex(sub [,start [,end]]) -> int
 		
 		Like S.rfind() but raise ValueError when the substring is not found.
 		"""
 
 	def rjust(self, ???):
 		"""
-		S.rjust(width[, fillchar]) -> str
+		S.rjust(width[, fillchar]) -> string
 		
 		Return S right-justified in a string of length width. Padding is
-		done using the specified fill character (default is a space).
+		done using the specified fill character (default is a space)
 		"""
 
 	def rpartition(self, ???):
@@ -481,37 +431,38 @@ class str():
 
 	def rsplit(self, ???):
 		"""
-		S.rsplit(sep=None, maxsplit=-1) -> list of strings
+		S.rsplit([sep [,maxsplit]]) -> list of strings
 		
-		Return a list of the words in S, using sep as the
-		delimiter string, starting at the end of the string and
-		working to the front.  If maxsplit is given, at most maxsplit
-		splits are done. If sep is not specified, any whitespace string
+		Return a list of the words in the string S, using sep as the
+		delimiter string, starting at the end of the string and working
+		to the front.  If maxsplit is given, at most maxsplit splits are
+		done. If sep is not specified or is None, any whitespace string
 		is a separator.
 		"""
 
 	def rstrip(self, ???):
 		"""
-		S.rstrip([chars]) -> str
+		S.rstrip([chars]) -> string or unicode
 		
 		Return a copy of the string S with trailing whitespace removed.
 		If chars is given and not None, remove characters in chars instead.
+		If chars is unicode, S will be converted to unicode before stripping
 		"""
 
 	def split(self, ???):
 		"""
-		S.split(sep=None, maxsplit=-1) -> list of strings
+		S.split([sep [,maxsplit]]) -> list of strings
 		
-		Return a list of the words in S, using sep as the
+		Return a list of the words in the string S, using sep as the
 		delimiter string.  If maxsplit is given, at most maxsplit
 		splits are done. If sep is not specified or is None, any
-		whitespace string is a separator and empty strings are
-		removed from the result.
+		whitespace string is a separator and empty strings are removed
+		from the result.
 		"""
 
 	def splitlines(self, ???):
 		"""
-		S.splitlines([keepends]) -> list of strings
+		S.splitlines(keepends=False) -> list of strings
 		
 		Return a list of the lines in S, breaking at line boundaries.
 		Line breaks are not included in the resulting list unless keepends
@@ -530,52 +481,54 @@ class str():
 
 	def strip(self, ???):
 		"""
-		S.strip([chars]) -> str
+		S.strip([chars]) -> string or unicode
 		
 		Return a copy of the string S with leading and trailing
 		whitespace removed.
 		If chars is given and not None, remove characters in chars instead.
+		If chars is unicode, S will be converted to unicode before stripping
 		"""
 
 	def swapcase(self, ???):
 		"""
-		S.swapcase() -> str
+		S.swapcase() -> string
 		
-		Return a copy of S with uppercase characters converted to lowercase
-		and vice versa.
+		Return a copy of the string S with uppercase characters
+		converted to lowercase and vice versa.
 		"""
 
 	def title(self, ???):
 		"""
-		S.title() -> str
+		S.title() -> string
 		
-		Return a titlecased version of S, i.e. words start with title case
-		characters, all remaining cased characters have lower case.
+		Return a titlecased version of S, i.e. words start with uppercase
+		characters, all remaining cased characters have lowercase.
 		"""
 
 	def translate(self, ???):
 		"""
-		S.translate(table) -> str
+		S.translate(table [,deletechars]) -> string
 		
-		Return a copy of the string S, where all characters have been mapped
-		through the given translation table, which must be a mapping of
-		Unicode ordinals to Unicode ordinals, strings, or None.
-		Unmapped characters are left untouched. Characters mapped to None
-		are deleted.
+		Return a copy of the string S, where all characters occurring
+		in the optional argument deletechars are removed, and the
+		remaining characters have been mapped through the given
+		translation table, which must be a string of length 256 or None.
+		If the table argument is None, no translation is applied and
+		the operation simply removes the characters in deletechars.
 		"""
 
 	def upper(self, ???):
 		"""
-		S.upper() -> str
+		S.upper() -> string
 		
-		Return a copy of S converted to uppercase.
+		Return a copy of the string S converted to uppercase.
 		"""
 
 	def zfill(self, ???):
 		"""
-		S.zfill(width) -> str
+		S.zfill(width) -> string
 		
 		Pad a numeric string S with zeros on the left, to fill a field
-		of the specified width. The string S is never truncated.
+		of the specified width.  The string S is never truncated.
 		"""
 
