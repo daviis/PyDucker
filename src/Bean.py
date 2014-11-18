@@ -2,13 +2,13 @@
 All classes contained within are wrappers around instance data dealing with ast traversal
 
 @author: Emily 2014/10/20
-revised: Isaac 2014/10/22
+revised: Jake 2014/11/12
 """
 import sys
 
 class GenericBean():
     
-    def __inti__(self, name, initialize):
+    def __init__(self, name, initialize):
         """
         @name:str
         @initalize:bool
@@ -51,6 +51,8 @@ class VarBean(GenericBean):
         """
         self.varname = name
         self.vartype = aType
+        self.homo = False
+        self.compType = None
 
 
 class ScopeLevelBean(GenericBean):

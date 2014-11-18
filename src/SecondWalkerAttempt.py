@@ -24,41 +24,41 @@ class InitialWalker(ast.NodeVisitor):
     def _first_visit(self):
         self.generic_visit(self.root)
         
-#     def generic_visit(self, node):
-#         """
-#         This function is to identify what type of visits should be made. 
-#         The type(node).__name__ returns the word to append to visit_ 
-#         to make a visitor
-#         """
-#         print (type(node).__name__)
-#         ast.NodeVisitor.generic_visit(self, node)
+    def generic_visit(self, node):
+        """
+        This function is to identify what type of visits should be made. 
+        The type(node).__name__ returns the word to append to visit_ 
+        to make a visitor
+        """
+        print (type(node).__name__)
+        ast.NodeVisitor.generic_visit(self, node)
          
-    def visit_ClassDef(self, node):
-        """
-        #! node:ast.AST
-        """
-        self.nameSpace.put(node.name)
-        self.classes.append(node)
-        
-    def visit_FunctionDef(self, node):
-        """
-        #! node:ast.AST
-        """
-        self.nameSpace.put(node.name)
-        self.funs.append(node)
-        
-    def visit_Assign(self, node):
-        #need to add global vars to namespace
-        self.globals.append(node)
-
-        
-    def checkResults(self):
-        for cla in self.classes:
-            print(ast.dump(cla))
-        for fun in self.funs:
-            print(ast.dump(fun))
-        for glob in self.globals:
-            print(ast.dump(glob))
+#     def visit_ClassDef(self, node):
+#         """
+#         #! node:ast.AST
+#         """
+#         self.nameSpace.put(node.name)
+#         self.classes.append(node)
+#         
+#     def visit_FunctionDef(self, node):
+#         """
+#         #! node:ast.AST
+#         """
+#         self.nameSpace.put(node.name)
+#         self.funs.append(node)
+#         
+#     def visit_Assign(self, node):
+#         #need to add global vars to namespace
+#         self.globals.append(node)
+# 
+#         
+#     def checkResults(self):
+#         for cla in self.classes:
+#             print(ast.dump(cla))
+#         for fun in self.funs:
+#             print(ast.dump(fun))
+#         for glob in self.globals:
+#             print(ast.dump(glob))
             
 class ClassDefWalker(InitialWalker):
     

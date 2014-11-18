@@ -14,15 +14,19 @@ def main():
 #    aFile = "../test/correct/add.py"
 #    aFile = "../test/correct/AccPat.py"
 #    aFile = "../test/incorrect/StrPlusInt.py"
-    aFile = "../test/correct/MultiClassMultiFun.py"
+#     aFile = "../test/correct/MultiClassMultiFun.py"
+    aFile = "../Test/correct/SingleMethodDef.py"
     print("Reading file ", aFile)
     with open(aFile, 'r') as f:
         fileCont = f.read()
     #parser.expr(fileCont, "aFile", 'eval')
     tree = ast.parse(fileCont, aFile)
     print ((ast.dump(tree)))
+    
+    
+    
     firstWalker = InitialWalker(tree)
-    firstWalker.initalPass()
+    firstWalker.walk()
     print("made firstwakler")
 #     firstWalker.checkResults()
     
@@ -42,7 +46,7 @@ def main():
         
     for aFun in firstWalker.funs:
         funWalker = FunDefWalker(aFun, firstWalker.nameSpace)
-        funWalker.walk
+        funWalker.walk()
         firstWalker.nameSpace.put(funWalker.name, funWalker.createFunBean())
         print("\none fun")
 #         funWalker.checkResults()
