@@ -5,4 +5,4 @@ def iter(aList, aNum):
     """
     for var in aList:
         aNum += var
-    return 33
+    return 33j

@@ -25,6 +25,7 @@ def main():
     nameSpace = Bean.NameSpaceBean()
     scope = Bean.ScopeLevelBean()
     
+#     firstWalker = InitialWalker(tree, nameSpace, scope)
     firstWalker = InitialWalker(tree)
     firstWalker.walk()
     print("made firstwakler")
