@@ -89,6 +89,13 @@ class ScopeLevelBean(GenericBean):
             print("reassign of " + item.name, file=sys.stderr)
         self.vars[item.name] = item
         
+    def copy(self):
+        """
+        Used to pass into a (class/fun)defWalker. When exited from the router it will pop off extra vars. 
+        """
+        raise NotImplementedError
+        
+        
 class NameSpaceBean(ScopeLevelBean):
     """
     This variation of ScopeLevelBean will wrap a dictionary where the key will be a string of the class/fun name

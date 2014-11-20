@@ -6,9 +6,8 @@ Created on Sep 19, 2014
 This file is where the command line option parser should direct to for the heavy lifting of static analysis. It will also be used for testing.
 '''
 import ast
-  
+import Bean
 from SecondWalkerAttempt import InitialWalker, ClassDefWalker, FunDefWalker
-        
 
 def main():
 #    aFile = "../test/correct/add.py"
@@ -23,7 +22,8 @@ def main():
     tree = ast.parse(fileCont, aFile)
     print ((ast.dump(tree)))
     
-    
+    nameSpace = Bean.NameSpaceBean()
+    scope = Bean.ScopeLevelBean()
     
     firstWalker = InitialWalker(tree)
     firstWalker.walk()
@@ -33,21 +33,19 @@ def main():
     
     #the interrupt work should be around here
     if not firstWalker.classes and not firstWalker.funs:
-        funWalker = FunDefWalker(tree)
         print("no classes or functions")
-        funWalker.checkResults()
         
     for aClass in firstWalker.classes:
-        classWalker = ClassDefWalker(aClass)
+        classWalker = ClassDefWalker(aClass, nameSpace, scope.copy())
         classWalker.walk()
-        firstWalker.nameSpace.put(classWalker.name, classWalker.createClassBean())
+        nameSpace.put(classWalker.name, classWalker.createClassBean())
         print("\none class")
 #         classWalker.checkResults()
         
     for aFun in firstWalker.funs:
-        funWalker = FunDefWalker(aFun, firstWalker.nameSpace)
+        funWalker = FunDefWalker(aFun, nameSpace, scope)
         funWalker.walk()
-        firstWalker.nameSpace.put(funWalker.name, funWalker.createFunBean())
+        nameSpace.put(funWalker.name, funWalker.createFunBean())
         print("\none fun")
 #         funWalker.checkResults()
         
