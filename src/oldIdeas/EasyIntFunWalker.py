@@ -9,7 +9,7 @@ update: 2014-11-19
 It looks like recursively walking the tree will work. 
 '''
 import ast
-from SecondWalkerAttempt import InitialWalker, ClassDefWalker, FunDefWalker
+from Walker import InitialWalker, ClassDefWalker, FunDefWalker
 from Bean import VarBean
         
 class TestWalker(InitialWalker):

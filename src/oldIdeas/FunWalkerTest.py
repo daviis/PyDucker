@@ -6,7 +6,7 @@ Created on Oct 25, 2014
 This class is to test how to make a fun bean from a funwalker.
 '''
 import Bean
-from SecondWalkerAttempt import FunDefWalker, InitialWalker
+from Walker import FunDefWalker, InitialWalker
 import ast
 
 def main():

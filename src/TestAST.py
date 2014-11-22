@@ -7,7 +7,7 @@ This file is where the command line option parser should direct to for the heavy
 '''
 import ast
 import Bean
-from SecondWalkerAttempt import InitialWalker, ClassDefWalker, FunDefWalker
+from Walker import InitialWalker, ClassDefWalker, FunDefWalker
 
 def main():
 #    aFile = "../test/correct/add.py"
