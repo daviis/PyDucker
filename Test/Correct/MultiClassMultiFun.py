@@ -1,7 +1,7 @@
 class Animal():
 	def __init__(self, idNum):
 		"""
-		#! idNum:int
+		@idNum:int
 		"""
 		self.id = idNum
 		
@@ -18,13 +18,13 @@ class Cat(Animal):
 	
 def makeDog(idCounter):
 	'''
-	#! idCounter:int
+	@idCounter:int
 	'''
 	return Dog(idCounter)
 
 def makeCat(idCounter):
 	"""
-	#! idCounter:int
+	@idCounter:int
 	"""
 	return Cat(idCounter)
 
