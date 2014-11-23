@@ -4,7 +4,11 @@ import math
 from importTest2 import sqrr
 from importTest2 import operations
 from importTest2 import randsqr
+
 def sqrt(a):
+    '''
+    @a:float
+    '''
     b = math.sqrt(a)
     return b
 print(sqrt(25))

@@ -5,7 +5,7 @@ Modified on 2014-11-06
 """
 
 class dict():
-	def __class__(self, ???):
+	def __class__(self):
 		"""
 		dict() -> new empty dictionary
 		dict(mapping) -> new dictionary initialized from a mapping object's
@@ -17,31 +17,31 @@ class dict():
 		dict(**kwargs) -> new dictionary initialized with the name=value pairs
 		    in the keyword argument list.  For example:  dict(one=1, two=2)
 		"""
+		return {}
+	
 
-	def __contains__(self, ???):
+	def __contains__(self, key):
 		"""
-		True if D has a key k, else False.
+		True if D has a key k ,else False.
+		@key:object
+		"""
+		return True
+
+#	def __delattr__(self):
+		"""
+		Implemen delattr(self, name).
 		"""
 
-	def __delattr__(self, ???):
-		"""
-		Implement delattr(self, name).
-		"""
-
-	def __delitem__(self, ???):
+	def __delitem__(self, value):
 		"""
 		Delete self[key].
+		@value:object
 		"""
+		
 
-	def __dir__(self, ???):
+#	def __doc__(self, ???):
 		"""
-		__dir__() -> list
-		default dir() implementation
-		"""
-
-	def __doc__(self, ???):
-		"""
-		str(object='') -> str
+		str(object='') -> string
 		str(bytes_or_buffer[, encoding[, errors]]) -> str
 		
 		Create a new string object from the given object. If encoding or
@@ -53,112 +53,133 @@ class dict():
 		errors defaults to 'strict'.
 		"""
 
-	def __eq__(self, ???):
+	def __eq__(self, value):
 		"""
 		Return self==value.
+		@value:object
 		"""
+		return True
 
-	def __format__(self, ???):
+	def __format__(self):
 		"""
 		default object formatter
 		"""
+		return ''
 
-	def __ge__(self, ???):
+	def __ge__(self, value):
 		"""
 		Return self>=value.
+		@value:object
 		"""
+		return True
 
-	def __getattribute__(self, ???):
+#	def __getattribute__(self):
 		"""
 		Return getattr(self, name).
 		"""
 
-	def __getitem__(self, ???):
+	def __getitem__(self, value):
 		"""
 		x.__getitem__(y) <==> x[y]
+		@value:object
 		"""
+		return object
 
-	def __gt__(self, ???):
+	def __gt__(self, value):
 		"""
-		Return self>value.
+		Return self>value
 		"""
+		return True
 
-	def __hash__(self, ???):
+#	def __hash__(self, ???):
 		"""
 		None
 		"""
 
-	def __init__(self, ???):
+#	def __init__(self, ???):
 		"""
-		Initialize self.  See help(type(self)) for accurate signature.
-		"""
-
-	def __iter__(self, ???):
-		"""
-		Implement iter(self).
+		Initialize self. see help(type(x)) for signature
 		"""
 
-	def __le__(self, ???):
+#	def __iter__(self, ???):
+		"""
+		Implement iter(self)
+		"""
+
+	def __le__(self, value):
 		"""
 		Return self<=value.
+		@value:object
 		"""
+		return True
 
-	def __len__(self, ???):
+	def __len__(self):
 		"""
 		Return len(self).
 		"""
+		return 1   
 
-	def __lt__(self, ???):
+	def __lt__(self, value):
 		"""
-		Return self<value.
+		Return self<value
+		@value: object
 		"""
+		return True
 
-	def __ne__(self, ???):
+	def __ne__(self, value):
 		"""
-		Return self!=value.
+		Return self!=value
+		@value:object
 		"""
+		return True
 
-	def __new__(self, ???):
+#	def __new__(self):
 		"""
-		Create and return a new object.  See help(type) for accurate signature.
+		Create and return a new object. See help(type) for accurate signature
 		"""
+		
 
-	def __reduce__(self, ???):
+#	def __reduce__(self, ???):
 		"""
 		helper for pickle
 		"""
 
-	def __reduce_ex__(self, ???):
+#	def __reduce_ex__(self, ???):
 		"""
 		helper for pickle
 		"""
 
-	def __repr__(self, ???):
+	def __repr__(self):
 		"""
 		Return repr(self).
 		"""
+		return ''
 
-	def __setattr__(self, ???):
+#	def __setattr__(self, ???):
 		"""
 		Implement setattr(self, name, value).
 		"""
 
-	def __setitem__(self, ???):
+	def __setitem__(self, key, value):
 		"""
 		Set self[key] to value.
+		@key:object
+		@value:object
 		"""
 
-	def __sizeof__(self, ???):
+	def __sizeof__(self):
 		"""
 		D.__sizeof__() -> size of D in memory, in bytes
 		"""
+		return 1
 
-	def __str__(self, ???):
+	def __str__(self):
 		"""
-		Return str(self).
+		Return str(self)
 		"""
+		return ''
 
-	def __subclasshook__(self, ???):
+#	def __subclasshook__(self, ???):
 		"""
 		Abstract classes can override this to customize issubclass().
 		
@@ -169,63 +190,85 @@ class dict():
 		
 		"""
 
-	def clear(self, ???):
+	def clear(self):
 		"""
 		D.clear() -> None.  Remove all items from D.
 		"""
 
-	def copy(self, ???):
+	def copy(self):
 		"""
 		D.copy() -> a shallow copy of D
 		"""
+		return {}
 
-	def fromkeys(self, ???):
+	def fromkeys(self, value):
 		"""
-		Returns a new dict with keys from iterable and values equal to value.
+		Return a new dict with key from iterable and value equal to value.
+		@value:object
 		"""
-
-	def get(self, ???):
+		return {}
+	
+	def get(self, key):
 		"""
 		D.get(k[,d]) -> D[k] if k in D, else d.  d defaults to None.
+		@key:object
 		"""
+		return object
 
-	def items(self, ???):
+	def has_key(self, key):
 		"""
-		D.items() -> a set-like object providing a view on D's items
+		D.has_key(k) -> True if D has a key k, else False
+		@key:object
 		"""
+		return True
 
-	def keys(self, ???):
+	def items(self):
 		"""
-		D.keys() -> a set-like object providing a view on D's keys
+		D.items() -> list of D's (key, value) pairs, as 2-tuples
 		"""
+		return ()
 
-	def pop(self, ???):
+	def keys(self):
+		"""
+		D.keys() -> list of D's keys
+		"""
+		return []
+
+	def pop(self, value):
 		"""
 		D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
 		If key is not found, d is returned if given, otherwise KeyError is raised
+		@value:object
 		"""
-
-	def popitem(self, ???):
+		return object
+	
+	def popitem(self):
 		"""
 		D.popitem() -> (k, v), remove and return some (key, value) pair as a
 		2-tuple; but raise KeyError if D is empty.
 		"""
+		return ()
 
-	def setdefault(self, ???):
+	def setdefault(self, key, value ):
 		"""
 		D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D
+		@key:object
+		@value:object
 		"""
+		return object
 
-	def update(self, ???):
+	def update(self, key, value):
 		"""
 		D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
-		If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
-		If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
-		In either case, this is followed by: for k in F:  D[k] = F[k]
+		If E present and has a .keys() method, does:     for k in E: D[k] = E[k]
+		If E present and lacks .keys() method, does:     for (k, v) in E: D[k] = v
+		In either case, this is followed by: for k in F: D[k] = F[k]
+		@key:object
+		@value:object
 		"""
 
-	def values(self, ???):
+	def values(self):
 		"""
-		D.values() -> an object providing a view on D's values
+		D.values() -> list of D's values
 		"""
-
+		return object
