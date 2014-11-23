@@ -7,7 +7,7 @@ This file is where the command line option parser should direct to for the heavy
 '''
 import ast
 import Bean
-from SecondWalkerAttempt import InitialWalker, ClassDefWalker, FunDefWalker
+from Walker import InitialWalker, ClassDefWalker, FunDefWalker
 
 def main():
 #    aFile = "../test/correct/add.py"
@@ -25,6 +25,7 @@ def main():
     nameSpace = Bean.NameSpaceBean()
     scope = Bean.ScopeLevelBean()
     
+#     firstWalker = InitialWalker(tree, nameSpace, scope)
     firstWalker = InitialWalker(tree)
     firstWalker.walk()
     print("made firstwakler")

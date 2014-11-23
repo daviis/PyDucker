@@ -112,7 +112,7 @@ class InitialWalker(ast.NodeVisitor):
             self.visit(value)
              
     def visit_Num(self, node):
-        return "int"
+        return type(node.n).__name__
      
     def visit_Return(self, node):
         #may need to look at the other fields in ast.Return but the basic way is this. 
