@@ -61,7 +61,7 @@ class str():
 		errors defaults to 'strict'.
 		"""
 
-	def __eq__(self):
+	def __eq__(self, value):
 		"""
 		Return self==value.
 		"""
@@ -78,7 +78,7 @@ class str():
 		"""
 		return ""
 
-	def __ge__(self):
+	def __ge__(self,value):
 		"""
 		Return self>=value.
 		"""
