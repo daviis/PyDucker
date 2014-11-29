@@ -8,15 +8,18 @@ import Bean
 from DocStringParser import parseDocString
 
 class InitialWalker(ast.NodeVisitor):
-    def __init__(self, astNode):
+    def __init__(self, astNode, nameSp, scopeBean):
         """
         @astNode:ast.AST
+        @nameSp:Bean.NameSpaceBean
+        @scopeBean:Bean.ScopeLevelBean
         """
         self.root = astNode
         self.classes = []
         self.funs = []
         self.globals = []
-        self.nameSpace = Bean.NameSpaceBean()
+        self.nameSpace = nameSp
+        self.scope = scopeBean
         
     def walk(self):
         self._first_visit()
@@ -130,15 +133,26 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.AST
         """
-        self.nameSpace.put(node.name)
         self.classes.append(node)
+        
+        clsWalker = ClassDefWalker(node, self.nameSpace, self.scope.copy())
+        clsWalker.walk()
+        
+        self.nameSpace.put(clsWalker.name, clsWalker.createClassBean())
+        
          
     def visit_FunctionDef(self, node):
         """
         @node:ast.AST
         """
-        self.nameSpace.put(node.name)
         self.funs.append(node)
+
+        funWalker = FunDefWalker(node, self.nameSpace, self.scope.copy())   
+        funWalker.walk()
+             
+        self.nameSpace.put(funWalker.name, funWalker.createFunBean())
+        
+        print("out fun")
          
 
     def checkResults(self):
@@ -232,5 +246,4 @@ class FunDefWalker(InitialWalker):
     def visit_Return(self, node):
         #may need to look at the other fields in ast.Return but the basic way is this. 
         self.retType = self.visit(node.value)
-        print(self.retType)
         

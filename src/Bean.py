@@ -93,7 +93,11 @@ class ScopeLevelBean(GenericBean):
         """
         Used to pass into a (class/fun)defWalker. When exited from the router it will pop off extra vars. 
         """
-        raise NotImplementedError
+        bean = ScopeLevelBean()
+        for varName in self.vars:
+            bean.append(self.vars[varName])
+        return bean
+        
         
         
 class NameSpaceBean(ScopeLevelBean):
