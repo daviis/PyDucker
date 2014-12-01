@@ -114,3 +114,15 @@ class NameSpaceBean(ScopeLevelBean):
         """
         self.vars[name] = bean
         
+    def __getitem__(self,key):
+        """
+        An incomplete method only the bare minimum now.
+        @key:str
+        """
+        if key in self.vars:
+            if self.vars[key] == None:
+                pass #make a bean here
+            return self.vars[key]
+        else:
+            return None
+        
