@@ -87,19 +87,18 @@ class InitialWalker(ast.NodeVisitor):
         #if so, then return the return type of the function
         leftBean = self.nameSpace[leftType]
         rightBean = self.nameSpace[leftType]
-        #Op will be the thing we need to check for
-        #
+        
         #Not sure how to check into nameSpace/Beans correctly here
-        #
         #if leftBean.hasMethod(op) and rightBean.hasMethod(op):
-            ##How do we tell what type it is if both implement the magic method?
             #if leftType == rightType:
                 #binOpType = leftType
             #else:
                 #binOpType = [leftType,rightType]
+                ##Has both types so add them to a list and return
             #return binOpType
         #else:
             #print('Error found when trying to '+ op + '.',sys.stderr)
+            ##Both types don't implement the magic method so print error and return None
             #return None
         return "some type from binop"
          
