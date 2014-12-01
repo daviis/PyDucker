@@ -91,28 +91,14 @@ class InitialWalker(ast.NodeVisitor):
         rightBean = self.nameSpace[rightType]
         
         if leftBean.hasMethod(op):
-            funBean = leftBean[op]
-            if funBean.takes([rightType]):
-                return funBean.retType
-        elif rightBean.hasMethod(rOp):
-            funBean = rightBean[rOp]
-            if funBean.takes([leftType]):
-                return funBean.retType
+            if leftBean[op].takes([rightType]):
+                return leftBean[op].retType
+        if rightBean.hasMethod(rOp):
+            if rightBean[rOp].takes([leftType]):
+                return rightBean[rOp].retType
         else:
             print('Error found when trying to '+ op + 'on ' + leftType +', ' + rightType +'.',sys.stderr)
 
-        #Not sure how to check into nameSpace/Beans correctly here
-        #if leftBean.hasMethod(op) and rightBean.hasMethod(op):
-            #if leftType == rightType:
-                #binOpType = leftType
-            #else:
-                #binOpType = [leftType,rightType]
-                ##Has both types so add them to a list and return
-            #return binOpType
-        #else:
-            #print('Error found when trying to '+ op + '.',sys.stderr)
-            ##Both types don't implement the magic method so print error and return None
-            #return None
         return "some type from binop"
          
     def visit_Call(self, node):
