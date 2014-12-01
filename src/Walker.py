@@ -82,12 +82,25 @@ class InitialWalker(ast.NodeVisitor):
         """
         leftType = self.visit(node.left)
         op = self.visit(node.op)
-        right = self.visit(node.right)
+        rOp = op[:2] + 'r' + op[2:]
+        rightType = self.visit(node.right)
         #look up if the method is contained in the left, if not then maybe the right
         #if so, then return the return type of the function
-        leftBean = self.nameSpace[leftType]
-        rightBean = self.nameSpace[leftType]
         
+        leftBean = self.nameSpace[leftType]
+        rightBean = self.nameSpace[rightType]
+        
+        if leftBean.hasMethod(op):
+            funBean = leftBean[op]
+            if funBean.takes([rightType]):
+                return funBean.retType
+        elif rightBean.hasMethod(rOp):
+            funBean = rightBean[rOp]
+            if funBean.takes([leftType]):
+                return funBean.retType
+        else:
+            print('Error found when trying to '+ op + 'on ' + leftType +', ' + rightType +'.',sys.stderr)
+
         #Not sure how to check into nameSpace/Beans correctly here
         #if leftBean.hasMethod(op) and rightBean.hasMethod(op):
             #if leftType == rightType:

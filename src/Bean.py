@@ -26,14 +26,20 @@ class ClassDefBean(GenericBean):
         self.name = classname
         self.varinfo = selfVars
         self.FunDefArr = {} #of key = Fundef.name, FunDefBean for faster look up
+        
+    def hasFun(self, op):
+        """
+        @op:str
+        """
+        return op in self.FunDefArr
 
 
 class FunDefBean(GenericBean):
     
     def __init__(self, paramsTypes, returntype, fundefname):
         """
-        @paramsTypes:*VarBean
-        @returnType:VarBean
+        @paramsTypes:*str
+        @returnType:str
         @fundefname:str
         """
         self.typesparams = paramsTypes
@@ -41,6 +47,16 @@ class FunDefBean(GenericBean):
         self.name = fundefname
         self.numparams = len(paramsTypes) # this should be assigned after creation to be length of self.typesparams
 
+    def takes(self, paramList):
+        """
+        @paramList:str*
+        """
+        if not len(paramList) == len(self.paramsTypes):
+            return False
+        for idx in len(paramList):
+            if not paramList[idx] == self.paramsTypes[idx]:
+                return False
+        return True
 
 class VarBean(GenericBean):
     
