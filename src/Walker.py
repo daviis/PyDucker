@@ -91,16 +91,16 @@ class InitialWalker(ast.NodeVisitor):
         #
         #Not sure how to check into nameSpace/Beans correctly here
         #
-        if leftBean.hasMethod(op) and rightBean.hasMethod(op):
-            #How do we tell what type it is if both implement the magic method?
-            if leftType == rightType:
-                binOpType = leftType
-            else:
-                binOpType = [leftType,rightType]
-            return binOpType
-        else:
-            print('Error found when trying to '+ op + '.',sys.stderr)
-            return None
+        #if leftBean.hasMethod(op) and rightBean.hasMethod(op):
+            ##How do we tell what type it is if both implement the magic method?
+            #if leftType == rightType:
+                #binOpType = leftType
+            #else:
+                #binOpType = [leftType,rightType]
+            #return binOpType
+        #else:
+            #print('Error found when trying to '+ op + '.',sys.stderr)
+            #return None
         return "some type from binop"
          
     def visit_Call(self, node):
