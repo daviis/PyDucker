@@ -32,8 +32,8 @@ class FunDefBean(GenericBean):
     
     def __init__(self, paramsTypes, returntype, fundefname):
         """
-        @paramsTypes:*VarBean
-        @returnType:VarBean
+        @paramsTypes:*str
+        @returnType:str
         @fundefname:str
         """
         self.typesparams = paramsTypes
