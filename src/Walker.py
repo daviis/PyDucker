@@ -6,6 +6,7 @@ Created on Oct 13, 2014
 import ast
 import Bean
 from DocStringParser import parseDocString
+import sys
 
 class InitialWalker(ast.NodeVisitor):
     def __init__(self, astNode, nameSp, scopeBean):
@@ -75,11 +76,29 @@ class InitialWalker(ast.NodeVisitor):
             self.visit(value)
            
     def visit_BinOp(self, node):
+        """
+        This will return either a single type or a list of two types that it could be
+        @node:ast.node
+        """
         leftType = self.visit(node.left)
         op = self.visit(node.op)
-        right = self.visit(node.right)
+        rOp = op[:2] + 'r' + op[2:]
+        rightType = self.visit(node.right)
         #look up if the method is contained in the left, if not then maybe the right
-        #if so, then return the return type of the function 
+        #if so, then return the return type of the function
+        
+        leftBean = self.nameSpace[leftType]
+        rightBean = self.nameSpace[rightType]
+        
+        if leftBean.hasMethod(op):
+            if leftBean[op].takes([rightType]):
+                return leftBean[op].retType
+        if rightBean.hasMethod(rOp):
+            if rightBean[rOp].takes([leftType]):
+                return rightBean[rOp].retType
+        else:
+            print('Error found when trying to '+ op + 'on ' + leftType +', ' + rightType +'.',sys.stderr)
+
         return "some type from binop"
          
     def visit_Call(self, node):

@@ -26,6 +26,12 @@ class ClassDefBean(GenericBean):
         self.name = classname
         self.varinfo = selfVars
         self.FunDefArr = {} #of key = Fundef.name, FunDefBean for faster look up
+        
+    def hasFun(self, op):
+        """
+        @op:str
+        """
+        return op in self.FunDefArr
 
 
 class FunDefBean(GenericBean):
@@ -41,6 +47,16 @@ class FunDefBean(GenericBean):
         self.name = fundefname
         self.numparams = len(paramsTypes) # this should be assigned after creation to be length of self.typesparams
 
+    def takes(self, paramList):
+        """
+        @paramList:str*
+        """
+        if not len(paramList) == len(self.paramsTypes):
+            return False
+        for idx in len(paramList):
+            if not paramList[idx] == self.paramsTypes[idx]:
+                return False
+        return True
 
 class VarBean(GenericBean):
     
@@ -113,4 +129,16 @@ class NameSpaceBean(ScopeLevelBean):
         @bean:GenericBean
         """
         self.vars[name] = bean
+        
+    def __getitem__(self,key):
+        """
+        An incomplete method only the bare minimum now.
+        @key:str
+        """
+        if key in self.vars:
+            if self.vars[key] == None:
+                pass #make a bean here
+            return self.vars[key]
+        else:
+            return None
         
