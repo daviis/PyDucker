@@ -74,6 +74,29 @@ class InitialWalker(ast.NodeVisitor):
     def visit_AugAssign(self, node):
         for _, value in ast.iter_fields(node):
             self.visit(value)
+        
+    def visit_UnaryOp(self,node):
+        #print(ast.dump(node))
+       # print('found unop, finding operand now')
+        operand = self.visit(node.operand)
+        operandBean = self.nameSpace[operand]
+       # print(operand)
+        op = self.visit(node.op)
+        #print(op)
+        if operandBean.hasMethod(op):
+            return operand
+        #print('leaving unop)
+        else:
+            print('Error found when trying to '+ op + 'on ' + operand +'.',sys.stderr)
+    
+    def visit_Invert(self,node):
+        return('__invert__')
+    
+    def visit_UAdd(self,node):
+        return('__pos__')
+    
+    def visit_USub(self,node):
+        return('__neg__')
            
     def visit_BinOp(self, node):
         """
@@ -84,16 +107,17 @@ class InitialWalker(ast.NodeVisitor):
         op = self.visit(node.op)
         rOp = op[:2] + 'r' + op[2:]
         rightType = self.visit(node.right)
+        print(op)
         #look up if the method is contained in the left, if not then maybe the right
         #if so, then return the return type of the function
         
         leftBean = self.nameSpace[leftType]
         rightBean = self.nameSpace[rightType]
         
-        if leftBean.hasMethod(op):
+        if leftBean.hasFun(op):
             if leftBean[op].takes([rightType]):
                 return leftBean[op].retType
-        if rightBean.hasMethod(rOp):
+        if rightBean.hasFun(rOp):
             if rightBean[rOp].takes([leftType]):
                 return rightBean[rOp].retType
         else:
