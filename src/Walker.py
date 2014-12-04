@@ -70,6 +70,20 @@ class InitialWalker(ast.NodeVisitor):
                     self.visit(arg)
             elif value:
                 self.visit(value)
+                
+    def visit_Assign(self, node):
+        """
+        @node:ast.ast
+        @todo look into tuple unpacking here
+        """
+        targets = []
+        for target in node.targets:
+            targets.append(self.visit(target))
+        value = self.visit(node.value)
+        
+        for varBean in targets:
+            varBean.type = value
+
             
     def visit_AugAssign(self, node):
         for _, value in ast.iter_fields(node):
@@ -123,15 +137,28 @@ class InitialWalker(ast.NodeVisitor):
                 self.visit(value)
             
     def visit_Load(self, node):
-        node
-        return self.namespace[node.name]
+        """
+        @node:ast.ast
+        This is an empty ast node, it just denodes that the name will be loading from namespace
+        """
+        return False
 
     def visit_Mult(self, node):
         return "__mul__"
     
     def visit_Name(self, node):
-        for _, value in ast.iter_fields(node):
-            self.visit(value)
+        """
+        @node:ast.ast
+        Store will be a boolean for if the Name is going to be loaded from or stored to the namespace.
+        It will return a tuple that is the store boolean and the VarBean realted to the assign 
+        """
+        store = self.visit(node.ctx)
+        if store:
+            bean = Bean.VarBean(node.id, None)
+            self.scope.append(bean)
+            return bean
+        else:    
+            return self.scope[node.id].type
              
     def visit_Num(self, node):
         return type(node.n).__name__
@@ -141,8 +168,11 @@ class InitialWalker(ast.NodeVisitor):
         val = self.visit(node.value)
             
     def visit_Store(self, node):
-        for _, value in ast.iter_fields(node):
-            self.visit(value)
+        """
+        @node:ast.ast
+        This is an empty ast node, it just denodes that the name will be storing to namespace
+        """
+        return True
             
     def visit_Str(self, node):
         return "str"
