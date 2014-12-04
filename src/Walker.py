@@ -123,8 +123,8 @@ class InitialWalker(ast.NodeVisitor):
                 self.visit(value)
             
     def visit_Load(self, node):
-        for _, value in ast.iter_fields(node):
-            self.visit(value)
+        node
+        return self.namespace[node.name]
 
     def visit_Mult(self, node):
         return "__mul__"
