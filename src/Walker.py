@@ -76,19 +76,13 @@ class InitialWalker(ast.NodeVisitor):
             self.visit(value)
         
     def visit_UnaryOp(self,node):
-        #print(ast.dump(node))
-       # print('found unop, finding operand now')
         operand = self.visit(node.operand)
         operandBean = self.nameSpace[operand]
-       # print(operand)
         op = self.visit(node.op)
-        print('Operation: ' + op)
-        print('Class name: ' + operandBean.name)
         if operandBean.hasFun(op):
-            return operand
-        #print('leaving unop)
+            return operandBean.funs[op].returnType
         else:
-            print('Error found when trying to '+ op + 'on ' + operand +'.',file = sys.stderr)
+            print('Error found when trying to '+ op + ' on ' + operand +'.',file = sys.stderr)
     
     def visit_Invert(self,node):
         return('__invert__')
@@ -122,7 +116,7 @@ class InitialWalker(ast.NodeVisitor):
             if rightBean[rOp].takes([leftType]):
                 return rightBean[rOp].retType
         else:
-            print('Error found when trying to '+ op + 'on ' + leftType +', ' + rightType +'.',sys.stderr)
+            print('Error found when trying to '+ op + 'on ' + leftType +', ' + rightType +'.', file = sys.stderr)
 
         return "some type from binop"
          
