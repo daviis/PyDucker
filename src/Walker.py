@@ -54,7 +54,7 @@ class InitialWalker(ast.NodeVisitor):
          
     """
     Each individual vist_* will need to check if the result if a list, if so then 
-    iterate over it. If not, then a single generic_visit is needed
+    iterate over it. If not, then a single visit is needed
     """
     def visit_Add(self, node):
         return "__add__"
@@ -70,6 +70,15 @@ class InitialWalker(ast.NodeVisitor):
                     self.visit(arg)
             elif value:
                 self.visit(value)
+            
+    def visit_Attribute(self, node):
+        """
+        Value is the type of the object the function is being called on. node.attr is the str rep of 
+        the method name
+        """
+        value = self.visit(node.value)
+        ctx = self.visit(node.ctx)
+        return value, node.attr
             
     def visit_AugAssign(self, node):
         for _, value in ast.iter_fields(node):
@@ -102,8 +111,23 @@ class InitialWalker(ast.NodeVisitor):
         return "some type from binop"
          
     def visit_Call(self, node):
-        for _, value in ast.iter_fields(node):
-            self.visit(value)
+        """
+        Fields are ('func', 'args', 'keywords', 'starargs', 'kwargs')
+        @node:ast.ast
+        """
+        cls, funcName = self.visit(node.func)
+        args = self.visit(node.args)
+        keywords = self.visit(node.keywords)
+        starargs = self.visit(node.starargs)
+        kwargs = self.visit(node.kwargs)
+        
+        clsBean = self.nameSpace[cls]
+        if clsBean.hasFun(funcName):
+            #fundefbean will need to be extended to handle things other than just a fixed lenght number of params
+            if clsBean[funcName].takes(args):
+                return clsBean[funcName].returnType
+        else:
+            print("class: " + clsBean.name + " doesn't have method: " + funcName, sys.stderr)
  
     def visit_Module(self, node):
         for _, value in ast.iter_fields(node):
