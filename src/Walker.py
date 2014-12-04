@@ -116,7 +116,11 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         cls, funcName = self.visit(node.func)
-        args = self.visit(node.args)
+        
+        args = []
+        for arg in node.args:
+            args.append(self.visit(arg))
+            
         keywords = self.visit(node.keywords)
         starargs = self.visit(node.starargs)
         kwargs = self.visit(node.kwargs)
@@ -124,8 +128,8 @@ class InitialWalker(ast.NodeVisitor):
         clsBean = self.nameSpace[cls]
         if clsBean.hasFun(funcName):
             #fundefbean will need to be extended to handle things other than just a fixed lenght number of params
-            if clsBean[funcName].takes(args):
-                return clsBean[funcName].returnType
+            if clsBean.funs[funcName].takes(args):
+                return clsBean.funs[funcName].returnType
         else:
             print("class: " + clsBean.name + " doesn't have method: " + funcName, sys.stderr)
  
