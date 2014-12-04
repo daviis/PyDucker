@@ -25,13 +25,13 @@ class ClassDefBean(GenericBean):
         """
         self.name = classname
         self.varinfo = selfVars
-        self.FunDefArr = {} #of key = Fundef.name, FunDefBean for faster look up
+        self.funs = {} #of key = Fundef.name, FunDefBean for faster look up
         
     def hasFun(self, op):
         """
         @op:str
         """
-        return op in self.FunDefArr
+        return op in self.funs
 
 
 class FunDefBean(GenericBean):
@@ -55,10 +55,10 @@ class FunDefBean(GenericBean):
         """
         @paramList:str*
         """
-        if not len(paramList) == len(self.paramsTypes):
+        if not len(paramList) == len(self.typesparams):
             return False
-        for idx in len(paramList):
-            if not paramList[idx] == self.paramsTypes[idx]:
+        for idx in range(len(paramList)):
+            if not paramList[idx] == self.typesparams[idx]:
                 return False
         return True
 
