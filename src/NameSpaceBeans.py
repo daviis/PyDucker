@@ -11,7 +11,8 @@ from Bean import NameSpaceBean, ClassDefBean , FunDefBean
 
 def handMakeNameSpace():
     nameSpace = NameSpaceBean()
-    intClass = ClassDefBean()
+    intClass = ClassDefBean('int', None)
+    #intClass = ClassDefBean()
     intClass.FunDefArr['__add__'] = FunDefBean(['self', 'int'],  'int', '__add__')
     intClass.FunDefArr['__bool__'] = FunDefBean(['self'] , 'int', '__bool__')
     intClass.FunDefArr['__eq__'] = FunDefBean(['self' , 'int'], 'bool' , '__eq__')
@@ -28,11 +29,11 @@ def handMakeNameSpace():
     intClass.FunDefArr['__xor__'] = FunDefBean(['self' , 'int'] , 'int', '__xor__')
     intClass.FunDefArr['__str__'] = FunDefBean(['self'] ,  'str', '__str__')
     intClass.FunDefArr['__sub__'] = FunDefBean(['self' , 'int'] ,  'int', '__sub__')
-    nameSpace['int'] = intClass
+    nameSpace.put(intClass.name, intClass)
     
     
     
-    strClass = ClassDefBean()
+    strClass = ClassDefBean('str', None)
     strClass.FunDefArr['__add__'] = FunDefBean(['self' , 'str' ] , 'str', '__add__')
     strClass.FunDefArr['__contains__'] = FunDefBean(['self' , 'str'] , 'bool', '__contains__')
     strClass.FunDefArr['__eq__'] = FunDefBean(['self' , 'str'] , 'bool', '__eq__')
@@ -62,5 +63,5 @@ def handMakeNameSpace():
     strClass.FunDefArr['upper'] = FunDefBean(['self'] ,  'str', 'upper')
                                                 
                                                     
-    nameSpace['str'] = strClass
+    nameSpace.put(strClass.name, strClass)
     return nameSpace

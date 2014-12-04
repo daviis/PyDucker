@@ -8,6 +8,7 @@ This file is where the command line option parser should direct to for the heavy
 import ast
 import Bean
 from Walker import InitialWalker
+from NameSpaceBeans import handMakeNameSpace
 
 def main():
     #open a file and get it read into a variable so it is just one string
@@ -21,7 +22,8 @@ def main():
     print ((ast.dump(tree)))
     
     #make some 
-    nameSpace = Bean.NameSpaceBean()
+   # nameSpace = Bean.NameSpaceBean()
+    nameSpace = handMakeNameSpace()
     scope = Bean.ScopeLevelBean()
     
 #     firstWalker = InitialWalker(tree, nameSpace, scope)

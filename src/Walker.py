@@ -82,12 +82,13 @@ class InitialWalker(ast.NodeVisitor):
         operandBean = self.nameSpace[operand]
        # print(operand)
         op = self.visit(node.op)
-        #print(op)
-        if operandBean.hasMethod(op):
+        print('Operation: ' + op)
+        print('Class name: ' + operandBean.name)
+        if operandBean.hasFun(op):
             return operand
         #print('leaving unop)
         else:
-            print('Error found when trying to '+ op + 'on ' + operand +'.',sys.stderr)
+            print('Error found when trying to '+ op + 'on ' + operand +'.',file = sys.stderr)
     
     def visit_Invert(self,node):
         return('__invert__')
