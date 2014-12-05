@@ -5,6 +5,7 @@ Created on Oct 13, 2014
 '''
 import ast
 import Bean
+import Exceptions
 from DocStringParser import parseDocString
 import sys
 
@@ -46,7 +47,8 @@ class InitialWalker(ast.NodeVisitor):
         ---
         """
         if isinstance(node, ast.AST):
-            return self.visit(node)
+            print("Unknown type of ast node. Need to implement visit_" + node.__class__.__name__)
+            
         #set a break point on this to find where there is a need to list-ify a vist_
         elif isinstance(node, list):
             print('got a list')
@@ -57,6 +59,11 @@ class InitialWalker(ast.NodeVisitor):
     iterate over it. If not, then a single visit is needed
     """
     def visit_Add(self, node):
+        """
+        @node:ast.ast
+        
+        Usually a binop will call this and return a str rep of the magic method __add__
+        """
         return "__add__"
      
     def visit_arg(self, node):
@@ -75,14 +82,21 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.ast
         @todo look into tuple unpacking here
+        
+        Targets are the things on the left hand side of the assignment statement. Value will be what is on the right side.
+        If there is a reassignment of a variables type within one varbean it will throw a TypeMissMatchException
         """
         targets = []
         for target in node.targets:
             targets.append(self.visit(target))
         value = self.visit(node.value)
         
-        for varBean in targets:
-            varBean.type = value
+        for varBeanName in targets:
+            curType = self.scope[varBeanName].type
+            if value != curType and curType:
+                raise  Exceptions.TypeMissMatchException(varBeanName, curType, value, node.lineno)
+            else:
+                self.scope[varBeanName].type = value
 
             
     def visit_Attribute(self, node):
@@ -100,7 +114,7 @@ class InitialWalker(ast.NodeVisitor):
            
     def visit_BinOp(self, node):
         """
-        This will return either a single type or a list of two types that it could be
+        This will return either a type of the function that is being called
         @node:ast.node
         """
         leftType = self.visit(node.left)
@@ -113,16 +127,14 @@ class InitialWalker(ast.NodeVisitor):
         leftBean = self.nameSpace[leftType]
         rightBean = self.nameSpace[rightType]
         
-        if leftBean.hasMethod(op):
-            if leftBean[op].takes([rightType]):
-                return leftBean[op].retType
-        if rightBean.hasMethod(rOp):
-            if rightBean[rOp].takes([leftType]):
-                return rightBean[rOp].retType
+        if leftBean.hasFun(op):
+            if leftBean.funs[op].takes([rightType]):
+                return leftBean.funs[op].returnType
+        if rightBean.hasFun(rOp):
+            if rightBean.funs[rOp].takes([leftType]):
+                return rightBean.funs[rOp].returnType
         else:
-            print('Error found when trying to '+ op + 'on ' + leftType +', ' + rightType +'.',sys.stderr)
-
-        return "some type from binop"
+            raise Exceptions.MissingMethodException(leftBean.name, rightBean.name, op, rOp)
          
     def visit_Call(self, node):
         """
@@ -182,9 +194,10 @@ class InitialWalker(ast.NodeVisitor):
         """
         store = self.visit(node.ctx)
         if store:
-            bean = Bean.VarBean(node.id, None)
-            self.scope.append(bean)
-            return bean
+            if not node.id in self.scope:
+                bean = Bean.VarBean(node.id, None)
+                self.scope.append(bean)
+            return node.id
         else:    
             return self.scope[node.id].type
              
