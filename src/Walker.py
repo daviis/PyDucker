@@ -7,7 +7,6 @@ import ast
 import Bean
 import Exceptions
 from DocStringParser import parseDocString
-import sys
 
 class InitialWalker(ast.NodeVisitor):
     def __init__(self, astNode, nameSp, scopeBean):
@@ -114,8 +113,8 @@ class InitialWalker(ast.NodeVisitor):
            
     def visit_BinOp(self, node):
         """
-        This will return either a type of the function that is being called
-        @node:ast.node
+        This will return the type of the function that is being called. Could throw MissingMethodException if the magic method cant be found.
+        @node:ast.ast
         """
         leftType = self.visit(node.left)
         op = self.visit(node.op)
@@ -134,11 +133,12 @@ class InitialWalker(ast.NodeVisitor):
             if rightBean.funs[rOp].takes([leftType]):
                 return rightBean.funs[rOp].returnType
         else:
-            raise Exceptions.MissingMethodException(leftBean.name, rightBean.name, op, rOp)
+            raise Exceptions.MissingMagicMethodException(leftBean.name, rightBean.name, op, rOp, node.lineno)
          
     def visit_Call(self, node):
         """
-        Fields are ('func', 'args', 'keywords', 'starargs', 'kwargs')
+        When a method is called on a class it generates one of these. This will attempt to return the str rep of the return type of the function.
+        It can throw a MissingMethodException if the function isn't found in the class or if the number/types of paramiters is wrong
         @node:ast.ast
         """
         cls, funcName = self.visit(node.func)
@@ -156,8 +156,10 @@ class InitialWalker(ast.NodeVisitor):
             #fundefbean will need to be extended to handle things other than just a fixed lenght number of params
             if clsBean.funs[funcName].takes(args):
                 return clsBean.funs[funcName].returnType
+            else:
+                raise Exceptions.IncorrectMethodExcepiton(clsBean.name, funcName, args, node.lineno)
         else:
-            print("class: " + clsBean.name + " doesn't have method: " + funcName, sys.stderr)
+            raise Exceptions.MissingMethodException(clsBean.name, funcName, node.lineno)
  
     def visit_Module(self, node):
         for _, value in ast.iter_fields(node):
