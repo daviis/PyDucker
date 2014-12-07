@@ -64,13 +64,13 @@ class FunDefBean(GenericBean):
 
 class VarBean(GenericBean):
     
-    def __init__(self, name, aType):
+    def __init__(self, aName, aType):
         """
         @name:str
         @aType:str
         """
-        self.varname = name
-        self.vartype = aType
+        self.name = aName
+        self.type = aType
         self.homo = False
         self.compType = None
 
@@ -87,16 +87,16 @@ class ScopeLevelBean(GenericBean):
         
     def __getitem__(self, item):
         """
-        @item:VarBean
+        @item:str
         """
-        return self.vars[item.name]
+        return self.vars[item]
     
     def __contains__(self, item):
         """
-        @item:VarBean
+        @item:str
         @!bool
         """
-        return item.name in self.vars
+        return item in self.vars
         
     def __iter__(self):
         return iter(self.vars)

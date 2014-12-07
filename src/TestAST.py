@@ -12,7 +12,7 @@ from NameSpaceBeans import handMakeNameSpace
 
 def main():
     #open a file and get it read into a variable so it is just one string
-    aFile = "../Test/correct/Call.py"
+    aFile = "../Test/Incorrect/Call.py"
     print("Reading file ", aFile)
     with open(aFile, 'r') as f:
         fileCont = f.read()
@@ -21,7 +21,6 @@ def main():
     tree = ast.parse(fileCont, aFile)
     print ((ast.dump(tree)))
     
-    #make some 
 #     nameSpace = Bean.NameSpaceBean()
     nameSpace = handMakeNameSpace()
     scope = Bean.ScopeLevelBean()
