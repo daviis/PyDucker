@@ -110,6 +110,26 @@ class InitialWalker(ast.NodeVisitor):
     def visit_AugAssign(self, node):
         for _, value in ast.iter_fields(node):
             self.visit(value)
+        
+    def visit_UnaryOp(self,node):
+        operand = self.visit(node.operand)
+        operandBean = self.nameSpace[operand]
+        op = self.visit(node.op)
+        if operandBean.hasFun(op):
+            return operandBean.funs[op].returnType
+        else:
+            #Need an exception for unary ops
+            #Exceptions.MissingMagicMethodException(operandBean.name, op, node.lineno)
+            print('Error found when trying to '+ op + ' on ' + operand +'.')#,file = sys.stderr)
+    
+    def visit_Invert(self,node):
+        return('__invert__')
+    
+    def visit_UAdd(self,node):
+        return('__pos__')
+    
+    def visit_USub(self,node):
+        return('__neg__')
            
     def visit_BinOp(self, node):
         """
@@ -120,6 +140,7 @@ class InitialWalker(ast.NodeVisitor):
         op = self.visit(node.op)
         rOp = op[:2] + 'r' + op[2:]
         rightType = self.visit(node.right)
+        print(op)
         #look up if the method is contained in the left, if not then maybe the right
         #if so, then return the return type of the function
         
