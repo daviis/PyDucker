@@ -118,7 +118,9 @@ class InitialWalker(ast.NodeVisitor):
         if operandBean.hasFun(op):
             return operandBean.funs[op].returnType
         else:
-            print('Error found when trying to '+ op + ' on ' + operand +'.',file = sys.stderr)
+            #Need an exception for unary ops
+            #Exceptions.MissingMagicMethodException(operandBean.name, op, node.lineno)
+            print('Error found when trying to '+ op + ' on ' + operand +'.')#,file = sys.stderr)
     
     def visit_Invert(self,node):
         return('__invert__')

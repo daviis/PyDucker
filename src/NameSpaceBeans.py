@@ -11,7 +11,8 @@ from Bean import NameSpaceBean, ClassDefBean , FunDefBean
 
 def handMakeNameSpace():
     nameSpace = NameSpaceBean()
-    intClass = ClassDefBean('int', None)s.funs['__add__'] = FunDefBean(['self', 'int'],  'int', '__add__')
+    intClass = ClassDefBean('int', None)
+    intClass.funs['__add__'] = FunDefBean(['self', 'int'],  'int', '__add__')
     intClass.funs['__bool__'] = FunDefBean(['self'] , 'int', '__bool__')
     intClass.funs['__eq__'] = FunDefBean(['self' , 'int'], 'bool' , '__eq__')
     intClass.funs['__float__'] = FunDefBean(['self'], 'float', '__float__')
@@ -27,6 +28,8 @@ def handMakeNameSpace():
     intClass.funs['__xor__'] = FunDefBean(['self' , 'int'] , 'int', '__xor__')
     intClass.funs['__str__'] = FunDefBean(['self'] ,  'str', '__str__')
     intClass.funs['__sub__'] = FunDefBean(['self' , 'int'] ,  'int', '__sub__')
+    intClass.funs['__pos__'] = FunDefBean(['self' , 'int'] ,  'int', '__pos__')
+    intClass.funs['__neg__'] = FunDefBean(['self' , 'int'] ,  'int', '__neg__')
     nameSpace.put(intClass.name, intClass)
     
     
