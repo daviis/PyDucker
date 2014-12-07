@@ -13,7 +13,6 @@ The exception hierarchy for PyDucker is
     |--- PyDuckerWarning
          |--- TypeMissmatchException
 '''
-from Bean import ClassDefBean 
 
 class PyDuckerException(Exception):
     def __init__(self, lineNo):
