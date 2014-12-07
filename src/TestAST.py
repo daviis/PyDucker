@@ -20,9 +20,7 @@ def main():
     #parse the string into an ast using the builtin function
     tree = ast.parse(fileCont, aFile)
     print ((ast.dump(tree)))
-    
-    #make some 
-   # nameSpace = Bean.NameSpaceBean()
+#     nameSpace = Bean.NameSpaceBean()
     nameSpace = handMakeNameSpace()
     scope = Bean.ScopeLevelBean()
     

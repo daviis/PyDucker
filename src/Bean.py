@@ -25,13 +25,13 @@ class ClassDefBean(GenericBean):
         """
         self.name = classname
         self.varinfo = selfVars
-        self.FunDefArr = {} #of key = Fundef.name, FunDefBean for faster look up
+        self.funs = {} #of key = Fundef.name, FunDefBean for faster look up
         
     def hasFun(self, op):
         """
         @op:str
         """
-        return op in self.FunDefArr
+        return op in self.funs
 
 
 class FunDefBean(GenericBean):
@@ -55,22 +55,22 @@ class FunDefBean(GenericBean):
         """
         @paramList:str*
         """
-        if not len(paramList) == len(self.paramsTypes):
+        if not len(paramList) == len(self.typesparams):
             return False
-        for idx in len(paramList):
-            if not paramList[idx] == self.paramsTypes[idx]:
+        for idx in range(len(paramList)):
+            if not paramList[idx] == self.typesparams[idx]:
                 return False
         return True
 
 class VarBean(GenericBean):
     
-    def __init__(self, name, aType):
+    def __init__(self, aName, aType):
         """
         @name:str
         @aType:str
         """
-        self.varname = name
-        self.vartype = aType
+        self.name = aName
+        self.type = aType
         self.homo = False
         self.compType = None
 
@@ -87,16 +87,16 @@ class ScopeLevelBean(GenericBean):
         
     def __getitem__(self, item):
         """
-        @item:VarBean
+        @item:str
         """
-        return self.vars[item.name]
+        return self.vars[item]
     
     def __contains__(self, item):
         """
-        @item:VarBean
+        @item:str
         @!bool
         """
-        return item.name in self.vars
+        return item in self.vars
         
     def __iter__(self):
         return iter(self.vars)
