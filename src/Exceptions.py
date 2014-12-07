@@ -2,7 +2,19 @@
 Created on Dec 4, 2014
 
 @author: daviis01
+
+The exception hierarchy for PyDucker is 
+
+|---PyDuckerException
+    |--- PyDuckerError
+         |--- MissingMethodException
+              |--- MissingMagicMethodException
+              |--- IncorrectMethodException
+    |--- PyDuckerWarning
+         |--- TypeMissmatchException
 '''
+from Bean import ClassDefBean 
+
 class PyDuckerException(Exception):
     def __init__(self, lineNo):
         """
@@ -12,8 +24,25 @@ class PyDuckerException(Exception):
         
     def __str__(self):
         return "\n\tOn line: " + str(self.lineNum)
+    
+    
+class PyDuckerError(PyDuckerException):
+    def __init__(self, lineNo):
+        """
+        @lineNo:int
+        """
+        super().__init__(lineNo)
+        
+class PyDuckerWarning(PyDuckerException):
+    def __init__(self, lineNo):
+        """
+        @lineNo:int
+        """
+        super().__init__(lineNo)
+        
+        
 
-class TypeMissMatchException(PyDuckerException):
+class TypeMissMatchException(PyDuckerWarning):
     
     def __init__(self, var, old, new, lineNu):
         """
@@ -32,33 +61,13 @@ class TypeMissMatchException(PyDuckerException):
         ret += "\nVar name : " + self.varName + "\n\told type: " + self.oldType + "\tnew type: " + self.newType + "\n\tline number: " + str(self.lineNum)
         return ret
     
-class MissingMagicMethodException(PyDuckerException):
     
-    def __init__(self, leftOne, rightOne, aOp, aRop, lineNo):
-        """
-        @left:str
-        @right:str
-        @op:str
-        @rop:str
-        @lineNu:int
-        """
-        super().__init__(lineNo)
-        self.left = leftOne
-        self.right = rightOne
-        self.op = aOp
-        self.rop = aRop
-        
-    def __str__(self):
-        ret = super().__str__()
-        ret += "\n\tCan not find magic method: " + self.op + " in class: " + self.left + " that takes: " + self.right + \
-             "\n\tOr can not find magic method: " + self.rop + " in class: " + self.right + " that takes: " + self.left 
-        return ret
     
-class MissingMethodException(PyDuckerException):
+class MissingMethodException(PyDuckerError):
     
     def __init__(self, aCls, aFun, lineNo):
         """
-        @aCls:str
+        @aCls:ClassDefBean
         @aFun:str
         @lineNu:int
         """
@@ -69,14 +78,38 @@ class MissingMethodException(PyDuckerException):
     def __str__(self):
         ret = super().__str__()
         ret += "\n\tCan not find method: " + self.fun
-        ret += "\n\tIn class: " + self.cls
+        ret += "\n\tIn class: " + self.cls.name
         return ret
+    
+    
+    
+class MissingMagicMethodException(MissingMethodException):
+    
+    def __init__(self, leftOne, rightOne, aOp, aRop, lineNo):
+        """
+        @left:ClassDefBean
+        @right:ClassDefBean
+        @op:str
+        @rop:str
+        @lineNu:int
+        """
+        super().__init__(leftOne, aOp, lineNo)
+        self.cls2 = rightOne
+        self.rop = aRop
+        
+    def __str__(self):
+        ret = super().__str__()
+        ret += " that takes: " + self.cls2.name
+        ret += "\n\tOr can not find method: " + self.rop + " \n\tIn class: " + self.cls2.name + " that takes: " + self.cls.name 
+        return ret
+    
+    
     
 class IncorrectMethodExcepiton(MissingMethodException):
     
     def __init__(self, aCls, aFun, someArgs, lineNo):
         """
-        @aCls:str
+        @aCls:ClassDefBean
         @aFun:str
         @someArgs:^str
         @lineNo:int
