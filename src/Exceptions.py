@@ -12,6 +12,7 @@ The exception hierarchy for PyDucker is
               |--- IncorrectMethodException
     |--- PyDuckerWarning
          |--- TypeMissmatchException
+         |--- HeteroCollectionException
 '''
 
 class PyDuckerException(Exception):
@@ -58,6 +59,22 @@ class TypeMissMatchException(PyDuckerWarning):
     def __str__(self):
         ret = super().__str__()
         ret += "\nVar name : " + self.varName + "\n\told type: " + self.oldType + "\tnew type: " + self.newType + "\n\tline number: " + str(self.lineNum)
+        return ret
+    
+    
+class HeteroCollecionException(PyDuckerWarning):
+    
+    def __init__(self, var, lineNu):
+        """
+        @var:str
+        @lineNu:int
+        """
+        super().__init__(lineNu)
+        self.varName = var
+        
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\nVaribale: " + self.varName + " is a heterogeneous collection"
         return ret
     
     
