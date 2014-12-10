@@ -188,12 +188,6 @@ class InitialWalker(ast.NodeVisitor):
         """
         return "__ge__"
     
-    def visit_Is(self, node):
-        """
-        @node:ast.ast
-        """
-        return "____"
- 
     def visit_LtE(self, node):
         """
         @node:ast.ast
