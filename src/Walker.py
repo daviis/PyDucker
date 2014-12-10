@@ -182,6 +182,24 @@ class InitialWalker(ast.NodeVisitor):
         else:
             raise Exceptions.MissingMethodException(clsBean.name, funcName, node.lineno)
  
+    def visit_Gt(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__ge__"
+    
+    def visit_Is(self, node):
+        """
+        @node:ast.ast
+        """
+        return "____"
+ 
+    def visit_LtE(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__le__"
+ 
     def visit_Module(self, node):
         for _, value in ast.iter_fields(node):
             for item in value:
@@ -223,9 +241,15 @@ class InitialWalker(ast.NodeVisitor):
             return node.id
         else:    
             return self.scope[node.id].type
-             
+        
     def visit_Num(self, node):
         return type(node.n).__name__
+    
+    def visit_Or(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__or__"
      
     def visit_Return(self, node):
         #may need to look at the other fields in ast.Return but the basic way is this. 
