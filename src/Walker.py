@@ -196,6 +196,18 @@ class InitialWalker(ast.NodeVisitor):
         """
         return self.visit(node.value)
  
+    def visit_Gt(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__ge__"
+    
+    def visit_GtE(self, node):
+        """
+        @node:ast.ast        
+        """
+        return "__ge__"
+
     def visit_If(self,node):
         """
         @node:ast.ast
@@ -221,17 +233,6 @@ class InitialWalker(ast.NodeVisitor):
         """
         return('__invert__')
     
-    def visit_Gt(self, node):
-        """
-        @node:ast.ast
-        """
-        return "__ge__"
-    
-    def visit_GtE(self, node):
-        """
-        @node:ast.ast        
-        """
-        return "__ge__"
     
     def visit_List(self, node):
         return 'list'
@@ -302,7 +303,7 @@ class InitialWalker(ast.NodeVisitor):
         '''
         visit_pass has pass because pass does not do anything
         '''
-        pass
+        self.visit(node)
 
     def visit_Return(self, node):
         #may need to look at the other fields in ast.Return but the basic way is this. 
