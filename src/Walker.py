@@ -154,7 +154,7 @@ class InitialWalker(ast.NodeVisitor):
             if rightBean.funs[rOp].takes([leftType]):
                 return rightBean.funs[rOp].returnType
         else:
-            raise Exceptions.MissingMagicMethodException(leftBean.name, rightBean.name, op, rOp, node.lineno)
+            raise Exceptions.MissingMagicMethodException(leftBean, rightBean, op, rOp, node.lineno)
          
     def visit_Call(self, node):
         """
@@ -178,9 +178,9 @@ class InitialWalker(ast.NodeVisitor):
             if clsBean.funs[funcName].takes(args):
                 return clsBean.funs[funcName].returnType
             else:
-                raise Exceptions.IncorrectMethodExcepiton(clsBean.name, funcName, args, node.lineno)
+                raise Exceptions.IncorrectMethodExcepiton(clsBean, funcName, args, node.lineno)
         else:
-            raise Exceptions.MissingMethodException(clsBean.name, funcName, node.lineno)
+            raise Exceptions.MissingMethodException(clsBean, funcName, node.lineno)
  
     def visit_Module(self, node):
         for _, value in ast.iter_fields(node):
