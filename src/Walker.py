@@ -28,22 +28,8 @@ class InitialWalker(ast.NodeVisitor):
     def _first_visit(self):
         self.visit(self.root)
         
-#     def generic_visit(self, node):
-#         """
-#         This function is to identify what type of visits should be made. 
-#         The type(node).__name__ returns the word to append to visit_ 
-#         to make a visitor
-#         """
-#         print (type(node).__name__)
-#         ast.NodeVisitor.generic_visit(self, node)
-        
     def generic_visit(self, node):
         """Called if no explicit visitor function exists for a node.
-        ----
-        Comment out this method if recursion depth is exceded
-        It means that one of the vist_* methods in the test case
-        is not implemented yet.
-        ---
         """
         if isinstance(node, ast.AST):
             print("Unknown type of ast node. Need to implement visit_" + node.__class__.__name__)
@@ -131,7 +117,7 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         We have the chance to find unreachable code here. It isn't necessary to keep track of op if we dont.
         """
-        op = self.visit(node.op)
+        op = self.visit(node.op) #it will riase an exception in here if it doesn't resolve to a boolean so the returned value isn't important as of yet.
         valueList = []
         for val in node.values:
             valueList.append(self.visit(val))
@@ -208,18 +194,18 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return self.visit(node.value)
- 
-    def visit_Invert(self,node):
-        """
-        @node:ast.ast
-        """
-        return('__invert__')
     
     def visit_GtE(self, node):
         """
         @node:ast.ast        
         """
         return "__ge__"
+ 
+    def visit_Invert(self,node):
+        """
+        @node:ast.ast
+        """
+        return('__invert__')
     
     def visit_Lt(self, node):
         """
