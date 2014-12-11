@@ -49,7 +49,7 @@ class FunDefBean(GenericBean):
             self.typesparams = paramsTypes[1:]
         self.returnType = returntype
         self.name = fundefname
-        self.numparams = len(paramsTypes) # this should be assigned after creation to be length of self.typesparams
+        self.numparams = len(self.typesparams) # this should be assigned after creation to be length of self.typesparams
 
     def takes(self, paramList):
         """

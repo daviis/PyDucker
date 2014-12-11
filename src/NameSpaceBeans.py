@@ -63,6 +63,10 @@ def handMakeNameSpace():
     strClass.funs['splitlines'] = FunDefBean(['self' , 'boolean'] ,  'list', 'splitlines')
     strClass.funs['upper'] = FunDefBean(['self'] ,  'str', 'upper')
     nameSpace.put(strClass.name, strClass)
+    
+    boolClass = ClassDefBean('bool', None)
+    boolClass.funs['__eq__'] = FunDefBean(['self', 'bool'], 'bool', '__eq__')
+    nameSpace.put(boolClass.name, boolClass)
 
     
     return nameSpace
