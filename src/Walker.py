@@ -214,7 +214,10 @@ class InitialWalker(ast.NodeVisitor):
             else:
                 rightClass = self.nameSpace[right]
                 if rightClass.hasFun(op):
-                    #if rightClass.funs[op].takes([left]):
+                    '''
+                    if rightClass.funs[op].takes([left]): this should not be need because 
+                    function sould take an obj
+                    '''
                     pass
                 else:
                     raise Exceptions.MissingMethodException(rightClass, op, node.lineno)
