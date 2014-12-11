@@ -331,6 +331,9 @@ class InitialWalker(ast.NodeVisitor):
         return "__or__"
      
     def visit_pass(self, node):
+        '''
+        visit_pass has pass because pass does not do anything
+        '''
         pass
 
     def visit_Return(self, node):
