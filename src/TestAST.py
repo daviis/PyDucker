@@ -12,7 +12,7 @@ from NameSpaceBeans import handMakeNameSpace
 
 def main():
     #open a file and get it read into a variable so it is just one string
-    aFile = "../Test/Correct/AccPat.py"
+    aFile = "../Test/Correct/If.py"
     print("Reading file ", aFile)
     with open(aFile, 'r') as f:
         fileCont = f.read()

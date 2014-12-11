@@ -28,15 +28,15 @@ class InitialWalker(ast.NodeVisitor):
     def _first_visit(self):
         self.visit(self.root)
         
-#     def generic_visit(self, node):
+    def generic_visit(self, node):
 #         """
 #         This function is to identify what type of visits should be made. 
 #         The type(node).__name__ returns the word to append to visit_ 
 #         to make a visitor
 #         """
-#         print (type(node).__name__)
-#         ast.NodeVisitor.generic_visit(self, node)
-        
+         print (type(node).__name__)
+         ast.NodeVisitor.generic_visit(self, node)
+    '''   
     def generic_visit(self, node):
         """Called if no explicit visitor function exists for a node.
         ----
@@ -51,7 +51,7 @@ class InitialWalker(ast.NodeVisitor):
         #set a break point on this to find where there is a need to list-ify a vist_
         elif isinstance(node, list):
             print('got a list')
-         
+     '''    
          
     """
     Each individual vist_* will need to check if the result if a list, if so then 
@@ -203,15 +203,22 @@ class InitialWalker(ast.NodeVisitor):
             leftClass = self.nameSpace[left]
             right = compsList[idx]
             op = opList[idx]
-            
-            if leftClass.hasFun(op):
-                if leftClass.funs[op].takes([right]):
-                    left = right
+            if right != 'list' and right != 'dict':
+                if leftClass.hasFun(op):
+                    if leftClass.funs[op].takes([right]):
+                        left = right
+                    else:
+                        raise Exceptions.IncorrectMethodExcepiton(leftClass, op, right, node.lineno)
                 else:
-                    raise Exceptions.IncorrectMethodExcepiton(leftClass, op, right, node.lineno)
+                    raise Exceptions.MissingMethodException(leftClass, op, node.lineno)
             else:
-                raise Exceptions.MissingMethodException(leftClass, op, node.lineno)
-            
+                rightClass = self.nameSpace[right]
+                if rightClass.hasFun(op):
+                    #if rightClass.funs[op].takes([left]):
+                    pass
+                else:
+                    raise Exceptions.MissingMethodException(rightClass, op, node.lineno)
+                    
         return 'bool'
     
     def visit_Eq(self, node):
@@ -226,6 +233,32 @@ class InitialWalker(ast.NodeVisitor):
         """
         return self.visit(node.value)
  
+    def visit_If(self,node):
+        """
+        @node:ast.ast
+        """
+        self.visit(node.test)
+        
+        for body in node.body:
+            self.visit(body)
+        
+        orElseList = node.orelse
+        if len(orElseList) != 0:
+            self.visti(orelse)
+        
+    def visit_In(self, node):
+        '''
+        visit_In returns __contains__ unless something else is found because
+        In is almost the same as asking if someting __contains__ something.
+        '''
+        return '__contains__'
+
+    def visit_Dict(self, node):
+        return 'dict'
+
+    def visit_List(self, node):
+        return 'list'
+
     def visit_Invert(self,node):
         """
         @node:ast.ast
@@ -294,6 +327,9 @@ class InitialWalker(ast.NodeVisitor):
         """
         return "__or__"
      
+    def visit_pass(self, node):
+        pass
+
     def visit_Return(self, node):
         #may need to look at the other fields in ast.Return but the basic way is this. 
         val = self.visit(node.value)
