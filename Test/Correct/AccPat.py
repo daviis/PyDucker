@@ -1,4 +1,5 @@
 a = 0
-while a < 10:
+b = 'z'
+while (a < 10) == True:
     a += 1
-print(a)
+a
