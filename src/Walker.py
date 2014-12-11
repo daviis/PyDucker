@@ -29,21 +29,8 @@ class InitialWalker(ast.NodeVisitor):
         self.visit(self.root)
         
     def generic_visit(self, node):
-#         """
-#         This function is to identify what type of visits should be made. 
-#         The type(node).__name__ returns the word to append to visit_ 
-#         to make a visitor
-#         """
-         print (type(node).__name__)
-         ast.NodeVisitor.generic_visit(self, node)
-    '''   
-    def generic_visit(self, node):
-        """Called if no explicit visitor function exists for a node.
-        ----
-        Comment out this method if recursion depth is exceded
-        It means that one of the vist_* methods in the test case
-        is not implemented yet.
-        ---
+        """
+        Called if no explicit visitor function exists for a node.
         """
         if isinstance(node, ast.AST):
             print("Unknown type of ast node. Need to implement visit_" + node.__class__.__name__)
@@ -51,7 +38,6 @@ class InitialWalker(ast.NodeVisitor):
         #set a break point on this to find where there is a need to list-ify a vist_
         elif isinstance(node, list):
             print('got a list')
-     '''    
          
     """
     Each individual vist_* will need to check if the result if a list, if so then 
@@ -167,23 +153,6 @@ class InitialWalker(ast.NodeVisitor):
         else:
             raise Exceptions.MissingMethodException(clsBean, funcName, node.lineno)
 
-    def visit_Gt(self, node):
-        """
-        @node:ast.ast
-        """
-        return "__ge__"
-    
-    def visit_LtE(self, node):
-        """
-        @node:ast.ast
-        """
-        return "__le__"
- 
-    def visit_Module(self, node):
-        for _, value in ast.iter_fields(node):
-            for item in value:
-                self.visit(item)
-
     def visit_Compare(self, node):
         """
         @node:ast.ast
@@ -203,26 +172,17 @@ class InitialWalker(ast.NodeVisitor):
             leftClass = self.nameSpace[left]
             right = compsList[idx]
             op = opList[idx]
-            if right != 'list' and right != 'dict':
-                if leftClass.hasFun(op):
-                    if leftClass.funs[op].takes([right]):
-                        left = right
-                    else:
-                        raise Exceptions.IncorrectMethodExcepiton(leftClass, op, right, node.lineno)
+            if leftClass.hasFun(op):
+                if leftClass.funs[op].takes([right]):
+                    left = right
                 else:
-                    raise Exceptions.MissingMethodException(leftClass, op, node.lineno)
+                    raise Exceptions.IncorrectMethodExcepiton(leftClass, op, right, node.lineno)
             else:
-                rightClass = self.nameSpace[right]
-                if rightClass.hasFun(op):
-                    '''
-                    if rightClass.funs[op].takes([left]): this should not be need because 
-                    function sould take an obj
-                    '''
-                    pass
-                else:
-                    raise Exceptions.MissingMethodException(rightClass, op, node.lineno)
-                    
+                raise Exceptions.MissingMethodException(leftClass, op, node.lineno)
         return 'bool'
+    
+    def visit_Dict(self, node):
+        return 'dict'
     
     def visit_Eq(self, node):
         """
@@ -245,9 +205,8 @@ class InitialWalker(ast.NodeVisitor):
         for body in node.body:
             self.visit(body)
         
-        orElseList = node.orelse
-        if len(orElseList) != 0:
-            self.visti(orelse)
+        for orElse in node.orelse:
+            self.visti(orElse)
         
     def visit_In(self, node):
         '''
@@ -256,17 +215,17 @@ class InitialWalker(ast.NodeVisitor):
         '''
         return '__contains__'
 
-    def visit_Dict(self, node):
-        return 'dict'
-
-    def visit_List(self, node):
-        return 'list'
-
     def visit_Invert(self,node):
         """
         @node:ast.ast
         """
         return('__invert__')
+    
+    def visit_Gt(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__ge__"
     
     def visit_GtE(self, node):
         """
@@ -274,11 +233,20 @@ class InitialWalker(ast.NodeVisitor):
         """
         return "__ge__"
     
+    def visit_List(self, node):
+        return 'list'
+    
     def visit_Lt(self, node):
         """
         @node:ast.ast
         """
         return "__lt__"
+    
+    def visit_LtE(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__le__"
             
     def visit_Load(self, node):
         """
@@ -330,7 +298,7 @@ class InitialWalker(ast.NodeVisitor):
         """
         return "__or__"
      
-    def visit_pass(self, node):
+    def visit_Pass(self, node):
         '''
         visit_pass has pass because pass does not do anything
         '''
@@ -372,10 +340,10 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         self.visit(node.test)
-#         for bodyPart in node.body:
-#             self.visit(bodyPart) #i dont think this needs to store what gets returned
-#         for orelse in node.orelse:
-#             self.visit(orelse)
+        for bodyPart in node.body:
+            self.visit(bodyPart) #i dont think this needs to store what gets returned
+        for orelse in node.orelse:
+            self.visit(orelse)
      
     #These are initial walker independent, ie they should be over written in inheriting classes    
     def visit_ClassDef(self, node):
