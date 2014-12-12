@@ -160,6 +160,31 @@ class InitialWalker(ast.NodeVisitor):
         """
         left = self.visit(node.left)
         
+        zipped = zip(node.ops, node.comparators)
+
+        for pair in zipped:
+            op = self.visit(pair[0])
+            arg = self.visit(pair[1])
+            
+            if op == "__contains__":
+                #__contains__ comes from when the phrase "x in y" is written. It unfortunitly is the wrong order of things so they 
+                #need to be flip flopped
+                temp = arg
+                arg = left
+                left = temp
+            
+            leftClass = self.nameSpace[left]
+            if leftClass.hasFun(op):
+                if leftClass.funs[op].takes([arg]):
+                    left = arg
+                else:
+                    raise Exceptions.IncorrectMethodExcepiton(leftClass, op, arg, node.lineno)
+            else:
+                raise Exceptions.MissingMethodException(leftClass, op, node.lineno)
+        return 'bool'
+            
+                 
+        '''
         opList = []
         for op in node.ops:
             opList.append(self.visit(op))
@@ -180,6 +205,7 @@ class InitialWalker(ast.NodeVisitor):
             else:
                 raise Exceptions.MissingMethodException(leftClass, op, node.lineno)
         return 'bool'
+        '''
     
     def visit_Dict(self, node):
         return 'dict'
