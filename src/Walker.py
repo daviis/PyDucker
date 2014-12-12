@@ -63,7 +63,7 @@ class InitialWalker(ast.NodeVisitor):
         @todo look into tuple unpacking here
         
         Targets are the things on the left hand side of the assignment statement. Value will be what is on the right side.
-        If there is a reassignment of a variables type within one varbean it will throw a TypeMissMatchException
+        If there is a reassignment of a variables type within one varbean it will throw a TypeMisMatchException
         """
         targets = []
         for target in node.targets:
@@ -73,7 +73,7 @@ class InitialWalker(ast.NodeVisitor):
         for varBeanName in targets:
             curType = self.scope[varBeanName].type
             if value != curType and curType:
-                raise  Exceptions.TypeMissMatchException(varBeanName, curType, value, node.lineno)
+                raise  Exceptions.TypeMisMatchException(varBeanName, curType, value, node.lineno)
             else:
                 self.scope[varBeanName].type = value
 
