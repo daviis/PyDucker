@@ -122,9 +122,9 @@ class InitialWalker(ast.NodeVisitor):
         for val in node.values:
             valueList.append(self.visit(val))
             
-        for type in valueList:
-            if not self.nameSpace[type].hasFun('__bool__'): #make sure that object can be evaluated as a boolean
-                raise Exceptions.MissingMagicMethodException(node.lineno, self.nameSpace[type]) #need to make a unop magic method excception
+        for aType in valueList:
+            if not self.nameSpace[aType].hasFun('__bool__'): #make sure that object can be evaluated as a boolean
+                raise Exceptions.MissingMagicMethodException(node.lineno, self.nameSpace[aType]) #need to make a unop magic method excception
         return 'bool'
     
     def visit_Call(self, node):
@@ -157,6 +157,7 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.ast
         Need to be able to handle 1 < 2 < 3 as well as (1 < 2) < 3
+        For the use of the phrase "x in y" the types of operator and operand need to be flipped. In generates the function "__contains__"
         """
         left = self.visit(node.left)
         
@@ -167,8 +168,6 @@ class InitialWalker(ast.NodeVisitor):
             arg = self.visit(pair[1])
             
             if op == "__contains__":
-                #__contains__ comes from when the phrase "x in y" is written. It unfortunitly is the wrong order of things so they 
-                #need to be flip flopped
                 temp = arg
                 arg = left
                 left = temp
@@ -182,30 +181,6 @@ class InitialWalker(ast.NodeVisitor):
             else:
                 raise Exceptions.MissingMethodException(leftClass, op, node.lineno)
         return 'bool'
-            
-                 
-        '''
-        opList = []
-        for op in node.ops:
-            opList.append(self.visit(op))
-        
-        compsList = []
-        for comp in node.comparators:
-            compsList.append(self.visit(comp))
-        
-        for idx in range(len(compsList)):
-            leftClass = self.nameSpace[left]
-            right = compsList[idx]
-            op = opList[idx]
-            if leftClass.hasFun(op):
-                if leftClass.funs[op].takes([right]):
-                    left = right
-                else:
-                    raise Exceptions.IncorrectMethodExcepiton(leftClass, op, right, node.lineno)
-            else:
-                raise Exceptions.MissingMethodException(leftClass, op, node.lineno)
-        return 'bool'
-        '''
     
     def visit_Dict(self, node):
         return 'dict'
@@ -333,7 +308,7 @@ class InitialWalker(ast.NodeVisitor):
 
     def visit_Return(self, node):
         #may need to look at the other fields in ast.Return but the basic way is this. 
-        val = self.visit(node.value)
+        return self.visit(node.value)
             
     def visit_Store(self, node):
         """
