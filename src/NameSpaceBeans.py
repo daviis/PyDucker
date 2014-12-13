@@ -68,5 +68,11 @@ def handMakeNameSpace():
     boolClass.funs['__eq__'] = FunDefBean(['self', 'bool'], 'bool', '__eq__')
     nameSpace.put(boolClass.name, boolClass)
 
-    
+    listClass = ClassDefBean('list' , None)
+    listClass.funs['__contains__'] = FunDefBean(['self' , 'obj'], 'bool', '__contains__')
+    nameSpace.put(listClass.name , listClass)
+
+    dictClass = ClassDefBean('dict' , None)
+    dictClass.funs['__contains__'] = FunDefBean(['self' , 'obj'], 'bool', '__contains__')
+    nameSpace.put(dictClass.name, dictClass) 
     return nameSpace

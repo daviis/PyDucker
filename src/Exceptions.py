@@ -11,7 +11,7 @@ The exception hierarchy for PyDucker is
               |--- MissingMagicMethodException
               |--- IncorrectMethodException
     |--- PyDuckerWarning
-         |--- TypeMissmatchException
+         |--- TypeMismatchException
          |--- HeteroCollectionException
 '''
 
@@ -42,7 +42,7 @@ class PyDuckerWarning(PyDuckerException):
         
         
 
-class TypeMissMatchException(PyDuckerWarning):
+class TypeMisMatchException(PyDuckerWarning):
     
     def __init__(self, var, old, new, lineNu):
         """

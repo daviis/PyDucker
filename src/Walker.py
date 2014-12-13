@@ -29,7 +29,8 @@ class InitialWalker(ast.NodeVisitor):
         self.visit(self.root)
         
     def generic_visit(self, node):
-        """Called if no explicit visitor function exists for a node.
+        """
+        Called if no explicit visitor function exists for a node.
         """
         if isinstance(node, ast.AST):
             print("Unknown type of ast node. Need to implement visit_" + node.__class__.__name__)
@@ -37,7 +38,6 @@ class InitialWalker(ast.NodeVisitor):
         #set a break point on this to find where there is a need to list-ify a vist_
         elif isinstance(node, list):
             print('got a list')
-         
          
     """
     Each individual vist_* will need to check if the result if a list, if so then 
@@ -63,7 +63,7 @@ class InitialWalker(ast.NodeVisitor):
         @todo look into tuple unpacking here
         
         Targets are the things on the left hand side of the assignment statement. Value will be what is on the right side.
-        If there is a reassignment of a variables type within one varbean it will throw a TypeMissMatchException
+        If there is a reassignment of a variables type within one varbean it will throw a TypeMisMatchException
         """
         targets = []
         for target in node.targets:
@@ -73,7 +73,7 @@ class InitialWalker(ast.NodeVisitor):
         for varBeanName in targets:
             curType = self.scope[varBeanName].type
             if value != curType and curType:
-                raise  Exceptions.TypeMissMatchException(varBeanName, curType, value, node.lineno)
+                raise  Exceptions.TypeMisMatchException(varBeanName, curType, value, node.lineno)
             else:
                 self.scope[varBeanName].type = value
 
@@ -117,14 +117,14 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         We have the chance to find unreachable code here. It isn't necessary to keep track of op if we dont.
         """
-        op = self.visit(node.op) #it will riase an exception in here if it doesn't resolve to a boolean so the returned value isn't important as of yet.
+        op = self.visit(node.op)
         valueList = []
         for val in node.values:
             valueList.append(self.visit(val))
             
-        for type in valueList:
-            if not self.nameSpace[type].hasFun('__bool__'): #make sure that object can be evaluated as a boolean
-                raise Exceptions.MissingMagicMethodException(node.lineno, self.nameSpace[type]) #need to make a unop magic method excception
+        for aType in valueList:
+            if not self.nameSpace[aType].hasFun('__bool__'): #make sure that object can be evaluated as a boolean
+                raise Exceptions.MissingMagicMethodException(node.lineno, self.nameSpace[aType]) #need to make a unop magic method excception
         return 'bool'
     
     def visit_Call(self, node):
@@ -153,52 +153,37 @@ class InitialWalker(ast.NodeVisitor):
         else:
             raise Exceptions.MissingMethodException(clsBean, funcName, node.lineno)
 
-    def visit_Gt(self, node):
-        """
-        @node:ast.ast
-        """
-        return "__ge__"
-    
-    def visit_LtE(self, node):
-        """
-        @node:ast.ast
-        """
-        return "__le__"
- 
-    def visit_Module(self, node):
-        for _, value in ast.iter_fields(node):
-            for item in value:
-                self.visit(item)
-
     def visit_Compare(self, node):
         """
         @node:ast.ast
         Need to be able to handle 1 < 2 < 3 as well as (1 < 2) < 3
+        For the use of the phrase "x in y" the types of operator and operand need to be flipped. In generates the function "__contains__"
         """
         left = self.visit(node.left)
         
-        opList = []
-        for op in node.ops:
-            opList.append(self.visit(op))
-        
-        compsList = []
-        for comp in node.comparators:
-            compsList.append(self.visit(comp))
-        
-        for idx in range(len(compsList)):
-            leftClass = self.nameSpace[left]
-            right = compsList[idx]
-            op = opList[idx]
+        zipped = zip(node.ops, node.comparators)
+
+        for pair in zipped:
+            op = self.visit(pair[0])
+            arg = self.visit(pair[1])
             
+            if op == "__contains__":
+                temp = arg
+                arg = left
+                left = temp
+            
+            leftClass = self.nameSpace[left]
             if leftClass.hasFun(op):
-                if leftClass.funs[op].takes([right]):
-                    left = right
+                if leftClass.funs[op].takes([arg]):
+                    left = arg
                 else:
-                    raise Exceptions.IncorrectMethodExcepiton(leftClass, op, right, node.lineno)
+                    raise Exceptions.IncorrectMethodExcepiton(leftClass, op, arg, node.lineno)
             else:
                 raise Exceptions.MissingMethodException(leftClass, op, node.lineno)
-            
         return 'bool'
+    
+    def visit_Dict(self, node):
+        return 'dict'
     
     def visit_Eq(self, node):
         """
@@ -211,24 +196,59 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return self.visit(node.value)
+ 
+    def visit_Gt(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__ge__"
     
     def visit_GtE(self, node):
         """
         @node:ast.ast        
         """
         return "__ge__"
- 
+
+    def visit_If(self,node):
+        """
+        @node:ast.ast
+        """
+        self.visit(node.test)
+        
+        for body in node.body:
+            self.visit(body)
+        
+        for orElse in node.orelse:
+            self.visti(orElse)
+        
+    def visit_In(self, node):
+        '''
+        visit_In returns __contains__ unless something else is found because
+        In is almost the same as asking if someting __contains__ something.
+        '''
+        return '__contains__'
+
     def visit_Invert(self,node):
         """
         @node:ast.ast
         """
         return('__invert__')
     
+    
+    def visit_List(self, node):
+        return 'list'
+    
     def visit_Lt(self, node):
         """
         @node:ast.ast
         """
         return "__lt__"
+    
+    def visit_LtE(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__le__"
             
     def visit_Load(self, node):
         """
@@ -280,9 +300,15 @@ class InitialWalker(ast.NodeVisitor):
         """
         return "__or__"
      
+    def visit_Pass(self, node):
+        '''
+        visit_pass has pass because pass does not do anything
+        '''
+        self.visit(node)
+
     def visit_Return(self, node):
         #may need to look at the other fields in ast.Return but the basic way is this. 
-        val = self.visit(node.value)
+        return self.visit(node.value)
             
     def visit_Store(self, node):
         """
