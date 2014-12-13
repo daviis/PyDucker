@@ -70,6 +70,7 @@ def handMakeNameSpace():
 
     listClass = ClassDefBean('list' , None)
     listClass.funs['__contains__'] = FunDefBean(['self' , 'obj'], 'bool', '__contains__')
+    listClass.funs['__iter__'] = FunDefBean(['self'], 'obj', '__iter__')
     nameSpace.put(listClass.name , listClass)
 
     dictClass = ClassDefBean('dict' , None)

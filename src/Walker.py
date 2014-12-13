@@ -16,9 +16,6 @@ class InitialWalker(ast.NodeVisitor):
         @scopeBean:Bean.ScopeLevelBean
         """
         self.root = astNode
-        self.classes = []
-        self.funs = []
-        self.globals = []
         self.nameSpace = nameSp
         self.scope = scopeBean
         
@@ -96,7 +93,6 @@ class InitialWalker(ast.NodeVisitor):
         op = self.visit(node.op)
         rOp = op[:2] + 'r' + op[2:]
         rightType = self.visit(node.right)
-        print(op)
         #look up if the method is contained in the left, if not then maybe the right
         #if so, then return the return type of the function
         
@@ -196,6 +192,22 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return self.visit(node.value)
+    
+    def visit_For(self, node):
+        """
+        @node:ast.ast
+        """
+        target = self.visit(node.target)
+        anIter = self.visit(node.iter)
+        
+        if not self.nameSpace[anIter].hasFun('__iter__'):
+            raise Exceptions.MissingMethodException(self.nameSpace[anIter], '__iter__', node.lineno)
+        targetBean = self.scope[target]
+        targetBean.type = anIter
+        
+        for bod in node.body:
+            self.visit(bod)
+        return 
  
     def visit_Gt(self, node):
         """
@@ -352,8 +364,6 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.AST
         """
-        self.classes.append(node)
-        
         clsWalker = ClassDefWalker(node, self.nameSpace, self.scope.copy())
         clsWalker.walk()
         
@@ -364,8 +374,6 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.AST
         """
-        self.funs.append(node)
-
         funWalker = FunDefWalker(node, self.nameSpace, self.scope.copy())   
         funWalker.walk()
              
@@ -373,14 +381,6 @@ class InitialWalker(ast.NodeVisitor):
         
         print("out fun")
          
-
-    def checkResults(self):
-        for cla in self.classes:
-            print(ast.dump(cla))
-        for fun in self.funs:
-            print(ast.dump(fun))
-        for glob in self.globals:
-            print(ast.dump(glob))
             
 class ClassDefWalker(InitialWalker):
     
@@ -394,7 +394,7 @@ class ClassDefWalker(InitialWalker):
         self.initFun = None
         self.nameSpace = nameSp
         self.funs = Bean.NameSpaceBean()
-        self.selfVars = scopeCopy
+        self.scope = scopeCopy
         self.name = classRoot.name
        
     def walk(self):
