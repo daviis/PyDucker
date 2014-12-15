@@ -18,20 +18,31 @@ class GenericBean():
 
 class ClassDefBean(GenericBean):
     
-    def __init__(self, classname, selfVars):
+    def __init__(self, classname, selfVars, rent):
         """
         @className:str
         @selfVars:ScopeLevelBean
+        @rent:str
         """
         self.name = classname
         self.varinfo = selfVars
         self.funs = {} #of key = Fundef.name, FunDefBean for faster look up
+        self.parent = rent #the name of the parent type
         
     def hasFun(self, op):
         """
         @op:str
         """
         return op in self.funs
+    
+    def isIterable(self):
+        return "__iter__" in self.funs
+    
+    def isCallable(self):
+        return "__call__" in self.funs
+    
+    def isBoolean(self):
+        return "__bool__" in self.funs
 
 
 class FunDefBean(GenericBean):

@@ -119,7 +119,7 @@ class InitialWalker(ast.NodeVisitor):
             valueList.append(self.visit(val))
             
         for aType in valueList:
-            if not self.nameSpace[aType].hasFun('__bool__'): #make sure that object can be evaluated as a boolean
+            if not self.nameSpace[aType].isBoolean(): #make sure that object can be evaluated as a boolean
                 raise Exceptions.MissingMagicMethodException(node.lineno, self.nameSpace[aType]) #need to make a unop magic method excception
         return 'bool'
     
@@ -200,7 +200,7 @@ class InitialWalker(ast.NodeVisitor):
         target = self.visit(node.target)
         anIter = self.visit(node.iter)
         
-        if not self.nameSpace[anIter].hasFun('__iter__'):
+        if not self.nameSpace[anIter].isIterable():
             raise Exceptions.MissingMethodException(self.nameSpace[anIter], '__iter__', node.lineno)
         targetBean = self.scope[target]
         targetBean.type = anIter
@@ -392,6 +392,7 @@ class ClassDefWalker(InitialWalker):
         """
         self.root = classRoot
         self.initFun = None
+        self.parent = None
         self.nameSpace = nameSp
         self.funs = Bean.NameSpaceBean()
         self.scope = scopeCopy
@@ -399,23 +400,16 @@ class ClassDefWalker(InitialWalker):
        
     def walk(self):
         #first call should be a quick walk to snag all of the fun names and self var names
-        self._first_visit(self.root)
-        #second walk call should be to actually do the checking  
-        self._second_visit(self.root)
+        self._first_visit(self.root.body)
         
-    def _first_visit(self, node):
+    def _first_visit(self, body):
         """
-        @node:ast.ast
+        @node:ast.ast*
         """
         #todo initial pass
-        self.visit(node)
-        
-    def _second_visit(self, node):
-        """
-        @node:ast.ast
-        """
-        #todo full pass
-        self.visit(node)
+        for bod in body:
+            self.visit(bod)
+
         
     def visit_FunctionDef(self, node):
         """
