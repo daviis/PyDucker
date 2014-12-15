@@ -390,26 +390,16 @@ class ClassDefWalker(InitialWalker):
         @nameSp:bean.NameSpaceBean
         @scopeCopy:bean.ScopeBean
         """
-        self.root = classRoot
+        super().__iter__(classRoot, nameSp, scopeCopy)
         self.initFun = None
         self.parent = None
-        self.nameSpace = nameSp
         self.funs = Bean.NameSpaceBean()
-        self.scope = scopeCopy
         self.name = classRoot.name
        
     def walk(self):
         #first call should be a quick walk to snag all of the fun names and self var names
-        self._first_visit(self.root.body)
-        
-    def _first_visit(self, body):
-        """
-        @node:ast.ast*
-        """
-        #todo initial pass
-        for bod in body:
+        for bod in self.root.body:
             self.visit(bod)
-
         
     def visit_FunctionDef(self, node):
         """
@@ -420,7 +410,7 @@ class ClassDefWalker(InitialWalker):
             self.initFun = node
     
     def createClassBean(self):
-        bean = Bean.ClassDefBean(self.name, self.selfVars)
+        bean = Bean.ClassDefBean(self.name, self.funs, self.parent)
 #         stuff about making the bean
         return bean
     
@@ -431,10 +421,9 @@ class FunDefWalker(InitialWalker):
         @nameSp:bean.NameSpaceBean
         @scopeLevel:bean.ScopeLevelBean
         """
+        super().__iter__(funRoot, nameSp, scopeLevel)
         self.name = funRoot.name
-        self.root = funRoot
         self.retType = None
-        self.scope = scopeLevel
         self.nameSpace = nameSp
         
     def walk(self):
