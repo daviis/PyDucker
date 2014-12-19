@@ -62,17 +62,17 @@ class InitialWalker(ast.NodeVisitor):
         Targets are the things on the left hand side of the assignment statement. Value will be what is on the right side.
         If there is a reassignment of a variables type within one varbean it will throw a TypeMisMatchException
         """
-        targets = []
+        tars = []
         for target in node.targets:
-            targets.append(self.visit(target))
+            tars.append(self.visit(target))
         value = self.visit(node.value)
         
-        for varBeanName in targets:
-            curType = self.scope[varBeanName].type
-            if value != curType and curType:
-                raise  Exceptions.TypeMisMatchException(varBeanName, curType, value, node.lineno)
+        for varBean in tars:
+            if varBean.typesMatch(value):
+                self.scope[varBean.name] = value
             else:
-                self.scope[varBeanName].type = value
+                raise  Exceptions.TypeMisMatchException(varBean.name, varBean.type, value.type, node.lineno)
+                
 
             
     def visit_Attribute(self, node):
@@ -89,24 +89,24 @@ class InitialWalker(ast.NodeVisitor):
         This will return the type of the function that is being called. Could throw MissingMethodException if the magic method cant be found.
         @node:ast.ast
         """
-        leftType = self.visit(node.left)
+        leftBean = self.visit(node.left)
         op = self.visit(node.op)
         rOp = op[:2] + 'r' + op[2:]
-        rightType = self.visit(node.right)
+        rightBean = self.visit(node.right)
         #look up if the method is contained in the left, if not then maybe the right
         #if so, then return the return type of the function
         
-        leftBean = self.nameSpace[leftType]
-        rightBean = self.nameSpace[rightType]
+        leftClass = self.nameSpace[leftBean.type]
+        rightClass = self.nameSpace[rightBean.type]
         
-        if leftBean.hasFun(op):
-            if leftBean.funs[op].takes([rightType]):
-                return leftBean.funs[op].returnType
-        if rightBean.hasFun(rOp):
-            if rightBean.funs[rOp].takes([leftType]):
-                return rightBean.funs[rOp].returnType
+        if leftClass.hasFun(op):
+            if leftClass.funs[op].takes([rightBean]):
+                return Bean.VarBean(leftClass.funs[op].returnType)
+        if rightClass.hasFun(rOp):
+            if rightClass.funs[rOp].takes([leftBean]):
+                return Bean.VarBean(rightClass.funs[rOp].returnType)
         else:
-            raise Exceptions.MissingMagicMethodException(leftBean, rightBean, op, rOp, node.lineno)
+            raise Exceptions.MissingMagicMethodException(leftClass, rightClass, op, rOp, node.lineno)
          
     def visit_BoolOp(self, node):
         """
@@ -139,7 +139,7 @@ class InitialWalker(ast.NodeVisitor):
         starargs = self.visit(node.starargs)
         kwargs = self.visit(node.kwargs)
         
-        clsBean = self.nameSpace[cls]
+        clsBean = self.nameSpace[cls.type]
         if clsBean.hasFun(funcName):
             #fundefbean will need to be extended to handle things other than just a fixed lenght number of params
             if clsBean.funs[funcName].takes(args):
@@ -168,18 +168,19 @@ class InitialWalker(ast.NodeVisitor):
                 arg = left
                 left = temp
             
-            leftClass = self.nameSpace[left]
+            leftClass = self.nameSpace[left.type]
             if leftClass.hasFun(op):
                 if leftClass.funs[op].takes([arg]):
                     left = arg
                 else:
-                    raise Exceptions.IncorrectMethodExcepiton(leftClass, op, arg, node.lineno)
+                    raise Exceptions.IncorrectMethodExcepiton(leftClass, op, arg.type, node.lineno)
             else:
                 raise Exceptions.MissingMethodException(leftClass, op, node.lineno)
-        return 'bool'
+        return Bean.VarBean('bool')
     
     def visit_Dict(self, node):
-        return 'dict'
+        print("need to figure out if we can tell what a dicts internals look like")
+        return Bean.VarBean('dict')
     
     def visit_Eq(self, node):
         """
@@ -200,10 +201,9 @@ class InitialWalker(ast.NodeVisitor):
         target = self.visit(node.target)
         anIter = self.visit(node.iter)
         
-        if not self.nameSpace[anIter].isIterable():
+        if not self.nameSpace[anIter.type].isIterable():
             raise Exceptions.MissingMethodException(self.nameSpace[anIter], '__iter__', node.lineno)
-        targetBean = self.scope[target]
-        targetBean.type = anIter
+        target.type = anIter.nextSubType()
         
         for bod in node.body:
             self.visit(bod)
@@ -248,7 +248,22 @@ class InitialWalker(ast.NodeVisitor):
     
     
     def visit_List(self, node):
-        return 'list'
+        """
+        @node:ast.ast
+        """
+        bean = Bean.VarBean('list')
+        
+        elements = []
+        for ele in node.elts:
+            elements.append(self.visit(ele))
+        
+        if all(x == elements[0] for x in elements):
+            bean.homo = True
+            bean.compType = [elements[0]]
+        else:
+            bean.compType = elements
+            
+        return bean
     
     def visit_Lt(self, node):
         """
@@ -285,17 +300,15 @@ class InitialWalker(ast.NodeVisitor):
         store = self.visit(node.ctx)
         if store:
             if not node.id in self.scope:
-                bean = Bean.VarBean(node.id, None)
+                bean = Bean.VarBean(None, node.id)
                 self.scope.append(bean)
-            return node.id
-        else:    
-            return self.scope[node.id].type
+        return self.scope[node.id]
 
     def visit_NameConstant(self, node):
         """
         @node:ast.ast
         """
-        return type(node.value).__name__
+        return Bean.VarBean(type(node.value).__name__)
         
     def visit_NotEq(self, node):
         """
@@ -304,7 +317,7 @@ class InitialWalker(ast.NodeVisitor):
         return "__ne__"
              
     def visit_Num(self, node):
-        return type(node.n).__name__
+        return Bean.VarBean(type(node.n).__name__)
     
     def visit_Or(self, node):
         """
@@ -330,7 +343,7 @@ class InitialWalker(ast.NodeVisitor):
         return True
             
     def visit_Str(self, node):
-        return "str"
+        return Bean.VarBean('str')
     
     def visit_UAdd(self,node):
         return('__pos__')
@@ -390,7 +403,7 @@ class ClassDefWalker(InitialWalker):
         @nameSp:bean.NameSpaceBean
         @scopeCopy:bean.ScopeBean
         """
-        super().__iter__(classRoot, nameSp, scopeCopy)
+        super().__init__(classRoot, nameSp, scopeCopy)
         self.initFun = None
         self.parent = None
         self.funs = Bean.NameSpaceBean()
@@ -421,7 +434,7 @@ class FunDefWalker(InitialWalker):
         @nameSp:bean.NameSpaceBean
         @scopeLevel:bean.ScopeLevelBean
         """
-        super().__iter__(funRoot, nameSp, scopeLevel)
+        super().__init__(funRoot, nameSp, scopeLevel)
         self.name = funRoot.name
         self.retType = None
         self.nameSpace = nameSp
