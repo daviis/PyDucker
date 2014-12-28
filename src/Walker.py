@@ -350,7 +350,7 @@ class InitialWalker(ast.NodeVisitor):
     
     def visit_UnaryOp(self,node):
         operand = self.visit(node.operand)
-        operandBean = self.nameSpace[operand]
+        operandBean = self.nameSpace[operand.type]
         op = self.visit(node.op)
         if operandBean.hasFun(op):
             return operandBean.funs[op].returnType
