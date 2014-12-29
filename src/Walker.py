@@ -4,6 +4,7 @@ Created on Oct 13, 2014
 @author: daviis01
 '''
 import ast
+import sys
 import Bean
 import Exceptions
 from DocStringParser import parseDocString
@@ -30,11 +31,11 @@ class InitialWalker(ast.NodeVisitor):
         Called if no explicit visitor function exists for a node.
         """
         if isinstance(node, ast.AST):
-            print("Unknown varType of ast node. Need to implement visit_" + node.__class__.__name__)
+            print("Unknown varType of ast node. Need to implement visit_" + node.__class__.__name__, file=sys.stderr)
             super().generic_visit(node)
         #set a break point on this to find where there is a need to list-ify a vist_
         elif isinstance(node, list):
-            print('got a list')
+            print('got a list', file=sys.stderr)
          
     """
     Each individual vist_* will need to check if the result if a list, if so then 
@@ -137,7 +138,10 @@ class InitialWalker(ast.NodeVisitor):
         for arg in node.args:
             args.append(self.visit(arg))
             
-        keywords = self.visit(node.keywords)
+        keywords = []
+        for key in node.keywords:
+            keywords.append(self.visit(key))
+            
         starargs = self.visit(node.starargs)
         kwargs = self.visit(node.kwargs)
         
