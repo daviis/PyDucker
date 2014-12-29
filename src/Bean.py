@@ -18,20 +18,31 @@ class GenericBean():
 
 class ClassDefBean(GenericBean):
     
-    def __init__(self, classname, selfVars):
+    def __init__(self, classname, selfVars, rent = 'object'):
         """
         @className:str
         @selfVars:ScopeLevelBean
+        @rent:str
         """
         self.name = classname
         self.varinfo = selfVars
         self.funs = {} #of key = Fundef.name, FunDefBean for faster look up
+        self.parent = rent #the name of the parent varType
         
     def hasFun(self, op):
         """
         @op:str
         """
         return op in self.funs
+    
+    def isIterable(self):
+        return "__iter__" in self.funs
+    
+    def isCallable(self):
+        return "__call__" in self.funs
+    
+    def isBoolean(self):
+        return "__bool__" in self.funs
 
 
 class FunDefBean(GenericBean):
@@ -47,7 +58,7 @@ class FunDefBean(GenericBean):
         if paramsTypes[0] == 'self':
             self.partOfClass = True
             self.typesparams = paramsTypes[1:]
-        self.returnType = returntype
+        self.returnType = VarBean(returntype)
         self.name = fundefname
         self.numparams = len(self.typesparams) # this should be assigned after creation to be length of self.typesparams
 
@@ -58,21 +69,47 @@ class FunDefBean(GenericBean):
         if not len(paramList) == len(self.typesparams):
             return False
         for idx in range(len(paramList)):
-            if not paramList[idx] == self.typesparams[idx]:
+            if not paramList[idx].varType == self.typesparams[idx]:
                 return False
         return True
 
 class VarBean(GenericBean):
     
-    def __init__(self, aName, aType):
+    def __init__(self,  aType, aName = '_'):
         """
+        This is what the varType of one variable should be. If it is a collection of subtypes them more of the fields come into play.
+        These fields are homo and compType. Homo is a boolean to see if all of the subtypes are the same. If they are, then compType will
+        be a list with only one str. Otherwise it will be a list with the initial types. 
+        Neither of these fields should be accessed directly. Instead call nextSubType()
         @name:str
         @aType:str
         """
         self.name = aName
-        self.type = aType
+        self.varType = aType
         self.homo = False
-        self.compType = None
+        self.compType = []
+        
+    def __eq__(self, other):
+        return self.varType == other.varType
+    
+    def nextSubType(self):
+        if self.homo:
+            return self.compType[0].varType
+        else:
+            return self.compType
+            
+    def typesMatch(self, other):
+        if self.compType:
+            if self.homo:
+                return self.compType[0] == other.compType[0] and self.varType == other.varType
+            else:
+                return self.varType == other.varType and  all(x == self.compType[0] for x in self.compType)
+        else:
+            if self.varType:
+                return self.varType == other.varType
+            else:
+                return True #currently the value of self.varType == None 
+    
 
 
 class ScopeLevelBean(GenericBean):
@@ -90,6 +127,9 @@ class ScopeLevelBean(GenericBean):
         @item:str
         """
         return self.vars[item]
+    
+    def __setitem__(self, name, item):
+        self.vars[name] = item
     
     def __contains__(self, item):
         """
