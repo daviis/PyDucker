@@ -45,13 +45,13 @@ def testAll():
         with open(aFile, 'r') as f:
             fileCont = f.read()
             
+        print("File name: ",aFile)            
         tree = ast.parse(fileCont, aFile)
         #print ((ast.dump(tree)))
         nameSpace = handMakeNameSpace()
         scope = Bean.ScopeLevelBean()
         firstWalker = InitialWalker(tree, nameSpace, scope)
         firstWalker.walk()
-        print("File name: ",aFile)
         print("Tree Dump: ",ast.dump(tree))
         print()
     
