@@ -10,9 +10,11 @@ import Bean
 from Walker import InitialWalker
 from NameSpaceBeans import handMakeNameSpace
 
-def main():
+def testOne(aFile):
+    """
+    @aFile:str
+    """
     #open a file and get it read into a variable so it is just one string
-    aFile = "../Test/Correct/SingleMethodDef.py"
     print("Reading file ", aFile)
     with open(aFile, 'r') as f:
         fileCont = f.read()
@@ -56,6 +58,6 @@ def testAll():
         print()
     
 if __name__ == '__main__':
-    #main()
+    #testOne("../Test/Correct/SingleMethodDef.py")
     testAll()
     print("out main")
