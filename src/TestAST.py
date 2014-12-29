@@ -30,7 +30,32 @@ def main():
 #     firstWalker.checkResults()
 
     #do some exception handling that will tell the user what went wrong in their project
-
+def testAll():
+    files = ['../Test/Correct/UnOp.py','../Test/Correct/StoreLoad.py','../Test/Correct/For.py','../Test/Correct/Call.py','../Test/Correct/BinOp.py','../Test/Correct/add.py','../Test/Correct/AccPat.py'] 
+    
+    #Non-working tests
+    #'../Test/Correct/SingleMethodDef.py',
+    #'../Test/Correct/MultiClassMultiFun.py',
+    #'../Test/Correct/MethodDef.py',
+    #'../Test/Correct/If.py',
+    
+    for i in files:
+        aFile = i
+        #print("Reading file ", aFile)
+        with open(aFile, 'r') as f:
+            fileCont = f.read()
+            
+        tree = ast.parse(fileCont, aFile)
+        #print ((ast.dump(tree)))
+        nameSpace = handMakeNameSpace()
+        scope = Bean.ScopeLevelBean()
+        firstWalker = InitialWalker(tree, nameSpace, scope)
+        firstWalker.walk()
+        print("File name: ",aFile)
+        print("Tree Dump: ",ast.dump(tree))
+        print()
+    
 if __name__ == '__main__':
-    main()
+    #main()
+    testAll()
     print("out main")
