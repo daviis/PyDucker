@@ -58,7 +58,7 @@ class FunDefBean(GenericBean):
         if paramsTypes[0] == 'self':
             self.partOfClass = True
             self.typesparams = paramsTypes[1:]
-        self.returnType = returntype
+        self.returnType = VarBean(returntype)
         self.name = fundefname
         self.numparams = len(self.typesparams) # this should be assigned after creation to be length of self.typesparams
 
