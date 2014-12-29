@@ -12,14 +12,14 @@ from NameSpaceBeans import handMakeNameSpace
 
 def main():
     #open a file and get it read into a variable so it is just one string
-    aFile = "../Test/Correct/UnOp.py"
+    aFile = "../Test/Correct/SingleMethodDef.py"
     print("Reading file ", aFile)
     with open(aFile, 'r') as f:
         fileCont = f.read()
 
     #parse the string into an ast using the builtin function
     tree = ast.parse(fileCont, aFile)
-    print ((ast.dump(tree)))
+    #print ((ast.dump(tree)))
 #     nameSpace = Bean.NameSpaceBean()
     nameSpace = handMakeNameSpace()
     scope = Bean.ScopeLevelBean()

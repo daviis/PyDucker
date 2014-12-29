@@ -30,7 +30,7 @@ class InitialWalker(ast.NodeVisitor):
         Called if no explicit visitor function exists for a node.
         """
         if isinstance(node, ast.AST):
-            print("Unknown type of ast node. Need to implement visit_" + node.__class__.__name__)
+            print("Unknown varType of ast node. Need to implement visit_" + node.__class__.__name__)
             super().generic_visit(node)
         #set a break point on this to find where there is a need to list-ify a vist_
         elif isinstance(node, list):
@@ -40,6 +40,8 @@ class InitialWalker(ast.NodeVisitor):
     Each individual vist_* will need to check if the result if a list, if so then 
     iterate over it. If not, then a single visit is needed
     """
+
+        
     def visit_Add(self, node):
         """
         @node:ast.ast
@@ -60,7 +62,7 @@ class InitialWalker(ast.NodeVisitor):
         @todo look into tuple unpacking here
         
         Targets are the things on the left hand side of the assignment statement. Value will be what is on the right side.
-        If there is a reassignment of a variables type within one varbean it will throw a TypeMisMatchException
+        If there is a reassignment of a variables varType within one varbean it will throw a TypeMisMatchException
         """
         tars = []
         for target in node.targets:
@@ -71,13 +73,13 @@ class InitialWalker(ast.NodeVisitor):
             if varBean.typesMatch(value):
                 self.scope[varBean.name] = value
             else:
-                raise  Exceptions.TypeMisMatchException(varBean.name, varBean.type, value.type, node.lineno)
+                raise  Exceptions.TypeMisMatchException(varBean.name, varBean.varType, value.varType, node.lineno)
                 
 
             
     def visit_Attribute(self, node):
         """
-        Value is the type of the object the function is being called on. node.attr is the str rep of 
+        Value is the varType of the object the function is being called on. node.attr is the str rep of 
         the method name
         """
         value = self.visit(node.value)
@@ -86,7 +88,7 @@ class InitialWalker(ast.NodeVisitor):
             
     def visit_BinOp(self, node):
         """
-        This will return the type of the function that is being called. Could throw MissingMethodException if the magic method cant be found.
+        This will return the varType of the function that is being called. Could throw MissingMethodException if the magic method cant be found.
         @node:ast.ast
         """
         leftBean = self.visit(node.left)
@@ -94,10 +96,10 @@ class InitialWalker(ast.NodeVisitor):
         rOp = op[:2] + 'r' + op[2:]
         rightBean = self.visit(node.right)
         #look up if the method is contained in the left, if not then maybe the right
-        #if so, then return the return type of the function
+        #if so, then return the return varType of the function
         
-        leftClass = self.nameSpace[leftBean.type]
-        rightClass = self.nameSpace[rightBean.type]
+        leftClass = self.nameSpace[leftBean.varType]
+        rightClass = self.nameSpace[rightBean.varType]
         
         if leftClass.hasFun(op):
             if leftClass.funs[op].takes([rightBean]):
@@ -125,7 +127,7 @@ class InitialWalker(ast.NodeVisitor):
     
     def visit_Call(self, node):
         """
-        When a method is called on a class it generates one of these. This will attempt to return the str rep of the return type of the function.
+        When a method is called on a class it generates one of these. This will attempt to return the str rep of the return varType of the function.
         It can throw a MissingMethodException if the function isn't found in the class or if the number/types of paramiters is wrong
         @node:ast.ast
         """
@@ -139,7 +141,7 @@ class InitialWalker(ast.NodeVisitor):
         starargs = self.visit(node.starargs)
         kwargs = self.visit(node.kwargs)
         
-        clsBean = self.nameSpace[cls.type]
+        clsBean = self.nameSpace[cls.varType]
         if clsBean.hasFun(funcName):
             #fundefbean will need to be extended to handle things other than just a fixed lenght number of params
             if clsBean.funs[funcName].takes(args):
@@ -168,12 +170,12 @@ class InitialWalker(ast.NodeVisitor):
                 arg = left
                 left = temp
             
-            leftClass = self.nameSpace[left.type]
+            leftClass = self.nameSpace[left.varType]
             if leftClass.hasFun(op):
                 if leftClass.funs[op].takes([arg]):
                     left = arg
                 else:
-                    raise Exceptions.IncorrectMethodExcepiton(leftClass, op, arg.type, node.lineno)
+                    raise Exceptions.IncorrectMethodExcepiton(leftClass, op, arg.varType, node.lineno)
             else:
                 raise Exceptions.MissingMethodException(leftClass, op, node.lineno)
         return Bean.VarBean('bool')
@@ -201,9 +203,9 @@ class InitialWalker(ast.NodeVisitor):
         target = self.visit(node.target)
         anIter = self.visit(node.iter)
         
-        if not self.nameSpace[anIter.type].isIterable():
+        if not self.nameSpace[anIter.varType].isIterable():
             raise Exceptions.MissingMethodException(self.nameSpace[anIter], '__iter__', node.lineno)
-        target.type = anIter.nextSubType()
+        target.varType = anIter.nextSubType()
         
         for bod in node.body:
             self.visit(bod)
@@ -350,7 +352,7 @@ class InitialWalker(ast.NodeVisitor):
     
     def visit_UnaryOp(self,node):
         operand = self.visit(node.operand)
-        operandBean = self.nameSpace[operand.type]
+        operandBean = self.nameSpace[operand.varType]
         op = self.visit(node.op)
         if operandBean.hasFun(op):
             return operandBean.funs[op].returnType
@@ -461,4 +463,19 @@ class FunDefWalker(InitialWalker):
     def visit_Return(self, node):
         #may need to look at the other fields in ast.Return but the basic way is this. 
         self.retType = self.visit(node.value)
+        
+        
+    def visit_arguments(self,node):
+        """
+        @node:ast.ast
+        """
+        print('found visit_arguments')
+        #print(ast.dump(node))
+        arguments = parseDocString(ast.get_docstring(self.root))
+        for i in arguments:
+            self.scope.append(i)
+            #Not the correct way to add it to the scope since we can't
+            #remove it when we're done!
+        print(self.scope.vars)
+        print('done visitng_aruments')    
         
