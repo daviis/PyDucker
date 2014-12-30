@@ -37,6 +37,30 @@ class InitialWalker(ast.NodeVisitor):
         elif isinstance(node, list):
             print('got a list', file=sys.stderr)
          
+    def _checkMagicMethod(self, lBean, rBean, op, node):
+        """
+        A helper method for visit_Binop and visit_AugAssign. It does exception raising and namespace checks.
+        @lBean:Bean.VarBean
+        @rBean:Bean.VarBean
+        @op:str
+        @node:ast.ast 
+        """
+        rOp = op[:2] + 'r' + op[2:]
+        #look up if the method is contained in the left, if not then maybe the right
+        #if so, then return the return varType of the function
+        
+        leftClass = self.nameSpace[lBean.varType]
+        rightClass = self.nameSpace[rBean.varType]
+        
+        if leftClass.hasFun(op):
+            if leftClass.funs[op].takes([rBean]):
+                return Bean.VarBean(leftClass.funs[op].returnType)
+        if rightClass.hasFun(rOp):
+            if rightClass.funs[rOp].takes([lBean]):
+                return Bean.VarBean(rightClass.funs[rOp].returnType)
+        else:
+            raise Exceptions.MissingMagicMethodException(leftClass, rightClass, op, rOp, node.lineno) 
+        
     """
     Each individual vist_* will need to check if the result if a list, if so then 
     iterate over it. If not, then a single visit is needed
@@ -72,7 +96,8 @@ class InitialWalker(ast.NodeVisitor):
         
         for varBean in tars:
             if varBean.typesMatch(value):
-                self.scope[varBean.name] = value
+                value.name = varBean.name
+                self.scope[value.name] = value
             else:
                 raise  Exceptions.TypeMisMatchException(varBean.name, varBean.varType, value.varType, node.lineno)
                 
@@ -86,6 +111,19 @@ class InitialWalker(ast.NodeVisitor):
         value = self.visit(node.value)
         ctx = self.visit(node.ctx)
         return value, node.attr
+    
+    def visit_AugAssign(self, node):
+        """
+        @node:ast.ast
+        """
+        target = self.visit(node.target)
+        op = self.visit(node.op)
+        value = self.visit(node.value)
+        
+        if target.name in self.scope:
+            return self._checkMagicMethod(target, value, op, node)
+        else:
+            raise Exceptions.OutOfScopeException(target.name, node.lineno)    
             
     def visit_BinOp(self, node):
         """
@@ -94,22 +132,10 @@ class InitialWalker(ast.NodeVisitor):
         """
         leftBean = self.visit(node.left)
         op = self.visit(node.op)
-        rOp = op[:2] + 'r' + op[2:]
         rightBean = self.visit(node.right)
-        #look up if the method is contained in the left, if not then maybe the right
-        #if so, then return the return varType of the function
         
-        leftClass = self.nameSpace[leftBean.varType]
-        rightClass = self.nameSpace[rightBean.varType]
+        return self._checkMagicMethod(leftBean, rightBean, op, node)
         
-        if leftClass.hasFun(op):
-            if leftClass.funs[op].takes([rightBean]):
-                return Bean.VarBean(leftClass.funs[op].returnType)
-        if rightClass.hasFun(rOp):
-            if rightClass.funs[rOp].takes([leftBean]):
-                return Bean.VarBean(rightClass.funs[rOp].returnType)
-        else:
-            raise Exceptions.MissingMagicMethodException(leftClass, rightClass, op, rOp, node.lineno)
          
     def visit_BoolOp(self, node):
         """
