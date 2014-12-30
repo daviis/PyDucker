@@ -21,15 +21,12 @@ def testOne(aFile):
 
     #parse the string into an ast using the builtin function
     tree = ast.parse(fileCont, aFile)
-    #print ((ast.dump(tree)))
-#     nameSpace = Bean.NameSpaceBean()
+    print ((ast.dump(tree)))
     nameSpace = handMakeNameSpace()
     scope = Bean.ScopeLevelBean()
     
-#     firstWalker = InitialWalker(tree, nameSpace, scope)
     firstWalker = InitialWalker(tree, nameSpace, scope)
     firstWalker.walk()
-#     firstWalker.checkResults()
 
     #do some exception handling that will tell the user what went wrong in their project
 def testAll():
@@ -58,6 +55,6 @@ def testAll():
         print()
     
 if __name__ == '__main__':
-    #testOne("../Test/Correct/SingleMethodDef.py")
+#     testOne("../Test/Correct/For.py")
     testAll()
     print("out main")

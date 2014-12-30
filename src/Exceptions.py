@@ -10,6 +10,7 @@ The exception hierarchy for PyDucker is
          |--- MissingMethodException
               |--- MissingMagicMethodException
               |--- IncorrectMethodException
+        |--- OutOfScopeException
     |--- PyDuckerWarning
          |--- TypeMismatchException
          |--- HeteroCollectionException
@@ -77,6 +78,21 @@ class HeteroCollecionException(PyDuckerWarning):
         ret += "\nVaribale: " + self.varName + " is a heterogeneous collection"
         return ret
     
+
+class OutOfScopeException(PyDuckerError):
+    
+    def __init__(self, someName, lineNo):
+        """
+        @someName:str
+        @lineNo:int
+        """
+        super().__init__(lineNo)
+        self.aName = someName
+        
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\tVariable name: " + self.aName + " is not in scope"
+        return ret
     
     
 class MissingMethodException(PyDuckerError):

@@ -4,6 +4,7 @@ Created on Oct 13, 2014
 @author: daviis01
 '''
 import ast
+import sys
 import Bean
 import Exceptions
 from DocStringParser import parseDocString
@@ -30,12 +31,36 @@ class InitialWalker(ast.NodeVisitor):
         Called if no explicit visitor function exists for a node.
         """
         if isinstance(node, ast.AST):
-            print("Unknown varType of ast node. Need to implement visit_" + node.__class__.__name__)
+            print("Unknown varType of ast node. Need to implement visit_" + node.__class__.__name__, file=sys.stderr)
             super().generic_visit(node)
         #set a break point on this to find where there is a need to list-ify a vist_
         elif isinstance(node, list):
-            print('got a list')
+            print('got a list', file=sys.stderr)
          
+    def _checkMagicMethod(self, lBean, rBean, op, node):
+        """
+        A helper method for visit_Binop and visit_AugAssign. It does exception raising and namespace checks.
+        @lBean:Bean.VarBean
+        @rBean:Bean.VarBean
+        @op:str
+        @node:ast.ast 
+        """
+        rOp = op[:2] + 'r' + op[2:]
+        #look up if the method is contained in the left, if not then maybe the right
+        #if so, then return the return varType of the function
+        
+        leftClass = self.nameSpace[lBean.varType]
+        rightClass = self.nameSpace[rBean.varType]
+        
+        if leftClass.hasFun(op):
+            if leftClass.funs[op].takes([rBean]):
+                return Bean.VarBean(leftClass.funs[op].returnType)
+        if rightClass.hasFun(rOp):
+            if rightClass.funs[rOp].takes([lBean]):
+                return Bean.VarBean(rightClass.funs[rOp].returnType)
+        else:
+            raise Exceptions.MissingMagicMethodException(leftClass, rightClass, op, rOp, node.lineno) 
+        
     """
     Each individual vist_* will need to check if the result if a list, if so then 
     iterate over it. If not, then a single visit is needed
@@ -71,7 +96,8 @@ class InitialWalker(ast.NodeVisitor):
         
         for varBean in tars:
             if varBean.typesMatch(value):
-                self.scope[varBean.name] = value
+                value.name = varBean.name
+                self.scope[value.name] = value
             else:
                 raise  Exceptions.TypeMisMatchException(varBean.name, varBean.varType, value.varType, node.lineno)
                 
@@ -85,6 +111,19 @@ class InitialWalker(ast.NodeVisitor):
         value = self.visit(node.value)
         ctx = self.visit(node.ctx)
         return value, node.attr
+    
+    def visit_AugAssign(self, node):
+        """
+        @node:ast.ast
+        """
+        target = self.visit(node.target)
+        op = self.visit(node.op)
+        value = self.visit(node.value)
+        
+        if target.name in self.scope:
+            return self._checkMagicMethod(self.scope[target.name], value, op, node)
+        else:
+            raise Exceptions.OutOfScopeException(target.name, node.lineno)    
             
     def visit_BinOp(self, node):
         """
@@ -93,22 +132,10 @@ class InitialWalker(ast.NodeVisitor):
         """
         leftBean = self.visit(node.left)
         op = self.visit(node.op)
-        rOp = op[:2] + 'r' + op[2:]
         rightBean = self.visit(node.right)
-        #look up if the method is contained in the left, if not then maybe the right
-        #if so, then return the return varType of the function
         
-        leftClass = self.nameSpace[leftBean.varType]
-        rightClass = self.nameSpace[rightBean.varType]
+        return self._checkMagicMethod(leftBean, rightBean, op, node)
         
-        if leftClass.hasFun(op):
-            if leftClass.funs[op].takes([rightBean]):
-                return Bean.VarBean(leftClass.funs[op].returnType)
-        if rightClass.hasFun(rOp):
-            if rightClass.funs[rOp].takes([leftBean]):
-                return Bean.VarBean(rightClass.funs[rOp].returnType)
-        else:
-            raise Exceptions.MissingMagicMethodException(leftClass, rightClass, op, rOp, node.lineno)
          
     def visit_BoolOp(self, node):
         """
@@ -137,7 +164,10 @@ class InitialWalker(ast.NodeVisitor):
         for arg in node.args:
             args.append(self.visit(arg))
             
-        keywords = self.visit(node.keywords)
+        keywords = []
+        for key in node.keywords:
+            keywords.append(self.visit(key))
+            
         starargs = self.visit(node.starargs)
         kwargs = self.visit(node.kwargs)
         
@@ -205,7 +235,9 @@ class InitialWalker(ast.NodeVisitor):
         
         if not self.nameSpace[anIter.varType].isIterable():
             raise Exceptions.MissingMethodException(self.nameSpace[anIter], '__iter__', node.lineno)
+        
         target.varType = anIter.nextSubType()
+        self.scope.append(target)
         
         for bod in node.body:
             self.visit(bod)
@@ -297,14 +329,15 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.ast
         Store will be a boolean for if the Name is going to be loaded from or stored to the namespace.
-        It will return a tuple that is the store boolean and the VarBean realted to the assign 
+        It will return a VarBean related to the assign 
         """
         store = self.visit(node.ctx)
         if store:
-            if not node.id in self.scope:
-                bean = Bean.VarBean(None, node.id)
-                self.scope.append(bean)
-        return self.scope[node.id]
+                return Bean.VarBean(None, node.id)
+        elif node.id in self.scope:
+            return self.scope[node.id]
+        else:
+            raise Exceptions.OutOfScopeException(node.id, node.lineno)
 
     def visit_NameConstant(self, node):
         """
