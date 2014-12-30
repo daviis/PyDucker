@@ -121,7 +121,7 @@ class InitialWalker(ast.NodeVisitor):
         value = self.visit(node.value)
         
         if target.name in self.scope:
-            return self._checkMagicMethod(target, value, op, node)
+            return self._checkMagicMethod(self.scope[target.name], value, op, node)
         else:
             raise Exceptions.OutOfScopeException(target.name, node.lineno)    
             
@@ -235,7 +235,9 @@ class InitialWalker(ast.NodeVisitor):
         
         if not self.nameSpace[anIter.varType].isIterable():
             raise Exceptions.MissingMethodException(self.nameSpace[anIter], '__iter__', node.lineno)
+        
         target.varType = anIter.nextSubType()
+        self.scope.append(target)
         
         for bod in node.body:
             self.visit(bod)
@@ -327,14 +329,15 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.ast
         Store will be a boolean for if the Name is going to be loaded from or stored to the namespace.
-        It will return a tuple that is the store boolean and the VarBean realted to the assign 
+        It will return a VarBean related to the assign 
         """
         store = self.visit(node.ctx)
         if store:
-            if not node.id in self.scope:
-                bean = Bean.VarBean(None, node.id)
-                self.scope.append(bean)
-        return self.scope[node.id]
+                return Bean.VarBean(None, node.id)
+        elif node.id in self.scope:
+            return self.scope[node.id]
+        else:
+            raise Exceptions.OutOfScopeException(node.id, node.lineno)
 
     def visit_NameConstant(self, node):
         """

@@ -55,6 +55,6 @@ def testAll():
         print()
     
 if __name__ == '__main__':
-#     testOne("../Test/Correct/AccPat.py")
+#     testOne("../Test/Correct/For.py")
     testAll()
     print("out main")
