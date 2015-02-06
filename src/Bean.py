@@ -5,6 +5,7 @@ All classes contained within are wrappers around instance data dealing with ast 
 revised: Jake 2014/11/12
 """
 import sys
+import Exceptions 
 
 class GenericBean():
     
@@ -35,6 +36,18 @@ class ClassDefBean(GenericBean):
         """
         return op in self.funs
     
+    def acceptsFun(self, fun):
+        """
+        @fun:FunDefBean
+        """
+        try:
+            return self.funs[fun.name] == fun 
+        except KeyError:
+            raise Exceptions.MissingMethodException(self, fun.name)
+        except Exceptions.IncorrectMethodExcepiton as ex:
+            ex.cls = self
+            raise ex
+            
     def isIterable(self):
         return "__iter__" in self.funs
     
@@ -65,6 +78,7 @@ class FunDefBean(GenericBean):
     def takes(self, paramList):
         """
         @paramList:str*
+        todo:expand so it can also take optional vars and list/dicts
         """
         if not len(paramList) == len(self.typesparams):
             return False
@@ -72,6 +86,16 @@ class FunDefBean(GenericBean):
             if not paramList[idx].varType == self.typesparams[idx]:
                 return False
         return True
+
+    def __eq__(self, funBean):
+        """
+        @funBean:FunDefBean
+        Like takes but uses a fundefbean instead of a string
+        """
+        if self.takes(funBean.typesparams):
+            return True
+        else:
+            raise Exceptions.IncorrectMethodExcepiton(funBean.name, funBean.typesparams)
 
 class VarBean(GenericBean):
     
@@ -186,3 +210,33 @@ class NameSpaceBean(ScopeLevelBean):
         else:
             return None
         
+    def checkCreate(self, clsName, args=None, kwargs=None):
+        """
+        @clsName:str
+        @args:VarBean*
+        @kwargs:str**
+        """
+        return self.vars[clsName].checkCreate(args, kwargs)
+    
+    def checkMagicMethod(self, lbean, rbean, op):
+        """
+        A method for visit_Binop and visit_AugAssign. It does exception raising and namespace checks.
+        @lBean:VarBean
+        @rBean:VarBean
+        @op:str
+        """
+        rOp = op[:2] + 'r' + op[2:]
+        fstFun = FunDefBean([rbean], None, op)
+        sndFun = FunDefBean([lbean], None, rOp)
+        
+        #look up if the method is contained in the left, if not then maybe the right
+        #if so, then return the return varType of the function
+        #if not, raise missingMagicMethodException
+        for bean, fun in ((lbean, fstFun), (rbean, sndFun)):
+            try:
+                resultType = bean.acceptsFun(fun)
+                return resultType
+            except Exceptions.MissingMethodException:
+                pass
+        raise Exceptions.MissingMagicMethodException(lbean, rbean, op, rOp)
+            
