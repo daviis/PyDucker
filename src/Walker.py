@@ -36,31 +36,7 @@ class InitialWalker(ast.NodeVisitor):
         #set a break point on this to find where there is a need to list-ify a vist_
         elif isinstance(node, list):
             print('got a list', file=sys.stderr)
-         
-    def _checkMagicMethod(self, lBean, rBean, op, node):
-        """
-        A helper method for visit_Binop and visit_AugAssign. It does exception raising and namespace checks.
-        @lBean:Bean.VarBean
-        @rBean:Bean.VarBean
-        @op:str
-        @node:ast.ast 
-        """
-        rOp = op[:2] + 'r' + op[2:]
-        #look up if the method is contained in the left, if not then maybe the right
-        #if so, then return the return varType of the function
-        
-        leftClass = self.nameSpace[lBean.varType]
-        rightClass = self.nameSpace[rBean.varType]
-        
-        if leftClass.hasFun(op):
-            if leftClass.funs[op].takes([rBean]):
-                return Bean.VarBean(leftClass.funs[op].returnType)
-        if rightClass.hasFun(rOp):
-            if rightClass.funs[rOp].takes([lBean]):
-                return Bean.VarBean(rightClass.funs[rOp].returnType)
-        else:
-            raise Exceptions.MissingMagicMethodException(leftClass, rightClass, op, rOp, node.lineno) 
-        
+                 
     """
     Each individual vist_* will need to check if the result if a list, if so then 
     iterate over it. If not, then a single visit is needed
@@ -120,9 +96,13 @@ class InitialWalker(ast.NodeVisitor):
         op = self.visit(node.op)
         value = self.visit(node.value)
         
-        if target.name in self.scope:
-            return self._checkMagicMethod(self.scope[target.name], value, op, node)
-        else:
+        try:
+            resultType = self.nameSpace.checkMagicMethod(target, value, op, node)
+            return resultType
+        except Exceptions.MissingMagicMethodException as ex:
+            ex.lineno = node.lineno
+            raise ex
+        except KeyError:
             raise Exceptions.OutOfScopeException(target.name, node.lineno)    
             
     def visit_BinOp(self, node):
@@ -134,8 +114,12 @@ class InitialWalker(ast.NodeVisitor):
         op = self.visit(node.op)
         rightBean = self.visit(node.right)
         
-        return self._checkMagicMethod(leftBean, rightBean, op, node)
-        
+        try:
+            resultType = self.nameSpace.checkMagicMethod(leftBean, rightBean, op)
+            return resultType
+        except Exceptions.MissingMagicMethodException as ex:
+            ex.lineno = node.lineno
+            raise ex
          
     def visit_BoolOp(self, node):
         """

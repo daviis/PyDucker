@@ -117,7 +117,7 @@ class MissingMethodException(PyDuckerError):
     
 class MissingMagicMethodException(MissingMethodException):
     
-    def __init__(self, leftOne, rightOne, aOp, aRop, lineNo):
+    def __init__(self, leftOne, rightOne, aOp, aRop, lineNo=-1):
         """
         @left:ClassDefBean
         @right:ClassDefBean
@@ -139,7 +139,7 @@ class MissingMagicMethodException(MissingMethodException):
     
 class IncorrectMethodExcepiton(MissingMethodException):
     
-    def __init__(self, aCls, aFun, someArgs, lineNo):
+    def __init__(self, aFun, someArgs, lineNo=-1, aCls=None):
         """
         @aCls:ClassDefBean
         @aFun:str
