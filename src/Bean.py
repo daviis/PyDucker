@@ -68,7 +68,7 @@ class FunDefBean(GenericBean):
         """
         self.partOfClass = False
         self.typesparams = paramsTypes
-        if paramsTypes[0] == 'self':
+        if paramsTypes[0].name == 'self':
             self.partOfClass = True
             self.typesparams = paramsTypes[1:]
         self.returnType = VarBean(returntype)
