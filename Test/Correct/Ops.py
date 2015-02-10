@@ -28,3 +28,5 @@ not 1
 1==1
 1!=1
 'hello'[0]
+'hello'[1:2]
+'hello'['e']
