@@ -166,7 +166,7 @@ class InitialWalker(ast.NodeVisitor):
             valueList.append(self.visit(val))
             
         for aType in valueList:
-            if not self.nameSpace[aType].isBoolean(): #make sure that object can be evaluated as a boolean
+            if not self.nameSpace[aType.varType].isBoolean(): #make sure that object can be evaluated as a boolean
                 raise Exceptions.MissingMagicMethodException(node.lineno, self.nameSpace[aType]) #need to make a unop magic method excception
         return 'bool'
     
@@ -231,6 +231,12 @@ class InitialWalker(ast.NodeVisitor):
     def visit_Dict(self, node):
         print("need to figure out if we can tell what a dicts internals look like")
         return Bean.VarBean('dict')
+    
+    def visit_Div(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__div__"
     
     def visit_Eq(self, node):
         """
@@ -369,6 +375,12 @@ class InitialWalker(ast.NodeVisitor):
         """
         return Bean.VarBean(type(node.value).__name__)
         
+    def visit_Not(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__bool__"
+        
     def visit_NotEq(self, node):
         """
         @node:ast.ast
@@ -410,6 +422,12 @@ class InitialWalker(ast.NodeVisitor):
     def visit_Str(self, node):
         return Bean.VarBean('str')
     
+    def visit_Sub(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__sub__"
+    
     def visit_UAdd(self,node):
         return('__pos__')
     
@@ -421,8 +439,8 @@ class InitialWalker(ast.NodeVisitor):
             return operandBean.funs[op].returnType
         else:
             #Need an exception for unary ops
-            #Exceptions.MissingMagicMethodException(operandBean.name, op, node.lineno)
-            print('Error found when trying to '+ op + ' on ' + operand +'.')#,file = sys.stderr)
+            Exceptions.MissingMagicMethodException(operandBean.name, op, node.lineno)
+#             print('Error found when trying to '+ op + ' on ' + operand +'.')#,file = sys.stderr)
 
     def visit_USub(self,node):
         return('__neg__')

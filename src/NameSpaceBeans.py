@@ -13,6 +13,7 @@ def handMakeNameSpace():
     nameSpace = NameSpaceBean()
     intClass = ClassDefBean('int', None)
     intClass.funs['__add__'] = FunDefBean([VarBean('int')],  VarBean('int'), '__add__')
+    intClass.funs['__div__'] = FunDefBean([VarBean('int')],  VarBean('int'), '__div__')
     intClass.funs['__bool__'] = FunDefBean([] , VarBean('int'), '__bool__')
     intClass.funs['__eq__'] = FunDefBean([VarBean('int')], VarBean('bool') , '__eq__')
     intClass.funs['__float__'] = FunDefBean([], VarBean('float'), '__float__')
