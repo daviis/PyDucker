@@ -121,6 +121,24 @@ class InitialWalker(ast.NodeVisitor):
             ex.lineno = node.lineno
             raise ex
          
+    def visit_BitAnd(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__and__"
+    
+    def visit_BitOr(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__or__"
+    
+    def visit_BitXor(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__xor__"
+         
     def visit_BoolOp(self, node):
         """
         @node:ast.ast
@@ -302,6 +320,12 @@ class InitialWalker(ast.NodeVisitor):
         """
         return False
     
+    def visit_LShift(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__lshift__"
+    
     def visit_Module(self, node):
         for bod in node.body:
             self.visit(bod)
@@ -353,6 +377,12 @@ class InitialWalker(ast.NodeVisitor):
     def visit_Return(self, node):
         #may need to look at the other fields in ast.Return but the basic way is this. 
         return self.visit(node.value)
+    
+    def visit_RShift(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__rshift__"
             
     def visit_Store(self, node):
         """

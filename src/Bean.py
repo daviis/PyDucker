@@ -62,15 +62,12 @@ class FunDefBean(GenericBean):
     
     def __init__(self, paramsTypes, returntype, fundefname):
         """
-        @paramsTypes:*str
-        @returnType:str
+        @paramsTypes:*VarBean
+        @returnType:VarBean
         @fundefname:str
         """
         self.partOfClass = False
         self.typesparams = paramsTypes
-        if paramsTypes[0].name == 'self':
-            self.partOfClass = True
-            self.typesparams = paramsTypes[1:]
         self.returnType = VarBean(returntype)
         self.name = fundefname
         self.numparams = len(self.typesparams) # this should be assigned after creation to be length of self.typesparams
@@ -114,7 +111,7 @@ class VarBean(GenericBean):
         self.compType = []
         
     def __eq__(self, other):
-        return self.varType == other.varType
+        return self.varType == other
     
     def nextSubType(self):
         if self.homo:
