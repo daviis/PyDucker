@@ -21,9 +21,6 @@ class InitialWalker(ast.NodeVisitor):
         self.scope = scopeBean
         
     def walk(self):
-        self._first_visit()
-        
-    def _first_visit(self):
         self.visit(self.root)
         
     def generic_visit(self, node):
@@ -234,6 +231,12 @@ class InitialWalker(ast.NodeVisitor):
         """
         return self.visit(node.value)
     
+    def visit_FloorDiv(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__floordiv__"
+    
     def visit_For(self, node):
         """
         @node:ast.ast
@@ -281,6 +284,12 @@ class InitialWalker(ast.NodeVisitor):
         In is almost the same as asking if someting __contains__ something.
         '''
         return '__contains__'
+    
+    def visit_Index(self, node):
+        """
+        @node:ast.ast
+        """
+        return self.visit(node.value)
 
     def visit_Invert(self,node):
         """
@@ -307,18 +316,6 @@ class InitialWalker(ast.NodeVisitor):
             
         return bean
     
-    def visit_Lt(self, node):
-        """
-        @node:ast.ast
-        """
-        return "__lt__"
-    
-    def visit_LtE(self, node):
-        """
-        @node:ast.ast
-        """
-        return "__le__"
-            
     def visit_Load(self, node):
         """
         @node:ast.ast
@@ -331,6 +328,24 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return "__lshift__"
+    
+    def visit_Lt(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__lt__"
+    
+    def visit_LtE(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__le__"
+    
+    def visit_Mod(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__mod__"
     
     def visit_Module(self, node):
         for bod in node.body:
@@ -372,6 +387,9 @@ class InitialWalker(ast.NodeVisitor):
         return "__ne__"
              
     def visit_Num(self, node):
+        """
+        @node:ast.ast
+        """
         return Bean.VarBean(type(node.n).__name__)
     
     def visit_Or(self, node):
@@ -385,6 +403,12 @@ class InitialWalker(ast.NodeVisitor):
         visit_pass has pass because pass does not do anything
         '''
         self.visit(node)
+        
+    def visit_Pow(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__pow__"
 
     def visit_Return(self, node):
         #may need to look at the other fields in ast.Return but the basic way is this. 
@@ -411,6 +435,15 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return "__sub__"
+    
+    def visit_Subscript(self, node):
+        """
+        @node:ast.ast
+        """
+        value = self.visit(node.value)
+        slice = self.visit(node.slice)
+        ctx = self.visit(node.ctx)
+        return 
     
     def visit_UAdd(self,node):
         return('__pos__')
