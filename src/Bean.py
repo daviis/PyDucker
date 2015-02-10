@@ -130,8 +130,7 @@ class VarBean(GenericBean):
                 return self.varType == other.varType
             else:
                 return True #currently the value of self.varType == None 
-    
-
+            
 
 class ScopeLevelBean(GenericBean):
     
@@ -231,7 +230,7 @@ class NameSpaceBean(ScopeLevelBean):
         #if not, raise missingMagicMethodException
         for bean, fun in ((lbean, fstFun), (rbean, sndFun)):
             try:
-                resultType = bean.acceptsFun(fun)
+                resultType = self.vars[bean.varType].acceptsFun(fun)
                 return resultType
             except Exceptions.MissingMethodException:
                 pass

@@ -55,6 +55,6 @@ def testAll():
         print()
     
 if __name__ == '__main__':
-    testOne("../Test/Correct/Bin.py")
+    testOne("../Test/Incorrect/BinOp.py")
 #     testAll()
     print("out main")

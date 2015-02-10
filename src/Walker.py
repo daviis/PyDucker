@@ -99,11 +99,11 @@ class InitialWalker(ast.NodeVisitor):
         try:
             resultType = self.nameSpace.checkMagicMethod(target, value, op, node)
             return resultType
-        except Exceptions.MissingMagicMethodException as ex:
-            ex.lineno = node.lineno
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
             raise ex
         except KeyError:
-            raise Exceptions.OutOfScopeException(target.name, node.lineno)    
+            raise Exceptions.OutOfScopeException(target.name, lineNo = node.lineno)    
             
     def visit_BinOp(self, node):
         """
@@ -117,8 +117,8 @@ class InitialWalker(ast.NodeVisitor):
         try:
             resultType = self.nameSpace.checkMagicMethod(leftBean, rightBean, op)
             return resultType
-        except Exceptions.MissingMagicMethodException as ex:
-            ex.lineno = node.lineno
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
             raise ex
          
     def visit_BitAnd(self, node):
@@ -151,7 +151,7 @@ class InitialWalker(ast.NodeVisitor):
             
         for aType in valueList:
             if not self.nameSpace[aType].isBoolean(): #make sure that object can be evaluated as a boolean
-                raise Exceptions.MissingMagicMethodException(node.lineno, self.nameSpace[aType]) #need to make a unop magic method excception
+                raise Exceptions.MissingMagicMethodException( self.nameSpace[aType], lineNo = node.lineno) #need to make a unop magic method excception
         return 'bool'
     
     def visit_Call(self, node):

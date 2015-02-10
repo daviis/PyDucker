@@ -97,7 +97,7 @@ class OutOfScopeException(PyDuckerError):
     
 class MissingMethodException(PyDuckerError):
     
-    def __init__(self, aCls, aFun, lineNo):
+    def __init__(self, aCls, aFun, lineNo=-1):
         """
         @aCls:ClassDefBean
         @aFun:str
@@ -110,7 +110,7 @@ class MissingMethodException(PyDuckerError):
     def __str__(self):
         ret = super().__str__()
         ret += "\n\tCan not find method: " + self.fun
-        ret += "\n\tIn class: " + self.cls.name
+        ret += "\n\tIn class: " + self.cls.varType
         return ret
     
     
@@ -131,8 +131,8 @@ class MissingMagicMethodException(MissingMethodException):
         
     def __str__(self):
         ret = super().__str__()
-        ret += " that takes: " + self.cls2.name
-        ret += "\n\tOr can not find method: " + self.rop + " \n\tIn class: " + self.cls2.name + " that takes: " + self.cls.name 
+        ret += " that takes: " + self.cls2.varType
+        ret += "\n\tOr can not find method: " + self.rop + " \n\tIn class: " + self.cls2.varType + " that takes: " + self.cls.varType 
         return ret
     
     
