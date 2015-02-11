@@ -94,7 +94,7 @@ class InitialWalker(ast.NodeVisitor):
         value = self.visit(node.value)
         
         try:
-            resultType = self.nameSpace.checkMagicMethod(target, value, op, node)
+            resultType = self.nameSpace.checkMagicMethod(target, value, op)
             return resultType
         except Exceptions.PyDuckerException as ex:
             ex.lineNum = node.lineno
@@ -176,9 +176,9 @@ class InitialWalker(ast.NodeVisitor):
             if clsBean.funs[funcName].takes(args):
                 return clsBean.funs[funcName].returnType
             else:
-                raise Exceptions.IncorrectMethodExcepiton(clsBean, funcName, args, node.lineno)
+                raise Exceptions.IncorrectMethodExcepiton(funcName, args, node.lineno, aCls=cls)
         else:
-            raise Exceptions.MissingMethodException(clsBean, funcName, node.lineno)
+            raise Exceptions.MissingMethodException(cls, funcName, node.lineno)
 
     def visit_Compare(self, node):
         """
@@ -285,11 +285,6 @@ class InitialWalker(ast.NodeVisitor):
         '''
         return '__contains__'
     
-    def visit_Index(self, node):
-        """
-        @node:ast.ast
-        """
-        return self.visit(node.value)
 
     def visit_Invert(self,node):
         """
@@ -361,13 +356,16 @@ class InitialWalker(ast.NodeVisitor):
         It will return a VarBean related to the assign 
         """
         store = self.visit(node.ctx)
-        if store:
+        
+        try:
+            scopedVarBean = self.scope[node.id]
+            return scopedVarBean
+        except KeyError:
+            if store:
                 return Bean.VarBean(None, node.id)
-        elif node.id in self.scope:
-            return self.scope[node.id]
-        else:
-            raise Exceptions.OutOfScopeException(node.id, node.lineno)
-
+            else:
+                raise Exceptions.OutOfScopeException(node.id, node.lineno)
+            
     def visit_NameConstant(self, node):
         """
         @node:ast.ast
@@ -435,15 +433,6 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return "__sub__"
-    
-    def visit_Subscript(self, node):
-        """
-        @node:ast.ast
-        """
-        value = self.visit(node.value)
-        slice = self.visit(node.slice)
-        ctx = self.visit(node.ctx)
-        return 
     
     def visit_UAdd(self,node):
         return('__pos__')
