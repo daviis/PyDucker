@@ -30,13 +30,19 @@ def testOne(aFile):
 
     #do some exception handling that will tell the user what went wrong in their project
 def testAll():
-    files = ['../Test/Correct/UnOp.py','../Test/Correct/StoreLoad.py','../Test/Correct/For.py','../Test/Correct/Call.py','../Test/Correct/BinOp.py','../Test/Correct/add.py','../Test/Correct/AccPat.py'] 
+    #Non-working tests are commented out    
+    files = ['../Test/Correct/AccPat.py',
+             '../Test/Correct/Call.py',
+             '../Test/Correct/For.py',
+             #'../Test/Correct/If.py',
+             #'../Test/Correct/MethodDef.py',
+             #'../Test/Correct/MultiClassMultiFun.py',
+             '../Test/Correct/Ops.py'
+             '../Test/Correct/SliceIndex.py',
+             '../Test/Correct/StoreLoad.py',
+             ] 
     
-    #Non-working tests
-    #'../Test/Correct/SingleMethodDef.py',
-    #'../Test/Correct/MultiClassMultiFun.py',
-    #'../Test/Correct/MethodDef.py',
-    #'../Test/Correct/If.py',
+    
     
     for i in files:
         aFile = i
