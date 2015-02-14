@@ -97,14 +97,14 @@ class OutOfScopeException(PyDuckerError):
     
 class MissingMethodException(PyDuckerError):
     
-    def __init__(self, aCls, aFun, lineNo=-1):
+    def __init__(self, aVar, aFun, lineNo=-1):
         """
-        @aCls:ClassDefBean
+        @aCls:VarBean
         @aFun:str
         @lineNu:int
         """
         super().__init__(lineNo)
-        self.cls = aCls
+        self.cls = aVar
         self.fun = aFun
         
     def __str__(self):
@@ -119,8 +119,8 @@ class MissingMagicMethodException(MissingMethodException):
     
     def __init__(self, leftOne, rightOne, aOp, aRop, lineNo=-1):
         """
-        @left:ClassDefBean
-        @right:ClassDefBean
+        @left:VarBean
+        @right:VarBean
         @op:str
         @rop:str
         @lineNu:int
@@ -141,7 +141,7 @@ class IncorrectMethodExcepiton(MissingMethodException):
     
     def __init__(self, aFun, someArgs, lineNo=-1, aCls=None):
         """
-        @aCls:ClassDefBean
+        @aCls:VarBean
         @aFun:str
         @someArgs:^str
         @lineNo:int

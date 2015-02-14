@@ -21,9 +21,6 @@ class InitialWalker(ast.NodeVisitor):
         self.scope = scopeBean
         
     def walk(self):
-        self._first_visit()
-        
-    def _first_visit(self):
         self.visit(self.root)
         
     def generic_visit(self, node):
@@ -97,7 +94,7 @@ class InitialWalker(ast.NodeVisitor):
         value = self.visit(node.value)
         
         try:
-            resultType = self.nameSpace.checkMagicMethod(target, value, op, node)
+            resultType = self.nameSpace.checkMagicMethod(target, value, op)
             return resultType
         except Exceptions.PyDuckerException as ex:
             ex.lineNum = node.lineno
@@ -150,8 +147,8 @@ class InitialWalker(ast.NodeVisitor):
             valueList.append(self.visit(val))
             
         for aType in valueList:
-            if not self.nameSpace[aType].isBoolean(): #make sure that object can be evaluated as a boolean
-                raise Exceptions.MissingMagicMethodException( self.nameSpace[aType], lineNo = node.lineno) #need to make a unop magic method excception
+            if not self.nameSpace[aType.varType].isBoolean(): #make sure that object can be evaluated as a boolean
+                raise Exceptions.MissingMagicMethodException(node.lineno, self.nameSpace[aType]) #need to make a unop magic method excception
         return 'bool'
     
     def visit_Call(self, node):
@@ -179,9 +176,9 @@ class InitialWalker(ast.NodeVisitor):
             if clsBean.funs[funcName].takes(args):
                 return clsBean.funs[funcName].returnType
             else:
-                raise Exceptions.IncorrectMethodExcepiton(clsBean, funcName, args, node.lineno)
+                raise Exceptions.IncorrectMethodExcepiton(funcName, args, node.lineno, aCls=cls)
         else:
-            raise Exceptions.MissingMethodException(clsBean, funcName, node.lineno)
+            raise Exceptions.MissingMethodException(cls, funcName, node.lineno)
 
     def visit_Compare(self, node):
         """
@@ -216,6 +213,12 @@ class InitialWalker(ast.NodeVisitor):
         print("need to figure out if we can tell what a dicts internals look like")
         return Bean.VarBean('dict')
     
+    def visit_Div(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__div__"
+    
     def visit_Eq(self, node):
         """
         @node:ast.ast        
@@ -227,6 +230,12 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return self.visit(node.value)
+    
+    def visit_FloorDiv(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__floordiv__"
     
     def visit_For(self, node):
         """
@@ -275,6 +284,7 @@ class InitialWalker(ast.NodeVisitor):
         In is almost the same as asking if someting __contains__ something.
         '''
         return '__contains__'
+    
 
     def visit_Invert(self,node):
         """
@@ -301,18 +311,6 @@ class InitialWalker(ast.NodeVisitor):
             
         return bean
     
-    def visit_Lt(self, node):
-        """
-        @node:ast.ast
-        """
-        return "__lt__"
-    
-    def visit_LtE(self, node):
-        """
-        @node:ast.ast
-        """
-        return "__le__"
-            
     def visit_Load(self, node):
         """
         @node:ast.ast
@@ -325,6 +323,24 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return "__lshift__"
+    
+    def visit_Lt(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__lt__"
+    
+    def visit_LtE(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__le__"
+    
+    def visit_Mod(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__mod__"
     
     def visit_Module(self, node):
         for bod in node.body:
@@ -340,18 +356,27 @@ class InitialWalker(ast.NodeVisitor):
         It will return a VarBean related to the assign 
         """
         store = self.visit(node.ctx)
-        if store:
+        
+        try:
+            scopedVarBean = self.scope[node.id]
+            return scopedVarBean
+        except KeyError:
+            if store:
                 return Bean.VarBean(None, node.id)
-        elif node.id in self.scope:
-            return self.scope[node.id]
-        else:
-            raise Exceptions.OutOfScopeException(node.id, node.lineno)
-
+            else:
+                raise Exceptions.OutOfScopeException(node.id, node.lineno)
+            
     def visit_NameConstant(self, node):
         """
         @node:ast.ast
         """
         return Bean.VarBean(type(node.value).__name__)
+        
+    def visit_Not(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__bool__"
         
     def visit_NotEq(self, node):
         """
@@ -360,6 +385,9 @@ class InitialWalker(ast.NodeVisitor):
         return "__ne__"
              
     def visit_Num(self, node):
+        """
+        @node:ast.ast
+        """
         return Bean.VarBean(type(node.n).__name__)
     
     def visit_Or(self, node):
@@ -373,6 +401,12 @@ class InitialWalker(ast.NodeVisitor):
         visit_pass has pass because pass does not do anything
         '''
         self.visit(node)
+        
+    def visit_Pow(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__pow__"
 
     def visit_Return(self, node):
         #may need to look at the other fields in ast.Return but the basic way is this. 
@@ -394,6 +428,12 @@ class InitialWalker(ast.NodeVisitor):
     def visit_Str(self, node):
         return Bean.VarBean('str')
     
+    def visit_Sub(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__sub__"
+    
     def visit_UAdd(self,node):
         return('__pos__')
     
@@ -405,8 +445,8 @@ class InitialWalker(ast.NodeVisitor):
             return operandBean.funs[op].returnType
         else:
             #Need an exception for unary ops
-            #Exceptions.MissingMagicMethodException(operandBean.name, op, node.lineno)
-            print('Error found when trying to '+ op + ' on ' + operand +'.')#,file = sys.stderr)
+            Exceptions.MissingMagicMethodException(operandBean.name, op, node.lineno)
+#             print('Error found when trying to '+ op + ' on ' + operand +'.')#,file = sys.stderr)
 
     def visit_USub(self,node):
         return('__neg__')
