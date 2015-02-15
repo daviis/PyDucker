@@ -38,7 +38,17 @@ class InitialWalker(ast.NodeVisitor):
     Each individual vist_* will need to check if the result if a list, if so then 
     iterate over it. If not, then a single visit is needed
     """
-
+    
+    def visit_Delete(self, node):
+        """
+        @node:ast.ast
+        Testing this one
+        """
+        print(ast.dump(node))
+        print(node.targets)
+        for i in node.targets:
+            self.visit(i)
+        print('visited')
         
     def visit_Add(self, node):
         """
