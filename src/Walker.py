@@ -225,6 +225,18 @@ class InitialWalker(ast.NodeVisitor):
         """
         return "__eq__"
     
+    def visit_ExceptHandler(self, node):
+        """
+        @node:ast.ast
+        todo maybe need to pop the the exception name from scope after this call
+        """
+        typeBean = self.visit(node.type)
+        typeBean.name = node.name
+        self.scope.append(typeBean) #name will be a str var name that the exception will take on, we will need to add it to the scope then remove it from scope when the call completes.
+        for bod in node.body:
+            self.visit(bod)
+        
+    
     def visit_Expr(self, node):
         """
         @node:ast.ast
@@ -407,8 +419,18 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return "__pow__"
-
+    
+    def visit_Raise(self, node):
+        """
+        @node:ast.ast
+        """
+        raisedType = self.visit(node.exc)
+        self.visit(node.cause) #todo figure out what this is susposed to do. The syntax is "raise x from y"
+    
     def visit_Return(self, node):
+        """
+        @node:ast.ast
+        """
         #may need to look at the other fields in ast.Return but the basic way is this. 
         return self.visit(node.value)
     
@@ -433,6 +455,19 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return "__sub__"
+    
+    def visit_Try(self, node):
+        """
+        @node:ast.ast
+        """
+        for bod in node.body:
+            self.visit(bod)
+        for hand in node.handlers:
+            self.visit(hand)
+        for orelse in node.orelse:
+            self.visit(orelse)
+        for final in node.finalbody:
+            self.visit(final)
     
     def visit_UAdd(self,node):
         return('__pos__')
