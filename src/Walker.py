@@ -43,6 +43,8 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         print(ast.dump(node))
+        print(node.s)
+        return Bean.VarBean('bytes')
  
         
     def visit_Add(self, node):
