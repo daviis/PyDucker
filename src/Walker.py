@@ -165,8 +165,11 @@ class InitialWalker(ast.NodeVisitor):
             valueList.append(self.visit(val))
             
         for aType in valueList:
-            if not self.nameSpace[aType.varType].isBoolean(): #make sure that object can be evaluated as a boolean
-                raise Exceptions.MissingMagicMethodException(node.lineno, self.nameSpace[aType]) #need to make a unop magic method excception
+            try:
+                self.nameSpace.duckBool(aType) #make sure that object can be evaluated as a boolean, if it isn't an internal exception is raised
+            except Exception.PyDuckerException as ex:
+                ex.lineNum = node.lineno
+                raise ex
         return 'bool'
     
     def visit_Call(self, node):
@@ -274,8 +277,11 @@ class InitialWalker(ast.NodeVisitor):
         target = self.visit(node.target)
         anIter = self.visit(node.iter)
         
-        if not self.nameSpace[anIter.varType].isIterable():
-            raise Exceptions.MissingMethodException(self.nameSpace[anIter], '__iter__', node.lineno)
+        try:
+            self.nameSpace.duckIter(anIter)
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
+            raise ex
         
         target.varType = anIter.nextSubType()
         self.scope.append(target)
