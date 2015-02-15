@@ -7,7 +7,7 @@ Created Nov-25-2014
 A module that hand makes a namespace which will be used in early testing of PyDucker walking. It generates ClassDefBeans for ints and strs and some of the
 FunDefBeans that are inside them.
 """
-from Bean import NameSpaceBean, ClassDefBean , FunDefBean, VarBean
+from Bean import NameSpaceBean, ScopeLevelBean, ClassDefBean , FunDefBean, VarBean
 
 def handMakeNameSpace():
     nameSpace = NameSpaceBean()
@@ -83,4 +83,15 @@ def handMakeNameSpace():
     dictClass = ClassDefBean('dict' , None)
     dictClass.funs['__contains__'] = FunDefBean([VarBean('obj')], VarBean('bool'), '__contains__')
     nameSpace.put(dictClass.name, dictClass) 
+    
+    exceptionClass = ClassDefBean("Exception", None)
+    nameSpace.put(exceptionClass.name, exceptionClass)
+    
     return nameSpace
+
+def handMakeScope():
+    scope = ScopeLevelBean()
+    
+    scope.append(VarBean("Exception", "ValueError"))
+    
+    return scope

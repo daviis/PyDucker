@@ -11,7 +11,7 @@ import sys
 import Bean
 import Exceptions
 from Walker import InitialWalker
-from NameSpaceBeans import handMakeNameSpace
+from NameSpaceBeans import handMakeNameSpace, handMakeScope
 
 def testOne(aFile):
     """
@@ -26,7 +26,7 @@ def testOne(aFile):
     tree = ast.parse(fileCont, aFile)
     print ((ast.dump(tree)))
     nameSpace = handMakeNameSpace()
-    scope = Bean.ScopeLevelBean()
+    scope = handMakeScope()
     
     firstWalker = InitialWalker(tree, nameSpace, scope)
     firstWalker.walk()
@@ -43,6 +43,7 @@ def testAllCorrect():
              '../Test/Correct/Ops.py',
              '../Test/Correct/SliceIndex.py',
              '../Test/Correct/StoreLoad.py',
+             '../Test/Correct/tryRaiseExcept.py'
              ]
     _testAll(files)
     
@@ -72,7 +73,7 @@ def _testAll(listOfFiles):
 
         try:
             nameSpace = handMakeNameSpace()
-            scope = Bean.ScopeLevelBean()
+            scope = handMakeScope()
             firstWalker = InitialWalker(tree, nameSpace, scope)
             firstWalker.walk()
         except Exceptions.PyDuckerException as ex:
@@ -82,7 +83,7 @@ def _testAll(listOfFiles):
             print()
     
 if __name__ == '__main__':
-#     testOne("../Test/Incorrect/StrPlusInt.py")
+    testOne("../Test/Correct/tryRaiseExcept.py")
 #     testAllCorrect()
-    testAllIncorrect()
+#     testAllIncorrect()
     print("out main")
