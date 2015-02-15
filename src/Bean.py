@@ -236,6 +236,12 @@ class NameSpaceBean(ScopeLevelBean):
         Same as duckbool
         """
         self.vars[varBean.varType].isString()
+        
+    def duckIter(self, varBean):
+        """
+        @varBean:VarBean
+        """
+        self.vars[varBean.varType].isIterable()
     
     def checkMagicMethod(self, lbean, rbean, op):
         """
