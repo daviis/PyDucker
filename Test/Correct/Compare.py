@@ -3,4 +3,4 @@
  
 assert False, 1+2
 
-1 if 2 else 3
+a = 1 if 2 else 3
