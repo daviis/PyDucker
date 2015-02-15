@@ -43,32 +43,7 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         print(ast.dump(node))
-    def visit_Delete(self, node):
-        """
-        @node:ast.ast
-        Much like visit_Assign but the opposite
-        """
-        
-        tars = []
-        for target in node.targets:
-            tars.append(self.visit(target)) 
-        #Each thing in tars is a variable
-        print(self.scope.vars)
-        for varBean in tars:
-            if varBean.name in self.scope:
-                del self.scope[varBean.name]
-            #else:
-                #raise  Exceptions.TypeMisMatchException(varBean.name, varBean.varType, value.varType, node.lineno)     
-        print(self.scope.vars)
-        
-    def visit_Del(self, node):
-        """
-        @node:ast.ast
-        I think this just says it's doing something?
-        it doesn't reference anything else inside itself
-        """
-        return
-        
+ 
         
     def visit_Add(self, node):
         """
@@ -273,6 +248,31 @@ class InitialWalker(ast.NodeVisitor):
         This node also does nothing.
         """
         return
+    
+    def visit_Del(self, node):
+        """
+        @node:ast.ast
+        Doesn't do anything
+        May come into play when deleting via splice and index
+        instead of a full list
+        """
+        return       
+    
+    def visit_Delete(self, node):
+        """
+        @node:ast.ast
+        Much like visit_Assign instead of adding we remove it from the scope
+        """  
+        tars = []
+        for target in node.targets:
+            tars.append(self.visit(target)) 
+            
+        for varBean in tars:
+            if varBean.name in self.scope:
+                del self.scope[varBean.name]
+            else: #Very small chance to actually get here
+                #the visit_Name function will catch out of scope first
+                raise Exceptions.OutOfScopeException(target.name, lineNo = node.lineno)
     
     def visit_Dict(self, node):
         print("need to figure out if we can tell what a dicts internals look like")
