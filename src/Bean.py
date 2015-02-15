@@ -41,7 +41,8 @@ class ClassDefBean(GenericBean):
         @fun:FunDefBean
         """
         try:
-            return self.funs[fun.name] == fun 
+            if self.funs[fun.name] == fun:
+                return self.funs[fun.name].returnType 
         except KeyError:
             raise Exceptions.MissingMethodException(self, fun.name)
         except Exceptions.IncorrectMethodExcepiton as ex:
@@ -49,13 +50,21 @@ class ClassDefBean(GenericBean):
             raise ex
             
     def isIterable(self):
-        return "__iter__" in self.funs
-    
+        if not "__iter__" in self.funs:
+            raise Exceptions.MissingMethodException(VarBean(self.name), "__iter__")
+
     def isCallable(self):
-        return "__call__" in self.funs
+        if not "__call__" in self.funs:
+            raise Exceptions.MissingMethodException(VarBean(self.name), "__call__")
+    
+    def isString(self):
+        if not "__str__" in self.funs:
+            raise Exceptions.MissingMethodException(VarBean(self.name), "__str__")
     
     def isBoolean(self):
-        return "__bool__" in self.funs
+        if not "__bool__" in self.funs:
+            raise Exceptions.MissingMethodException(VarBean(self.name), "__bool__")
+            
 
 
 class FunDefBean(GenericBean):
@@ -68,7 +77,7 @@ class FunDefBean(GenericBean):
         """
         self.partOfClass = False
         self.typesparams = paramsTypes
-        self.returnType = VarBean(returntype)
+        self.returnType = returntype
         self.name = fundefname
         self.numparams = len(self.typesparams) # this should be assigned after creation to be length of self.typesparams
 
@@ -213,6 +222,20 @@ class NameSpaceBean(ScopeLevelBean):
         @kwargs:str**
         """
         return self.vars[clsName].checkCreate(args, kwargs)
+    
+    def duckBool(self, varBean):
+        """
+        @varBean:VarBean
+        Check to see if the class can be evaluated into a boolean, if not an exception is raised in ClassDefBean.
+        """
+        self.vars[varBean.varType].isBoolean()
+        
+    def duckStr(self, varBean):
+        """
+        @varBean:VarBean
+        Same as duckbool
+        """
+        self.vars[varBean.varType].isString()
     
     def checkMagicMethod(self, lbean, rbean, op):
         """
