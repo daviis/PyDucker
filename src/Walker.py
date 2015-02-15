@@ -53,6 +53,19 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return "__and__"
+    
+    def visit_Assert(self, node):
+        """
+        @node:ast.ast
+        """
+        testType = self.visit(node.test)
+        try:
+            self.nameSpace.duckBool(testType) #check to see if the condition will evaluate to a boolean type, if not an exception is thrown
+            msgType = self.visit(node.msg)
+            self.nameSpace.duckStr(msgType) #check to see if msgType will evaluate to a string, if not an exception is thrown.
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
+            raise ex
      
     def visit_Assign(self, node):
         """
@@ -303,7 +316,6 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return('__invert__')
-    
     
     def visit_List(self, node):
         """
