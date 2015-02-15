@@ -1,5 +1,6 @@
-{1, 2, 3} #a set
+# {1, 2, 3} #a set
 { x for x in [1]} #setcomp
+# { x for x in [1] if x < 0} #setcomp with an if to test visit_comprehension
   
 {1:'a', 2:'b'} #dict
 { x : x+1 for x in [1]} #dictcomp
