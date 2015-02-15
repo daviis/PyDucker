@@ -78,8 +78,13 @@ class InitialWalker(ast.NodeVisitor):
         tars = []
         for target in node.targets:
             tars.append(self.visit(target))
-        value = self.visit(node.value)
         
+        try:
+            value = self.visit(node.value)
+        except Exceptions.TypeMisMatchException as ex:
+            ex.varName = tars[0].name
+            raise ex
+            
         for varBean in tars:
             if varBean.typesMatch(value):
                 value.name = varBean.name
@@ -302,6 +307,24 @@ class InitialWalker(ast.NodeVisitor):
         
         for orElse in node.orelse:
             self.visti(orElse)
+            
+    def visit_IfExp(self, node):
+        """
+        @node:ast.ast
+        """
+        testVal = self.visit(node.test)
+        try:
+            self.nameSpace.duckBool(testVal)
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
+            raise ex
+        
+        first = self.visit(node.body)
+        second = self.visit(node.orelse)
+        if first == second:
+            return first
+        else:
+            raise Exceptions.TypeMisMatchException("_", first, second, node.lineno)
         
     def visit_In(self, node):
         '''
