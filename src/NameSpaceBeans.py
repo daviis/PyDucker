@@ -73,6 +73,7 @@ def handMakeNameSpace():
     
     boolClass = ClassDefBean('bool', None)
     boolClass.funs['__eq__'] = FunDefBean([VarBean('bool')], VarBean('bool'), '__eq__')
+    boolClass.funs['__bool__'] = FunDefBean([VarBean('bool')], VarBean('bool'), '__bool__')
     nameSpace.put(boolClass.name, boolClass)
 
     listClass = ClassDefBean('list' , None)
