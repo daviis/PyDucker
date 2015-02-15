@@ -159,7 +159,14 @@ class ScopeLevelBean(GenericBean):
     
     def __setitem__(self, name, item):
         self.vars[name] = item
-    
+        
+    def __delitem__(self,item):
+        """
+        @item:str
+        Delete an entry from scope where item is the key
+        """
+        del self.vars[item]
+        
     def __contains__(self, item):
         """
         @item:str

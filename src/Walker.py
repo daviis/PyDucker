@@ -46,12 +46,20 @@ class InitialWalker(ast.NodeVisitor):
     def visit_Delete(self, node):
         """
         @node:ast.ast
-        About 90% sure it just reroutes to visit_Del
+        Much like visit_Assign but the opposite
         """
-        print(ast.dump(node))
-        for i in node.targets:
-            self.visit(i)
-        print('visited')
+        
+        tars = []
+        for target in node.targets:
+            tars.append(self.visit(target)) 
+        #Each thing in tars is a variable
+        print(self.scope.vars)
+        for varBean in tars:
+            if varBean.name in self.scope:
+                del self.scope[varBean.name]
+            #else:
+                #raise  Exceptions.TypeMisMatchException(varBean.name, varBean.varType, value.varType, node.lineno)     
+        print(self.scope.vars)
         
     def visit_Del(self, node):
         """
