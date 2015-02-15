@@ -172,6 +172,13 @@ class InitialWalker(ast.NodeVisitor):
                 raise ex
         return 'bool'
     
+    def visit_Break(self, node):
+        """
+        @node:ast.ast
+        this node doesn't do anything
+        """
+        return
+    
     def visit_Call(self, node):
         """
         When a method is called on a class it generates one of these. This will attempt to return the str rep of the return varType of the function.
@@ -229,6 +236,13 @@ class InitialWalker(ast.NodeVisitor):
             else:
                 raise Exceptions.MissingMethodException(left, op, node.lineno)
         return Bean.VarBean('bool')
+    
+    def visit_Continue(self, node):
+        """
+        @node:ast.ast
+        This node also does nothing.
+        """
+        return
     
     def visit_Dict(self, node):
         print("need to figure out if we can tell what a dicts internals look like")
