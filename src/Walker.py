@@ -204,9 +204,9 @@ class InitialWalker(ast.NodeVisitor):
                 if leftClass.funs[op].takes([arg]):
                     left = arg
                 else:
-                    raise Exceptions.IncorrectMethodExcepiton(leftClass, op, arg.varType, node.lineno)
+                    raise Exceptions.IncorrectMethodExcepiton(op, arg.varType, node.lineno, left)
             else:
-                raise Exceptions.MissingMethodException(leftClass, op, node.lineno)
+                raise Exceptions.MissingMethodException(left, op, node.lineno)
         return Bean.VarBean('bool')
     
     def visit_Dict(self, node):
