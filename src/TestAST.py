@@ -36,6 +36,8 @@ def testAllCorrect():
     #Non-working tests are commented out    
     files = ['../Test/Correct/AccPat.py',
              '../Test/Correct/Call.py',
+             '../Test/Correct/Collections.py',
+             '../Test/Correct/Compare.py',
              '../Test/Correct/For.py',
              #'../Test/Correct/If.py',
              #'../Test/Correct/MethodDef.py',
@@ -52,6 +54,7 @@ def testAllIncorrect():
     files = ['../Test/Incorrect/BinOp.py',
              '../Test/Incorrect/Call.py',
 #              '../Test/Incorrect/ClassBiReference.py',
+             '../Test/Incorrect/Compare.py',
              '../Test/Incorrect/generalTest.py',
 #              '../Test/Incorrect/localFun.py',
 #              '../Test/Incorrect/ScopeTest.py',
@@ -83,7 +86,7 @@ def _testAll(listOfFiles):
             print()
     
 if __name__ == '__main__':
-    testOne("../Test/Correct/tryRaiseExcept.py")
+    testOne("../Test/Correct/Compare.py")
 #     testAllCorrect()
 #     testAllIncorrect()
     print("out main")
