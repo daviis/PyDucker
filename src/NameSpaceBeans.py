@@ -85,6 +85,9 @@ def handMakeNameSpace():
     dictClass.funs['__contains__'] = FunDefBean([VarBean('obj')], VarBean('bool'), '__contains__')
     nameSpace.put(dictClass.name, dictClass) 
     
+    bytesClass = ClassDefBean('bytes' , None)
+    nameSpace.put(bytesClass.name, bytesClass) 
+    
     exceptionClass = ClassDefBean("Exception", None)
     nameSpace.put(exceptionClass.name, exceptionClass)
     
