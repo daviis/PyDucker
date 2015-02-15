@@ -33,6 +33,20 @@ class InitialWalker(ast.NodeVisitor):
         #set a break point on this to find where there is a need to list-ify a vist_
         elif isinstance(node, list):
             print('got a list', file=sys.stderr)
+            
+    def _makeCompType(self, nodeList):
+        """
+        @nodeList:ast.ast*
+        Used for creating lists, sets and tuples.
+        """
+        elements = []
+        for ele in nodeList:
+            elements.append(self.visit(ele))
+        
+        if all(x == elements[0] for x in elements):
+            return [elements[0]]
+        else:
+            return elements
                  
     """
     Each individual vist_* will need to check if the result if a list, if so then 
@@ -237,6 +251,29 @@ class InitialWalker(ast.NodeVisitor):
                 raise Exceptions.MissingMethodException(left, op, node.lineno)
         return Bean.VarBean('bool')
     
+    def visit_comprehension(self, node):
+        """
+        @node:ast.ast
+        @todo figure out what node.ifs is supposed to do.
+        """
+        targetVar = self.visit(node.target)
+        
+        for anIf in node.ifs:
+            self.visit(anIf)
+        
+        iterVar = self.visit(node.iter)
+        try:
+            self.nameSpace.duckIter(iterVar)
+            if iterVar.homo:
+                retVar =  iterVar.compType[0]
+                retVar.name = targetVar.name
+                self.scope.append(retVar)
+            else:
+                print("Not sure how we are doing non homo lists.", file=sys.stderr)
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
+            raise ex
+    
     def visit_Continue(self, node):
         """
         @node:ast.ast
@@ -366,11 +403,9 @@ class InitialWalker(ast.NodeVisitor):
         """
         bean = Bean.VarBean('list')
         
-        elements = []
-        for ele in node.elts:
-            elements.append(self.visit(ele))
+        elements = self._makeCompType(node.elts)
         
-        if all(x == elements[0] for x in elements):
+        if len(elements) == 1:
             bean.homo = True
             bean.compType = [elements[0]]
         else:
@@ -494,6 +529,30 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return "__rshift__"
+    
+    def visit_Set(self, node):
+        """
+        @node:ast.ast
+        """
+        bean = Bean.VarBean('set')
+        
+        elements = self._makeCompType(node.elts)
+        if len(elements) == 1:
+            bean.homo = True
+            bean.compType = [elements[0]]
+        else:
+            bean.compType = elements
+            
+        return bean
+    
+    def visit_SetComp(self, node):
+        """
+        @node:ast.ast
+        """
+        for gen in node.generators:
+            one = self.visit(gen)
+        two = self.visit(node.elt)
+        return
             
     def visit_Store(self, node):
         """
