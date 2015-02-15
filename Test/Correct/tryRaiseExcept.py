@@ -1,6 +1,6 @@
 try:
     1+1
 except ValueError as ex:
-    raise 
+    raise ex
 finally:
     2 + 2
