@@ -48,8 +48,8 @@ class TypeMisMatchException(PyDuckerWarning):
     def __init__(self, var, old, new, lineNu):
         """
         @var:str
-        @old:str
-        @new:str
+        @old:VarBean
+        @new:VarBean
         @lineNu:int
         """
         super().__init__(lineNu)
@@ -59,7 +59,7 @@ class TypeMisMatchException(PyDuckerWarning):
     
     def __str__(self):
         ret = super().__str__()
-        ret += "\nVar name : " + self.varName + "\n\told type: " + self.oldType + "\tnew type: " + self.newType + "\n\tline number: " + str(self.lineNum)
+        ret += "\n\tVar name : " + self.varName + "\n\told type: " + self.oldType.varType + "\n\tnew type: " + self.newType.varType
         return ret
     
     
