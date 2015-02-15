@@ -7,12 +7,19 @@ Created Nov-25-2014
 A module that hand makes a namespace which will be used in early testing of PyDucker walking. It generates ClassDefBeans for ints and strs and some of the
 FunDefBeans that are inside them.
 """
-from Bean import NameSpaceBean, ClassDefBean , FunDefBean, VarBean
+from Bean import NameSpaceBean, ScopeLevelBean, ClassDefBean , FunDefBean, VarBean
 
 def handMakeNameSpace():
     nameSpace = NameSpaceBean()
     intClass = ClassDefBean('int', None)
     intClass.funs['__add__'] = FunDefBean([VarBean('int')],  VarBean('int'), '__add__')
+    intClass.funs['__div__'] = FunDefBean([VarBean('int')],  VarBean('int'), '__div__')
+    intClass.funs['__mod__'] = FunDefBean([VarBean('int')],  VarBean('int'), '__mod__')
+    intClass.funs['__or__'] = FunDefBean([VarBean('int')],  VarBean('int'), '__or__')
+    intClass.funs['__and__'] = FunDefBean([VarBean('int')],  VarBean('int'), '__and__')
+    intClass.funs['__ne__'] = FunDefBean([VarBean('int')],  VarBean('int'), '__ne__')
+    intClass.funs['__pow__'] = FunDefBean([VarBean('int')],  VarBean('int'), '__pow__')
+    intClass.funs['__flooriv__'] = FunDefBean([VarBean('int')],  VarBean('int'), '__floordiv__')
     intClass.funs['__bool__'] = FunDefBean([] , VarBean('int'), '__bool__')
     intClass.funs['__eq__'] = FunDefBean([VarBean('int')], VarBean('bool') , '__eq__')
     intClass.funs['__float__'] = FunDefBean([], VarBean('float'), '__float__')
@@ -66,6 +73,7 @@ def handMakeNameSpace():
     
     boolClass = ClassDefBean('bool', None)
     boolClass.funs['__eq__'] = FunDefBean([VarBean('bool')], VarBean('bool'), '__eq__')
+    boolClass.funs['__bool__'] = FunDefBean([VarBean('bool')], VarBean('bool'), '__bool__')
     nameSpace.put(boolClass.name, boolClass)
 
     listClass = ClassDefBean('list' , None)
@@ -76,4 +84,15 @@ def handMakeNameSpace():
     dictClass = ClassDefBean('dict' , None)
     dictClass.funs['__contains__'] = FunDefBean([VarBean('obj')], VarBean('bool'), '__contains__')
     nameSpace.put(dictClass.name, dictClass) 
+    
+    exceptionClass = ClassDefBean("Exception", None)
+    nameSpace.put(exceptionClass.name, exceptionClass)
+    
     return nameSpace
+
+def handMakeScope():
+    scope = ScopeLevelBean()
+    
+    scope.append(VarBean("Exception", "ValueError"))
+    
+    return scope

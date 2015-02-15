@@ -5,6 +5,7 @@ All classes contained within are wrappers around instance data dealing with ast 
 revised: Jake 2014/11/12
 """
 import sys
+import Exceptions 
 
 class GenericBean():
     
@@ -35,14 +36,35 @@ class ClassDefBean(GenericBean):
         """
         return op in self.funs
     
+    def acceptsFun(self, fun):
+        """
+        @fun:FunDefBean
+        """
+        try:
+            if self.funs[fun.name] == fun:
+                return self.funs[fun.name].returnType 
+        except KeyError:
+            raise Exceptions.MissingMethodException(self, fun.name)
+        except Exceptions.IncorrectMethodExcepiton as ex:
+            ex.cls = self
+            raise ex
+            
     def isIterable(self):
-        return "__iter__" in self.funs
-    
+        if not "__iter__" in self.funs:
+            raise Exceptions.MissingMethodException(VarBean(self.name), "__iter__")
+
     def isCallable(self):
-        return "__call__" in self.funs
+        if not "__call__" in self.funs:
+            raise Exceptions.MissingMethodException(VarBean(self.name), "__call__")
+    
+    def isString(self):
+        if not "__str__" in self.funs:
+            raise Exceptions.MissingMethodException(VarBean(self.name), "__str__")
     
     def isBoolean(self):
-        return "__bool__" in self.funs
+        if not "__bool__" in self.funs:
+            raise Exceptions.MissingMethodException(VarBean(self.name), "__bool__")
+            
 
 
 class FunDefBean(GenericBean):
@@ -55,13 +77,14 @@ class FunDefBean(GenericBean):
         """
         self.partOfClass = False
         self.typesparams = paramsTypes
-        self.returnType = VarBean(returntype)
+        self.returnType = returntype
         self.name = fundefname
         self.numparams = len(self.typesparams) # this should be assigned after creation to be length of self.typesparams
 
     def takes(self, paramList):
         """
         @paramList:str*
+        todo:expand so it can also take optional vars and list/dicts
         """
         if not len(paramList) == len(self.typesparams):
             return False
@@ -69,6 +92,16 @@ class FunDefBean(GenericBean):
             if not paramList[idx].varType == self.typesparams[idx]:
                 return False
         return True
+
+    def __eq__(self, funBean):
+        """
+        @funBean:FunDefBean
+        Like takes but uses a fundefbean instead of a string
+        """
+        if self.takes(funBean.typesparams):
+            return True
+        else:
+            raise Exceptions.IncorrectMethodExcepiton(funBean.name, funBean.typesparams)
 
 class VarBean(GenericBean):
     
@@ -106,8 +139,7 @@ class VarBean(GenericBean):
                 return self.varType == other.varType
             else:
                 return True #currently the value of self.varType == None 
-    
-
+            
 
 class ScopeLevelBean(GenericBean):
     
@@ -183,3 +215,53 @@ class NameSpaceBean(ScopeLevelBean):
         else:
             return None
         
+    def checkCreate(self, clsName, args=None, kwargs=None):
+        """
+        @clsName:str
+        @args:VarBean*
+        @kwargs:str**
+        """
+        return self.vars[clsName].checkCreate(args, kwargs)
+    
+    def duckBool(self, varBean):
+        """
+        @varBean:VarBean
+        Check to see if the class can be evaluated into a boolean, if not an exception is raised in ClassDefBean.
+        """
+        self.vars[varBean.varType].isBoolean()
+        
+    def duckStr(self, varBean):
+        """
+        @varBean:VarBean
+        Same as duckbool
+        """
+        self.vars[varBean.varType].isString()
+        
+    def duckIter(self, varBean):
+        """
+        @varBean:VarBean
+        """
+        self.vars[varBean.varType].isIterable()
+    
+    def checkMagicMethod(self, lbean, rbean, op):
+        """
+        A method for visit_Binop and visit_AugAssign. It does exception raising and namespace checks.
+        @lBean:VarBean
+        @rBean:VarBean
+        @op:str
+        """
+        rOp = op[:2] + 'r' + op[2:]
+        fstFun = FunDefBean([rbean], None, op)
+        sndFun = FunDefBean([lbean], None, rOp)
+        
+        #look up if the method is contained in the left, if not then maybe the right
+        #if so, then return the return varType of the function
+        #if not, raise missingMagicMethodException
+        for bean, fun in ((lbean, fstFun), (rbean, sndFun)):
+            try:
+                resultType = self.vars[bean.varType].acceptsFun(fun)
+                return resultType
+            except Exceptions.MissingMethodException:
+                pass
+        raise Exceptions.MissingMagicMethodException(lbean, rbean, op, rOp)
+            

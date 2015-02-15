@@ -48,8 +48,8 @@ class TypeMisMatchException(PyDuckerWarning):
     def __init__(self, var, old, new, lineNu):
         """
         @var:str
-        @old:str
-        @new:str
+        @old:VarBean
+        @new:VarBean
         @lineNu:int
         """
         super().__init__(lineNu)
@@ -59,7 +59,7 @@ class TypeMisMatchException(PyDuckerWarning):
     
     def __str__(self):
         ret = super().__str__()
-        ret += "\nVar name : " + self.varName + "\n\told type: " + self.oldType + "\tnew type: " + self.newType + "\n\tline number: " + str(self.lineNum)
+        ret += "\n\tVar name : " + self.varName + "\n\told type: " + self.oldType.varType + "\n\tnew type: " + self.newType.varType
         return ret
     
     
@@ -97,30 +97,30 @@ class OutOfScopeException(PyDuckerError):
     
 class MissingMethodException(PyDuckerError):
     
-    def __init__(self, aCls, aFun, lineNo):
+    def __init__(self, aVar, aFun, lineNo=-1):
         """
-        @aCls:ClassDefBean
+        @aCls:VarBean
         @aFun:str
         @lineNu:int
         """
         super().__init__(lineNo)
-        self.cls = aCls
+        self.cls = aVar
         self.fun = aFun
         
     def __str__(self):
         ret = super().__str__()
         ret += "\n\tCan not find method: " + self.fun
-        ret += "\n\tIn class: " + self.cls.name
+        ret += "\n\tIn class: " + self.cls.varType
         return ret
     
     
     
 class MissingMagicMethodException(MissingMethodException):
     
-    def __init__(self, leftOne, rightOne, aOp, aRop, lineNo):
+    def __init__(self, leftOne, rightOne, aOp, aRop, lineNo=-1):
         """
-        @left:ClassDefBean
-        @right:ClassDefBean
+        @left:VarBean
+        @right:VarBean
         @op:str
         @rop:str
         @lineNu:int
@@ -131,17 +131,17 @@ class MissingMagicMethodException(MissingMethodException):
         
     def __str__(self):
         ret = super().__str__()
-        ret += " that takes: " + self.cls2.name
-        ret += "\n\tOr can not find method: " + self.rop + " \n\tIn class: " + self.cls2.name + " that takes: " + self.cls.name 
+        ret += " that takes: " + self.cls2.varType
+        ret += "\n\tOr can not find method: " + self.rop + " \n\tIn class: " + self.cls2.varType + " that takes: " + self.cls.varType 
         return ret
     
     
     
 class IncorrectMethodExcepiton(MissingMethodException):
     
-    def __init__(self, aCls, aFun, someArgs, lineNo):
+    def __init__(self, aFun, someArgs, lineNo=-1, aCls=None):
         """
-        @aCls:ClassDefBean
+        @aCls:VarBean
         @aFun:str
         @someArgs:^str
         @lineNo:int
