@@ -38,13 +38,6 @@ class InitialWalker(ast.NodeVisitor):
     Each individual vist_* will need to check if the result if a list, if so then 
     iterate over it. If not, then a single visit is needed
     """
-    def visit_Bytes(self, node):
-        """
-        @node:ast.ast
-        """
-        print(ast.dump(node))
-        print(node.s)
-        return Bean.VarBean('bytes')
  
         
     def visit_Add(self, node):
@@ -185,6 +178,12 @@ class InitialWalker(ast.NodeVisitor):
         this node doesn't do anything
         """
         return
+    
+    def visit_Bytes(self, node):
+        """
+        @node:ast.ast
+        """
+        return Bean.VarBean('bytes')
     
     def visit_Call(self, node):
         """
