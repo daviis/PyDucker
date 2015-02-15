@@ -36,7 +36,7 @@ def testAllCorrect():
     #Non-working tests are commented out    
     files = ['../Test/Correct/AccPat.py',
              '../Test/Correct/Call.py',
-             '../Test/Correct/Collections.py',
+#             '../Test/Correct/Collections.py',
              '../Test/Correct/Compare.py',
              '../Test/Correct/For.py',
              #'../Test/Correct/If.py',
@@ -81,12 +81,13 @@ def _testAll(listOfFiles):
             firstWalker.walk()
         except Exceptions.PyDuckerException as ex:
 #             print(ex, file=sys.stderr) #printing to sys.stderr will need to be locked so output flows correctly, otherwise the messages come out interwoven.
+            print("\n", ex.__class__.__name__, end="")
             print(ex)
         finally:
             print()
     
 if __name__ == '__main__':
-    testOne("../Test/Correct/Compare.py")
+#     testOne("../Test/Correct/For.py")
 #     testAllCorrect()
-#     testAllIncorrect()
+    testAllIncorrect()
     print("out main")
