@@ -38,6 +38,36 @@ class InitialWalker(ast.NodeVisitor):
     Each individual vist_* will need to check if the result if a list, if so then 
     iterate over it. If not, then a single visit is needed
     """
+    
+    def visit_Subscript(self, node):
+        """
+        @node:ast.ast
+        """ 
+        #print(ast.dump(node.value))
+        #print(ast.dump(node.slice))
+        var = self.visit(node.value) #Item being sliced
+        self.visit(node.slice)
+        
+    def visit_Slice(self, node):
+        """
+        @node:ast.ast
+        """
+        holder = [None,None,None]
+        #holder = [lower,upper,step]
+        if node.lower:
+            holder[0] = self.visit(node.lower)
+        if node.upper:
+            holder[1] = self.visit(node.upper)
+        if node.step:
+            holder[2] = self.visit(node.step)
+            
+        for i in holder:
+            if i:
+                if i.varType != 'int':
+                    print('found a non-int')
+
+                        
+        
  
         
     def visit_Add(self, node):
