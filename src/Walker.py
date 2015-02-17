@@ -248,6 +248,7 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         Need to be able to handle 1 < 2 < 3 as well as (1 < 2) < 3
         For the use of the phrase "x in y" the types of operator and operand need to be flipped. In generates the function "__contains__"
+        @todo refactor the fundef checking down into the namespace
         """
         left = self.visit(node.left)
         
@@ -261,6 +262,9 @@ class InitialWalker(ast.NodeVisitor):
                 temp = arg
                 arg = left
                 left = temp
+                
+            elif op == "is" or op == "isnot":
+                continue
             
             leftClass = self.nameSpace[left.varType]
             if leftClass.hasFun(op):
@@ -478,6 +482,22 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return('__invert__')
+    
+    def visit_Is(self, node):
+        """
+        @node:ast.ast
+        Is isn't actually a magic method, it calls id() on the objects, which in cpython returns the mem-address of each obj. Then compares them. 
+        It would be possible to check to see if each side was of the same type and if they wernt then they couldn't possibly be the same mem address and throw an exception. But this is the safe way for now.
+        """
+        return "is"
+    
+    def visit_IsNot(self, node):
+        """
+        @node:ast.ast
+        Is not is just the same as is then inverted.
+        """
+        return "isnot"
+        
     
     def visit_List(self, node):
         """
