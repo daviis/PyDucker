@@ -96,6 +96,9 @@ def handMakeNameSpace():
     exceptionClass = ClassDefBean("Exception", None)
     nameSpace.put(exceptionClass.name, exceptionClass)
     
+    generatorClass = ClassDefBean("generator", None)
+    nameSpace.put(generatorClass.name, generatorClass)
+    
     return nameSpace
 
 def handMakeScope():
