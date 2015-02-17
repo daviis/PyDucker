@@ -181,7 +181,7 @@ class ScopeLevelBean(GenericBean):
         """
         @item:VarBean
         """
-        if(item.name in self.vars):
+        if item.name in self.vars and item != self.vars[item.name]:
             print("reassign of " + item.name, file=sys.stderr)
         self.vars[item.name] = item
         
