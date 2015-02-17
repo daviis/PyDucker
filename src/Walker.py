@@ -48,6 +48,21 @@ class InitialWalker(ast.NodeVisitor):
         else:
             return elements
                  
+    def _generatorHelper(self, varBean, ele):
+        """
+        @varBean:Bean.VarBean
+        @ele:ast.ast
+        """
+        varBean.compType = [self.visit(ele)]
+        
+        for internalType in varBean.compType:
+            internalType.name = '_' #clear out the name that was in comp type
+        
+        if len(varBean.compType) == 1:
+            varBean.homo = True
+            
+        return varBean
+                 
     """
     Each individual vist_* will need to check if the result if a list, if so then 
     iterate over it. If not, then a single visit is needed
@@ -313,8 +328,36 @@ class InitialWalker(ast.NodeVisitor):
                 raise Exceptions.OutOfScopeException(target.name, lineNo = node.lineno)
     
     def visit_Dict(self, node):
-        print("need to figure out if we can tell what a dicts internals look like")
-        return Bean.VarBean('dict')
+        """
+        @node:ast.ast
+        @todo finalize the internal structure of the varbean being returned.
+        """
+        keyTypes = self._makeCompType(node.keys)
+        valTypes = self._makeCompType(node.values)
+        retBean =  Bean.VarBean('dict')
+        
+        if len(keyTypes) == 1:
+            retBean.homo = True
+        retBean.compType = keyTypes
+        
+        if len(valTypes) == 1:
+            pass #maybe have a second internal homo variable?
+        retBean.valType = valTypes
+        
+        return retBean
+    
+    def visit_DictComp(self, node):
+        """
+        @node:ast.ast
+        """
+        retBean = Bean.VarBean('dict')
+        
+        for gen in node.generators:
+            self.visit(gen)
+        retBean.compType = self.visit(node.key)
+        retBean.valType = self.visit(node.value)
+        
+        return retBean
     
     def visit_Div(self, node):
         """
@@ -372,6 +415,15 @@ class InitialWalker(ast.NodeVisitor):
             self.visit(bod)
         return 
  
+    def visit_GeneratorExp(self, node):
+        """
+        @node:ast.ast
+        """
+        for gen in node.generators:
+            self.visit(gen)
+            
+        return self._generatorHelper(Bean.VarBean("generator"), node.elt)
+ 
     def visit_Gt(self, node):
         """
         @node:ast.ast
@@ -421,7 +473,6 @@ class InitialWalker(ast.NodeVisitor):
         '''
         return '__contains__'
     
-
     def visit_Invert(self,node):
         """
         @node:ast.ast
@@ -438,12 +489,19 @@ class InitialWalker(ast.NodeVisitor):
         
         if len(elements) == 1:
             bean.homo = True
-            bean.compType = [elements[0]]
-        else:
-            bean.compType = elements
+        bean.compType = elements
             
         return bean
     
+    def visit_ListComp(self, node):
+        """
+        @node:ast.ast
+        """
+        for gen in node.generators:
+            self.visit(gen)
+            
+        return self._generatorHelper(Bean.VarBean('list'), node.elt)
+        
     def visit_Load(self, node):
         """
         @node:ast.ast
@@ -531,9 +589,10 @@ class InitialWalker(ast.NodeVisitor):
      
     def visit_Pass(self, node):
         '''
+        @node:ast.ast
         visit_pass has pass because pass does not do anything
         '''
-        self.visit(node)
+        return
         
     def visit_Pow(self, node):
         """
@@ -581,9 +640,15 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         for gen in node.generators:
-            one = self.visit(gen)
-        two = self.visit(node.elt)
-        return
+            self.visit(gen)
+        
+        return self._generatorHelper(Bean.VarBean('set'), node.elt)
+            
+#     def visit_Starred(self, node):
+#         """
+#         @node:ast.ast
+#         """
+#         return
             
     def visit_Store(self, node):
         """
@@ -614,21 +679,48 @@ class InitialWalker(ast.NodeVisitor):
         for final in node.finalbody:
             self.visit(final)
     
+    def visit_Tuple(self, node):
+        """
+        @node:ast.ast
+        A store will be on the left side of an assignment statement, like 'a, b = [1, 2]'
+        In a store all the types will need to be a ast.Name type
+        """
+        store = self.visit(node.ctx)
+        if store:
+            varNameList = []
+            for ele in node.elts:
+                varNameList.append(self.visit(ele))
+            return varNameList
+        else:
+            retBean = Bean.VarBean("tuple")
+            compType = self._makeCompType(node.elts)
+            if len(compType) == 1:
+                retBean.homo = True
+            retBean.compType = compType
+            return retBean
+    
     def visit_UAdd(self,node):
+        """
+        @node:ast.ast
+        """
         return('__pos__')
     
     def visit_UnaryOp(self,node):
+        """
+        @node:ast.ast
+        """
         operand = self.visit(node.operand)
         operandBean = self.nameSpace[operand.varType]
         op = self.visit(node.op)
         if operandBean.hasFun(op):
             return operandBean.funs[op].returnType
         else:
-            #Need an exception for unary ops
-            Exceptions.MissingMagicMethodException(operandBean.name, op, node.lineno)
-#             print('Error found when trying to '+ op + ' on ' + operand +'.')#,file = sys.stderr)
+            Exceptions.MissingMethodException(operandBean, op, node.lineno)
 
     def visit_USub(self,node):
+        """
+        @node:ast.ast
+        """
         return('__neg__')
     
     def visit_While(self, node):
