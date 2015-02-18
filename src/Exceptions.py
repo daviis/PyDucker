@@ -153,3 +153,18 @@ class IncorrectMethodExcepiton(MissingMethodException):
         ret = super().__str__()
         ret += "\n\tWith args: " + str(self.argLst)
         return ret
+    
+class NonIntIndexException(PyDuckerError):
+    
+    def __init__(self, someName, lineNo=-1):
+        """
+        @someName:str
+        @lineNo:int
+        """
+        super().__init__(lineNo)
+        self.aName = someName
+        
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\tVariable name: " + self.aName + " is not an integer and needs to be to index."
+        return ret

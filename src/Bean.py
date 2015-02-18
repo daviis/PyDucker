@@ -64,6 +64,10 @@ class ClassDefBean(GenericBean):
     def isBoolean(self):
         if not "__bool__" in self.funs:
             raise Exceptions.MissingMethodException(VarBean(self.name), "__bool__")
+        
+    def isIndexable(self):
+        if not "__index__" in self.funs:
+            raise Exceptions.MissingMethodException(VarBean(self.name), "__index__")
             
 
 
@@ -249,6 +253,12 @@ class NameSpaceBean(ScopeLevelBean):
         @varBean:VarBean
         """
         self.vars[varBean.varType].isIterable()
+        
+    def duckIndex(self, varBean):
+        """
+        @varBean:VarBean
+        """
+        self.vars[varBean.varType].isIndexable()
     
     def checkMagicMethod(self, lbean, rbean, op):
         """

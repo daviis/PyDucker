@@ -38,33 +38,9 @@ class InitialWalker(ast.NodeVisitor):
     Each individual vist_* will need to check if the result if a list, if so then 
     iterate over it. If not, then a single visit is needed
     """
-    
-    def visit_Subscript(self, node):
-        """
-        @node:ast.ast
-        """ 
-        #print(ast.dump(node.value))
-        #print(ast.dump(node.slice))
-        var = self.visit(node.value) #Item being sliced
-        self.visit(node.slice)
+
         
-    def visit_Slice(self, node):
-        """
-        @node:ast.ast
-        """
-        holder = [None,None,None]
-        #holder = [lower,upper,step]
-        if node.lower:
-            holder[0] = self.visit(node.lower)
-        if node.upper:
-            holder[1] = self.visit(node.upper)
-        if node.step:
-            holder[2] = self.visit(node.step)
-            
-        for i in holder:
-            if i:
-                if i.varType != 'int':
-                    print('found a non-int')
+
 
                         
         
@@ -414,6 +390,15 @@ class InitialWalker(ast.NodeVisitor):
         '''
         return '__contains__'
     
+    def visit_Index(self, node):
+        """
+        @node:ast.ast
+        """
+        var = self.visit(node.value)
+        if var.varType == 'int':
+            return
+        else:
+            raise Exceptions.NonIntIndexException(var.name)    
 
     def visit_Invert(self,node):
         """
@@ -555,6 +540,28 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return "__rshift__"
+    
+    def visit_Slice(self, node):
+        """
+        @node:ast.ast
+        """
+        holder = [None,None,None]
+        #holder = [lower,upper,step]
+        if node.lower:
+            holder[0] = self.visit(node.lower)
+        if node.upper:
+            holder[1] = self.visit(node.upper)
+        if node.step:
+            holder[2] = self.visit(node.step)
+            
+        for i in holder:
+            if i:
+                #Check if it has a __index__ magic method
+                try:
+                    self.nameSpace.duckIndex(i)
+                except Exceptions.PyDuckerException as ex:
+                    #No linenumber here
+                    raise ex  
             
     def visit_Store(self, node):
         """
@@ -571,6 +578,18 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return "__sub__"
+    
+    def visit_Subscript(self, node):
+        """
+        @node:ast.ast
+        """ 
+        var = self.visit(node.value) #Item being sliced
+        try:
+            self.visit(node.slice)
+            return var #May need to return something else
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
+            raise ex      
     
     def visit_Try(self, node):
         """
