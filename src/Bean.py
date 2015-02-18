@@ -111,12 +111,15 @@ class VarBean(GenericBean):
         These fields are homo and compType. Homo is a boolean to see if all of the subtypes are the same. If they are, then compType will
         be a list with only one str. Otherwise it will be a list with the initial types. 
         Neither of these fields should be accessed directly. Instead call nextSubType()
+        
+        Starred is a field to see if the var is supposed to be unpacked into. It might be set in visit_Starred and looked up in visit_ASssign. 
         @name:str
         @aType:str
         """
         self.name = aName
         self.varType = aType
         self.homo = False
+        self.starred = False
         self.compType = []
         
     def __eq__(self, other):
