@@ -106,7 +106,7 @@ class InitialWalker(ast.NodeVisitor):
         """
         tars = []
         for target in node.targets:
-            tars.append(self.visit(target))
+            tars.extend(self.visit(target))
         
         try:
             value = self.visit(node.value)
@@ -114,10 +114,22 @@ class InitialWalker(ast.NodeVisitor):
             ex.varName = tars[0].name
             raise ex
             
+        
         for varBean in tars:
-            if varBean.typesMatch(value):
+            
+            if varBean.starred:
+                if value.homo: #we cant handle non homo lists yet so if it is then raise an exception
+                    varBean.starred = False
+                    varBean.homo = True
+                    varBean.compType = value.compType
+                    self.scope.append(varBean)
+                else:
+                    raise Exceptions.PyDuckerException(-1)
+                
+            elif varBean.typesMatch(value):
                 value.name = varBean.name
-                self.scope[value.name] = value
+                self.scope.append(value)
+            
             else:
                 raise  Exceptions.TypeMisMatchException(varBean.name, varBean.varType, value.varType, node.lineno)
                 
@@ -664,11 +676,18 @@ class InitialWalker(ast.NodeVisitor):
         
         return self._generatorHelper(Bean.VarBean('set'), node.elt)
             
-#     def visit_Starred(self, node):
-#         """
-#         @node:ast.ast
-#         """
-#         return
+    def visit_Starred(self, node):
+        """
+        @node:ast.ast
+        I think it will alwyas be false, otherwise just raise an exception
+        """
+        if self.visit(node.ctx): #if it was to store things into
+            retBean = self.visit(node.value)
+            retBean.varType = "list" 
+            retBean.starred = True
+            return retBean
+        else:
+            raise Exceptions.PyDuckerException(-1)
             
     def visit_Store(self, node):
         """
