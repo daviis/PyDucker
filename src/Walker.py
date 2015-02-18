@@ -559,6 +559,7 @@ class InitialWalker(ast.NodeVisitor):
                 #Check if it has a __index__ magic method
                 try:
                     self.nameSpace.duckIndex(i)
+                    return
                 except Exceptions.PyDuckerException as ex:
                     #No linenumber here
                     raise ex  
@@ -586,7 +587,7 @@ class InitialWalker(ast.NodeVisitor):
         var = self.visit(node.value) #Item being sliced
         try:
             self.visit(node.slice)
-            return var #May need to return something else
+            return #May need to return something else
         except Exceptions.PyDuckerException as ex:
             ex.lineNum = node.lineno
             raise ex      
