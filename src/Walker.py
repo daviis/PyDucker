@@ -614,6 +614,7 @@ class FunDefWalker(InitialWalker):
         @scopeLevel:bean.ScopeLevelBean
         """
         super().__init__(funRoot, nameSp, scopeLevel)
+        self._findParamTypes()
         self.name = funRoot.name
         self.retType = None
         self.nameSpace = nameSp
@@ -622,7 +623,9 @@ class FunDefWalker(InitialWalker):
         self.visit(self.root)
         
     def _findParamTypes(self):
-        scopeObject = parseDocString(ast.get_docstring(self.root))
+        scopeObjects = parseDocString(ast.get_docstring(self.root))
+        for scope in scopeObjects:
+            self.scope.append(scope)
     
     def createFunBean(self):
         bean = Bean.FunDefBean(list(self.scope), self.retType, self.name)
@@ -652,29 +655,18 @@ class FunDefWalker(InitialWalker):
         #if arglist is empty no arguments were passed to the funciton
         print('found visit_arguments')
         #print(self.scope.vars)
-        #print(ast.dump(node))
-        #print((ast.get_docstring(self.root)))
-        if node.args == []:
-            if ast.get_docstring(self.root) != None:
-                print('error: Function has a Dockstring but no argumenst givent to the function')
-            else:
-                print('works')
-        else:
-            if ast.get_docstring(self.root) != None:
-                arguments = parseDocString(ast.get_docstring(self.root))
-                for i in arguments:
-                    #will have to check if arguments given to the function
-                    #match the argumenst given to the Dockstring
-                    if i.name in arglist:
-                        self.scope.append(i)
-                         #Not the correct way to add it to the scope since we can't
-                         #remove it when we're done!
-                    else:
-                        print('error argument not given  to Dockstring')
-                   
-            else: 
-                Exceptions.MissingDocStringException(arglist, node)
-                print('error: Function was given arguments but no arguments were given to the Dockstring')
+        #print(ast.dump(nod)e))
+        if ast.get_docstring(self.root) != None:
+            arguments = parseDocString(ast.get_docstring(self.root))
+            for i in arguments:
+                #will have to check if arguments given to the function
+                #mathc the argumenst given to the Dockstring
+                if i.name in arglist:
+                    self.scope.append(i)
+                else:
+                    print('error argument not given  to Dockstring')
+                #Not the correct way to add it to the scope since we can't
+                #remove it when we're done!
         print(self.scope.vars)
         print('done visitng_aruments')    
         
