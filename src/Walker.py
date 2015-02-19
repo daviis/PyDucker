@@ -62,6 +62,31 @@ class InitialWalker(ast.NodeVisitor):
             varBean.homo = True
             
         return varBean
+    
+    def _tupleUnpacking(self, tupleOfVarNames, target):
+        """
+        @tupleOfVarnames:Bean.VarBean
+        @target:Bean.VarBean
+        A helper function for visit_Assign. This function handles tuple unpacking and adding the new vars to the scope. 
+        Part of tuple unpacking is making sure that Starred values keep their comp type
+        @todo handle lists of variable types, then we can also add in length checking (maybe)
+        """
+        self.nameSpace.duckIter(target)
+        
+        for varBean in tupleOfVarNames.compType: 
+            if varBean.starred:
+                if target.homo:
+                    varBean.compType = target.compType
+                    varBean.homo = True
+                    varBean.starred = False
+                    self.scope.append(varBean)
+                else:
+                    raise Exceptions.PyDuckerException(-1) #we cant do non homo lists like this. If we want to do them at some point then we will need to extend this fun.
+            else:
+                compBean = target.compType[0] 
+                compBean.name = varBean.name
+                self.scope.append(compBean)
+            
                  
     """
     Each individual vist_* will need to check if the result if a list, if so then 
@@ -106,7 +131,7 @@ class InitialWalker(ast.NodeVisitor):
         """
         tars = []
         for target in node.targets:
-            tars.extend(self.visit(target))
+            tars.append(self.visit(target))
         
         try:
             value = self.visit(node.value)
@@ -114,17 +139,14 @@ class InitialWalker(ast.NodeVisitor):
             ex.varName = tars[0].name
             raise ex
             
-        
         for varBean in tars:
             
-            if varBean.starred:
-                if value.homo: #we cant handle non homo lists yet so if it is then raise an exception
-                    varBean.starred = False
-                    varBean.homo = True
-                    varBean.compType = value.compType
-                    self.scope.append(varBean)
-                else:
-                    raise Exceptions.PyDuckerException(-1)
+            if varBean.varType == "tuple":
+                try:
+                    self._tupleUnpacking(varBean, value)
+                except Exceptions.PyDuckerException as ex:
+                    ex.lineNum = node.lineno
+                    raise ex
                 
             elif varBean.typesMatch(value):
                 value.name = varBean.name
@@ -370,8 +392,8 @@ class InitialWalker(ast.NodeVisitor):
         
         for gen in node.generators:
             self.visit(gen)
-        retBean.compType = self.visit(node.key)
-        retBean.valType = self.visit(node.value)
+        retBean.compType = [self.visit(node.key)]
+        retBean.valType = [self.visit(node.value)]
         
         return retBean
     
@@ -726,10 +748,10 @@ class InitialWalker(ast.NodeVisitor):
         """
         store = self.visit(node.ctx)
         if store:
-            varNameList = []
+            retBean = Bean.VarBean('tuple')
             for ele in node.elts:
-                varNameList.append(self.visit(ele))
-            return varNameList
+                retBean.compType.append(self.visit(ele))
+            return retBean
         else:
             retBean = Bean.VarBean("tuple")
             compType = self._makeCompType(node.elts)
