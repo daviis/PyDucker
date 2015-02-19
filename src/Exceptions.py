@@ -97,14 +97,17 @@ class OutOfScopeException(PyDuckerError):
     
 class MissingDocStringException(PyDuckerError):
 
-    def __init__(self, someName, lineNo):
+    def __init__(self, someName, lineNo=-1):
+        """
+        @someName:str
+        @lineNo:int
+        """
         super().__init__(lineNo)
         self.aName = someName
         
     def __str__(self):
-        ret = super().__str()
-        ret += "\n\tVarible name: " + self.aName + "in a DocString"
-        print(ret)
+        ret = super().__str__()
+        ret += "\n\tVarible name: " + self.aName + " in a DocString"
         return ret
     
 class MissingMethodException(PyDuckerError):

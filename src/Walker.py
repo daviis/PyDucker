@@ -633,12 +633,16 @@ class FunDefWalker(InitialWalker):
         return bean
     
     def visit_FunctionDef(self, node):
-        for _, value in ast.iter_fields(node):
-            if isinstance(value, list):
-                for arg in value:
-                    self.visit(arg)
-            elif value:
-                self.visit(value)
+        try:
+            for _, value in ast.iter_fields(node):
+                if isinstance(value, list):
+                    for arg in value:
+                        self.visit(arg)
+                elif value:
+                    self.visit(value)
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
+            raise ex            
             
     def visit_Return(self, node):
         #may need to look at the other fields in ast.Return but the basic way is this. 
@@ -649,7 +653,6 @@ class FunDefWalker(InitialWalker):
         """
         @node:ast.ast
         """
-        
         arglist = node.args 
         #arglist used to check if any arguments were passed to the function
         #if arglist is empty no arguments were passed to the funciton
