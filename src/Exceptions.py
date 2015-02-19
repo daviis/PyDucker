@@ -11,6 +11,7 @@ The exception hierarchy for PyDucker is
               |--- MissingMagicMethodException
               |--- IncorrectMethodException
         |--- OutOfScopeException
+        |--- MissingDocStringException
     |--- PyDuckerWarning
          |--- TypeMismatchException
          |--- HeteroCollectionException
@@ -94,6 +95,17 @@ class OutOfScopeException(PyDuckerError):
         ret += "\n\tVariable name: " + self.aName + " is not in scope"
         return ret
     
+class MissingDocStringException(PyDuckerError):
+
+    def __init__(self, someName, lineNo):
+        super().__init__(lineNo)
+        self.aName = someName
+        
+    def __str__(self):
+        ret = super().__str()
+        ret += "\n\tVarible name: " + self.aName + "in a DocString"
+        print(ret)
+        return ret
     
 class MissingMethodException(PyDuckerError):
     
