@@ -57,13 +57,14 @@ def parseDocString(docString,returnList = True):
                 #lists handled
         
         for key in variables:
+            
             currentVar = VarBean(currentType,key)
-            if isHomo == False:
-                currentVar.homo = False
-            else:
-                if compType:
-                    currentVar.homo = True
-                    currentVar.compType = compType
+            #if isHomo == False:
+             #   currentVar.homo = False
+            #else:
+             #   if compType:
+              #      currentVar.homo = True
+               #     currentVar.compType = compType
             finalList.append(currentVar)
     
     if returnList == False:
