@@ -44,7 +44,10 @@ class InitialWalker(ast.NodeVisitor):
             elements.append(self.visit(ele))
         
         if all(x == elements[0] for x in elements):
-            return [elements[0]]
+            if elements:
+                return [elements[0]]
+            else:
+                return elements #this will be an empty list because the  iterable it is going into is empty 
         else:
             return elements
                  
@@ -141,7 +144,7 @@ class InitialWalker(ast.NodeVisitor):
             
         for varBean in tars:
             
-            if varBean.varType == "tuple":
+            if varBean.varType == "tuple" and varBean.starred:
                 try:
                     self._tupleUnpacking(varBean, value)
                 except Exceptions.PyDuckerException as ex:
@@ -751,6 +754,7 @@ class InitialWalker(ast.NodeVisitor):
             retBean = Bean.VarBean('tuple')
             for ele in node.elts:
                 retBean.compType.append(self.visit(ele))
+            retBean.starred = True #set starred to true becuase unpacking needs a flag to show it isn't a reassign of a regular tuple
             return retBean
         else:
             retBean = Bean.VarBean("tuple")
