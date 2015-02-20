@@ -625,6 +625,12 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return "__bool__"
+    
+    def visit_NotIn(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__contains__"
         
     def visit_NotEq(self, node):
         """
