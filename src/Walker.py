@@ -33,6 +33,63 @@ class InitialWalker(ast.NodeVisitor):
         #set a break point on this to find where there is a need to list-ify a vist_
         elif isinstance(node, list):
             print('got a list', file=sys.stderr)
+            
+    def _makeCompType(self, nodeList):
+        """
+        @nodeList:ast.ast*
+        Used for creating lists, sets and tuples.
+        """
+        elements = []
+        for ele in nodeList:
+            elements.append(self.visit(ele))
+        
+        if all(x == elements[0] for x in elements):
+            if elements:
+                return [elements[0]]
+            else:
+                return elements #this will be an empty list because the  iterable it is going into is empty 
+        else:
+            return elements
+                 
+    def _generatorHelper(self, varBean, ele):
+        """
+        @varBean:Bean.VarBean
+        @ele:ast.ast
+        """
+        varBean.compType = [self.visit(ele)]
+        
+        for internalType in varBean.compType:
+            internalType.name = '_' #clear out the name that was in comp type
+        
+        if len(varBean.compType) == 1:
+            varBean.homo = True
+            
+        return varBean
+    
+    def _tupleUnpacking(self, tupleOfVarNames, target):
+        """
+        @tupleOfVarnames:Bean.VarBean
+        @target:Bean.VarBean
+        A helper function for visit_Assign. This function handles tuple unpacking and adding the new vars to the scope. 
+        Part of tuple unpacking is making sure that Starred values keep their comp type
+        @todo handle lists of variable types, then we can also add in length checking (maybe)
+        """
+        self.nameSpace.duckIter(target)
+        
+        for varBean in tupleOfVarNames.compType: 
+            if varBean.starred:
+                if target.homo:
+                    varBean.compType = target.compType
+                    varBean.homo = True
+                    varBean.starred = False
+                    self.scope.append(varBean)
+                else:
+                    raise Exceptions.PyDuckerException(-1) #we cant do non homo lists like this. If we want to do them at some point then we will need to extend this fun.
+            else:
+                compBean = target.compType[0] 
+                compBean.name = varBean.name
+                self.scope.append(compBean)
+            
                  
     """
     Each individual vist_* will need to check if the result if a list, if so then 
@@ -86,9 +143,18 @@ class InitialWalker(ast.NodeVisitor):
             raise ex
             
         for varBean in tars:
-            if varBean.typesMatch(value):
+            
+            if varBean.varType == "tuple" and varBean.starred:
+                try:
+                    self._tupleUnpacking(varBean, value)
+                except Exceptions.PyDuckerException as ex:
+                    ex.lineNum = node.lineno
+                    raise ex
+                
+            elif varBean.typesMatch(value):
                 value.name = varBean.name
-                self.scope[value.name] = value
+                self.scope.append(value)
+            
             else:
                 raise  Exceptions.TypeMisMatchException(varBean.name, varBean.varType, value.varType, node.lineno)
                 
@@ -219,6 +285,7 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         Need to be able to handle 1 < 2 < 3 as well as (1 < 2) < 3
         For the use of the phrase "x in y" the types of operator and operand need to be flipped. In generates the function "__contains__"
+        @todo refactor the fundef checking down into the namespace
         """
         left = self.visit(node.left)
         
@@ -232,6 +299,9 @@ class InitialWalker(ast.NodeVisitor):
                 temp = arg
                 arg = left
                 left = temp
+                
+            elif op == "is" or op == "isnot":
+                continue
             
             leftClass = self.nameSpace[left.varType]
             if leftClass.hasFun(op):
@@ -242,6 +312,29 @@ class InitialWalker(ast.NodeVisitor):
             else:
                 raise Exceptions.MissingMethodException(left, op, node.lineno)
         return Bean.VarBean('bool')
+    
+    def visit_comprehension(self, node):
+        """
+        @node:ast.ast
+        @todo figure out what node.ifs is supposed to do.
+        """
+        targetVar = self.visit(node.target)
+        
+        for anIf in node.ifs:
+            self.visit(anIf)
+        
+        iterVar = self.visit(node.iter)
+        try:
+            self.nameSpace.duckIter(iterVar)
+            if iterVar.homo:
+                retVar =  iterVar.compType[0]
+                retVar.name = targetVar.name
+                self.scope.append(retVar)
+            else:
+                print("Not sure how we are doing non homo lists.", file=sys.stderr)
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
+            raise ex
     
     def visit_Continue(self, node):
         """
@@ -276,8 +369,36 @@ class InitialWalker(ast.NodeVisitor):
                 raise Exceptions.OutOfScopeException(target.name, lineNo = node.lineno)
     
     def visit_Dict(self, node):
-        print("need to figure out if we can tell what a dicts internals look like")
-        return Bean.VarBean('dict')
+        """
+        @node:ast.ast
+        @todo finalize the internal structure of the varbean being returned.
+        """
+        keyTypes = self._makeCompType(node.keys)
+        valTypes = self._makeCompType(node.values)
+        retBean =  Bean.VarBean('dict')
+        
+        if len(keyTypes) == 1:
+            retBean.homo = True
+        retBean.compType = keyTypes
+        
+        if len(valTypes) == 1:
+            pass #maybe have a second internal homo variable?
+        retBean.valType = valTypes
+        
+        return retBean
+    
+    def visit_DictComp(self, node):
+        """
+        @node:ast.ast
+        """
+        retBean = Bean.VarBean('dict')
+        
+        for gen in node.generators:
+            self.visit(gen)
+        retBean.compType = [self.visit(node.key)]
+        retBean.valType = [self.visit(node.value)]
+        
+        return retBean
     
     def visit_Div(self, node):
         """
@@ -335,6 +456,15 @@ class InitialWalker(ast.NodeVisitor):
             self.visit(bod)
         return 
  
+    def visit_GeneratorExp(self, node):
+        """
+        @node:ast.ast
+        """
+        for gen in node.generators:
+            self.visit(gen)
+            
+        return self._generatorHelper(Bean.VarBean("generator"), node.elt)
+ 
     def visit_Gt(self, node):
         """
         @node:ast.ast
@@ -384,12 +514,27 @@ class InitialWalker(ast.NodeVisitor):
         '''
         return '__contains__'
     
-
     def visit_Invert(self,node):
         """
         @node:ast.ast
         """
         return('__invert__')
+    
+    def visit_Is(self, node):
+        """
+        @node:ast.ast
+        Is isn't actually a magic method, it calls id() on the objects, which in cpython returns the mem-address of each obj. Then compares them. 
+        It would be possible to check to see if each side was of the same type and if they wernt then they couldn't possibly be the same mem address and throw an exception. But this is the safe way for now.
+        """
+        return "is"
+    
+    def visit_IsNot(self, node):
+        """
+        @node:ast.ast
+        Is not is just the same as is then inverted.
+        """
+        return "isnot"
+        
     
     def visit_List(self, node):
         """
@@ -397,18 +542,23 @@ class InitialWalker(ast.NodeVisitor):
         """
         bean = Bean.VarBean('list')
         
-        elements = []
-        for ele in node.elts:
-            elements.append(self.visit(ele))
+        elements = self._makeCompType(node.elts)
         
-        if all(x == elements[0] for x in elements):
+        if len(elements) == 1:
             bean.homo = True
-            bean.compType = [elements[0]]
-        else:
-            bean.compType = elements
+        bean.compType = elements
             
         return bean
     
+    def visit_ListComp(self, node):
+        """
+        @node:ast.ast
+        """
+        for gen in node.generators:
+            self.visit(gen)
+            
+        return self._generatorHelper(Bean.VarBean('list'), node.elt)
+        
     def visit_Load(self, node):
         """
         @node:ast.ast
@@ -475,6 +625,12 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return "__bool__"
+    
+    def visit_NotIn(self, node):
+        """
+        @node:ast.ast
+        """
+        return "__contains__"
         
     def visit_NotEq(self, node):
         """
@@ -496,9 +652,10 @@ class InitialWalker(ast.NodeVisitor):
      
     def visit_Pass(self, node):
         '''
+        @node:ast.ast
         visit_pass has pass because pass does not do anything
         '''
-        self.visit(node)
+        return
         
     def visit_Pow(self, node):
         """
@@ -525,6 +682,43 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return "__rshift__"
+    
+    def visit_Set(self, node):
+        """
+        @node:ast.ast
+        """
+        bean = Bean.VarBean('set')
+        
+        elements = self._makeCompType(node.elts)
+        if len(elements) == 1:
+            bean.homo = True
+            bean.compType = [elements[0]]
+        else:
+            bean.compType = elements
+            
+        return bean
+    
+    def visit_SetComp(self, node):
+        """
+        @node:ast.ast
+        """
+        for gen in node.generators:
+            self.visit(gen)
+        
+        return self._generatorHelper(Bean.VarBean('set'), node.elt)
+            
+    def visit_Starred(self, node):
+        """
+        @node:ast.ast
+        I think it will alwyas be false, otherwise just raise an exception
+        """
+        if self.visit(node.ctx): #if it was to store things into
+            retBean = self.visit(node.value)
+            retBean.varType = "list" 
+            retBean.starred = True
+            return retBean
+        else:
+            raise Exceptions.PyDuckerException(-1)
             
     def visit_Store(self, node):
         """
@@ -555,21 +749,49 @@ class InitialWalker(ast.NodeVisitor):
         for final in node.finalbody:
             self.visit(final)
     
+    def visit_Tuple(self, node):
+        """
+        @node:ast.ast
+        A store will be on the left side of an assignment statement, like 'a, b = [1, 2]'
+        In a store all the types will need to be a ast.Name type
+        """
+        store = self.visit(node.ctx)
+        if store:
+            retBean = Bean.VarBean('tuple')
+            for ele in node.elts:
+                retBean.compType.append(self.visit(ele))
+            retBean.starred = True #set starred to true becuase unpacking needs a flag to show it isn't a reassign of a regular tuple
+            return retBean
+        else:
+            retBean = Bean.VarBean("tuple")
+            compType = self._makeCompType(node.elts)
+            if len(compType) == 1:
+                retBean.homo = True
+            retBean.compType = compType
+            return retBean
+    
     def visit_UAdd(self,node):
+        """
+        @node:ast.ast
+        """
         return('__pos__')
     
     def visit_UnaryOp(self,node):
+        """
+        @node:ast.ast
+        """
         operand = self.visit(node.operand)
         operandBean = self.nameSpace[operand.varType]
         op = self.visit(node.op)
         if operandBean.hasFun(op):
             return operandBean.funs[op].returnType
         else:
-            #Need an exception for unary ops
-            Exceptions.MissingMagicMethodException(operandBean.name, op, node.lineno)
-#             print('Error found when trying to '+ op + ' on ' + operand +'.')#,file = sys.stderr)
+            Exceptions.MissingMethodException(operandBean, op, node.lineno)
 
     def visit_USub(self,node):
+        """
+        @node:ast.ast
+        """
         return('__neg__')
     
     def visit_While(self, node):

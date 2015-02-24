@@ -87,7 +87,7 @@ def _testAll(listOfFiles):
             print()
     
 if __name__ == '__main__':
-    testOne("../Test/Correct/bytes.py")
+    testOne("../Test/Incorrect/TupleUnPack.py")
 #     testAllCorrect()
     #testAllIncorrect()
     print("out main")
