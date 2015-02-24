@@ -677,11 +677,17 @@ class FunDefWalker(InitialWalker):
         """
         @node:ast.ast
         """
+        arglist = node.args
         print('found visit_arguments')
         #print(ast.dump(node))
-        arguments = parseDocString(ast.get_docstring(self.root))
-        for i in arguments:
-            self.scope.append(i)
+        if arglist != []:    
+            if ast.get_docstring(self.root) != None:
+                arguments = parseDocString(ast.get_docstring(self.root))
+                for i in arguments:
+                    print(i)
+                    self.scope.append(i)
+            else:
+                print('err0')
             #Not the correct way to add it to the scope since we can't
             #remove it when we're done!
         print(self.scope.vars)
