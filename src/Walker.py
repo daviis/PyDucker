@@ -867,6 +867,7 @@ class FunDefWalker(InitialWalker):
         @scopeLevel:bean.ScopeLevelBean
         """
         super().__init__(funRoot, nameSp, scopeLevel)
+        self._findParamTypes()
         self.name = funRoot.name
         self.retType = None
         self.nameSpace = nameSp
@@ -875,7 +876,9 @@ class FunDefWalker(InitialWalker):
         self.visit(self.root)
         
     def _findParamTypes(self):
-        scopeObject = parseDocString(ast.get_docstring(self.root))
+        scopeObjects = parseDocString(ast.get_docstring(self.root))
+        for scope in scopeObjects:
+            self.scope.append(scope)
     
     def createFunBean(self):
         bean = Bean.FunDefBean(list(self.scope), self.retType, self.name)
@@ -883,12 +886,16 @@ class FunDefWalker(InitialWalker):
         return bean
     
     def visit_FunctionDef(self, node):
-        for _, value in ast.iter_fields(node):
-            if isinstance(value, list):
-                for arg in value:
-                    self.visit(arg)
-            elif value:
-                self.visit(value)
+        try:
+            for _, value in ast.iter_fields(node):
+                if isinstance(value, list):
+                    for arg in value:
+                        self.visit(arg)
+                elif value:
+                    self.visit(value)
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
+            raise ex            
             
     def visit_Return(self, node):
         #may need to look at the other fields in ast.Return but the basic way is this. 
