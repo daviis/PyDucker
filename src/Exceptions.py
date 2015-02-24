@@ -156,15 +156,15 @@ class IncorrectMethodExcepiton(MissingMethodException):
     
 class NonIntIndexException(PyDuckerError):
     
-    def __init__(self, someName, lineNo=-1):
+    def __init__(self, varBean, lineNo=-1):
         """
-        @someName:str
+        @varBean:str
         @lineNo:int
         """
         super().__init__(lineNo)
-        self.aName = someName
+        self.varBean = varBean
         
     def __str__(self):
         ret = super().__str__()
-        ret += "\n\tVariable name: " + self.aName + " is not an integer and needs to be to index."
+        ret += "\n\tVariable name: " + self.varBean.name + " is an " + self.varBean.varType +" and needs to be an integer in order to index."
         return ret

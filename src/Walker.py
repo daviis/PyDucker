@@ -585,6 +585,7 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """ 
         var = self.visit(node.value) #Item being sliced
+        print(ast.dump(node))
         try:
             self.visit(node.slice)
             return #May need to return something else
