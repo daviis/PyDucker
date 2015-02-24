@@ -91,6 +91,11 @@ def handMakeNameSpace():
     exceptionClass = ClassDefBean("Exception", None)
     nameSpace.put(exceptionClass.name, exceptionClass)
     
+    floatClass = ClassDefBean('float', None)
+    floatClass.funs['__add__'] = FunDefBean([VarBean('float')], VarBean('float'), '__add__')
+    floatClass.funs['__sub__'] = FunDefBean([VarBean('float')], VarBean('float'), '__sub__' )
+    nameSpace.put(floatClass.name, floatClass)
+    
     return nameSpace
 
 def handMakeScope():
