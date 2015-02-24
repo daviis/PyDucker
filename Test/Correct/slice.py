@@ -1,6 +1,6 @@
 x = 'hello'
 x[1]
-'hello'[0]
-#a = x[3:]
+z = 'hello'[0]
+a = x[0]
 #x['a']
-#b = x[0]
+b = x[0]

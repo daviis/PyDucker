@@ -396,9 +396,9 @@ class InitialWalker(ast.NodeVisitor):
         """
         var = self.visit(node.value)
         if var.varType == 'int':
-            return
+            return var
         else:
-            raise Exceptions.NonIntIndexException(var.name)    
+            raise Exceptions.NonIntIndexException(var)    
 
     def visit_Invert(self,node):
         """
@@ -585,10 +585,9 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """ 
         var = self.visit(node.value) #Item being sliced
-        print(ast.dump(node))
         try:
             self.visit(node.slice)
-            return #May need to return something else
+            return var#Return the varBean
         except Exceptions.PyDuckerException as ex:
             ex.lineNum = node.lineno
             raise ex      
