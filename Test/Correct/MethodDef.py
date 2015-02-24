@@ -1,8 +1,8 @@
 def add(a, b):
-    '''
-    @a:float
-    @b:float
-    '''
+#    '''
+ #   @a:float
+  #  @b:float
+   # '''
     return a + b 
 
 #def sub(a, b):

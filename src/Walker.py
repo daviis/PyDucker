@@ -876,10 +876,11 @@ class FunDefWalker(InitialWalker):
         self.visit(self.root)
         
     def _findParamTypes(self):
-        scopeObjects = parseDocString(ast.get_docstring(self.root))
-        for scope in scopeObjects:
-            self.scope.append(scope)
-    
+        if ast.get_docstring(self.root):
+            scopeObjects = parseDocString(ast.get_docstring(self.root))
+            for scope in scopeObjects:
+                self.scope.append(scope)
+        
     def createFunBean(self):
         bean = Bean.FunDefBean(list(self.scope), self.retType, self.name)
 #         stuff about making the bean
@@ -916,7 +917,9 @@ class FunDefWalker(InitialWalker):
                     print(i)
                     self.scope.append(i)
             else:
-                print('err0')
+                print(self.name)
+                Exceptions.MissingDocStringException(self.name)
+                
             #Not the correct way to add it to the scope since we can't
             #remove it when we're done!
         print(self.scope.vars)
