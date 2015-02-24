@@ -158,8 +158,9 @@ class InitialWalker(ast.NodeVisitor):
                     raise ex
                 
             elif varBean.typesMatch(value):
-                value.name = varBean.name
-                self.scope.append(value)
+                varBean.recursiveClone(value)
+#                 value.name = varBean.name
+                self.scope.append(varBean)
             
             else:
                 raise  Exceptions.TypeMisMatchException(varBean.name, varBean.varType, value.varType, node.lineno)
