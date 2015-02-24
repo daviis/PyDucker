@@ -82,6 +82,16 @@ def handMakeNameSpace():
     listClass.funs['__iter__'] = FunDefBean(['self'], 'obj', '__iter__')
     nameSpace.put(listClass.name , listClass)
 
+    setClass = ClassDefBean('set' , None)
+    setClass.funs['__contains__'] = FunDefBean([VarBean('obj')], VarBean('bool'), '__contains__')
+    setClass.funs['__iter__'] = FunDefBean(['self'], 'obj', '__iter__')
+    nameSpace.put(setClass.name , setClass)
+
+    tupleClass = ClassDefBean('tuple' , None)
+    tupleClass.funs['__contains__'] = FunDefBean([VarBean('obj')], VarBean('bool'), '__contains__')
+    tupleClass.funs['__iter__'] = FunDefBean(['self'], 'obj', '__iter__')
+    nameSpace.put(tupleClass.name , tupleClass)
+
     dictClass = ClassDefBean('dict' , None)
     dictClass.funs['__contains__'] = FunDefBean([VarBean('obj')], VarBean('bool'), '__contains__')
     nameSpace.put(dictClass.name, dictClass) 
@@ -91,6 +101,9 @@ def handMakeNameSpace():
     
     exceptionClass = ClassDefBean("Exception", None)
     nameSpace.put(exceptionClass.name, exceptionClass)
+    
+    generatorClass = ClassDefBean("generator", None)
+    nameSpace.put(generatorClass.name, generatorClass)
     
     return nameSpace
 
