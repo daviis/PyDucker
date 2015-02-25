@@ -152,8 +152,10 @@ class InitialWalker(ast.NodeVisitor):
                     raise ex
                 
             elif varBean.typesMatch(value):
+                print('value ' , value)
                 value.name = varBean.name
                 self.scope.append(value)
+                    
             
             else:
                 raise  Exceptions.TypeMisMatchException(varBean.name, varBean.varType, value.varType, node.lineno)
@@ -257,7 +259,9 @@ class InitialWalker(ast.NodeVisitor):
         It can throw a MissingMethodException if the function isn't found in the class or if the number/types of paramiters is wrong
         @node:ast.ast
         """
+      
         cls, funcName = self.visit(node.func)
+        
         
         args = []
         for arg in node.args:
@@ -274,6 +278,7 @@ class InitialWalker(ast.NodeVisitor):
         if clsBean.hasFun(funcName):
             #fundefbean will need to be extended to handle things other than just a fixed lenght number of params
             if clsBean.funs[funcName].takes(args):
+                clsBean.funs[funcName].returntype
                 return clsBean.funs[funcName].returnType
             else:
                 raise Exceptions.IncorrectMethodExcepiton(funcName, args, node.lineno, aCls=cls)
@@ -606,6 +611,7 @@ class InitialWalker(ast.NodeVisitor):
         store = self.visit(node.ctx)
         
         try:
+            
             scopedVarBean = self.scope[node.id]
             return scopedVarBean
         except KeyError:
@@ -803,6 +809,12 @@ class InitialWalker(ast.NodeVisitor):
             self.visit(bodyPart) #i dont think this needs to store what gets returned
         for orelse in node.orelse:
             self.visit(orelse)
+     
+    def visit_Yield(self, node):
+        """
+        @node.ast.AST
+        """
+        
      
     #These are initial walker independent, ie they should be over written in inheriting classes    
     def visit_ClassDef(self, node):

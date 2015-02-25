@@ -158,6 +158,7 @@ class ScopeLevelBean(GenericBean):
         """
         @item:str
         """
+        print(self.vars)
         return self.vars[item]
     
     def __setitem__(self, name, item):
