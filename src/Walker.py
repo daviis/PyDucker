@@ -824,8 +824,6 @@ class InitialWalker(ast.NodeVisitor):
              
         self.nameSpace.put(funWalker.name, funWalker.createFunBean())
         
-        print("out fun")
-         
             
 class ClassDefWalker(InitialWalker):
     
@@ -867,6 +865,7 @@ class FunDefWalker(InitialWalker):
         @scopeLevel:bean.ScopeLevelBean
         """
         super().__init__(funRoot, nameSp, scopeLevel)
+        self._findParamTypes()
         self.name = funRoot.name
         self.retType = None
         self.nameSpace = nameSp
@@ -874,38 +873,46 @@ class FunDefWalker(InitialWalker):
     def walk(self):
         self.visit(self.root)
         
+    def _addPramsToScope(self):
+        params = self._findParamsTypes()
+        for scope in params:
+                self.scope.append(scope)
+        
     def _findParamTypes(self):
-        scopeObject = parseDocString(ast.get_docstring(self.root))
-    
+        if ast.get_docstring(self.root):
+            return parseDocString(ast.get_docstring(self.root))
+        
     def createFunBean(self):
-        bean = Bean.FunDefBean(list(self.scope), self.retType, self.name)
-#         stuff about making the bean
-        return bean
+        return Bean.FunDefBean(self._findParamTypes(), self.retType, self.name)
     
     def visit_FunctionDef(self, node):
-        for _, value in ast.iter_fields(node):
-            if isinstance(value, list):
-                for arg in value:
-                    self.visit(arg)
-            elif value:
-                self.visit(value)
+        try:
+            for _, value in ast.iter_fields(node):
+                if isinstance(value, list):
+                    for arg in value:
+                        self.visit(arg)
+                elif value:
+                    self.visit(value)
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
+            raise ex            
             
     def visit_Return(self, node):
-        #may need to look at the other fields in ast.Return but the basic way is this. 
         self.retType = self.visit(node.value)
-        
         
     def visit_arguments(self,node):
         """
         @node:ast.ast
         """
-        print('found visit_arguments')
-        #print(ast.dump(node))
-        arguments = parseDocString(ast.get_docstring(self.root))
-        for i in arguments:
-            self.scope.append(i)
+        arglist = node.args
+        if arglist != []:    
+            if ast.get_docstring(self.root) != None:
+                arguments = parseDocString(ast.get_docstring(self.root))
+                for i in arguments:
+                    self.scope.append(i)
+            else:
+                Exceptions.MissingDocStringException(self.name)
+                
             #Not the correct way to add it to the scope since we can't
             #remove it when we're done!
-        print(self.scope.vars)
-        print('done visitng_aruments')    
         

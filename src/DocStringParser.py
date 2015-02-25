@@ -55,6 +55,8 @@ def parseDocString(docString,returnList = True):
                 elif currentType[-1] == '*':
                     compType = currentType[:-1]
                 #lists handled
+        else:
+            isHomo = False
         
         for key in variables:
             currentVar = VarBean(currentType,key)
