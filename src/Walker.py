@@ -881,21 +881,24 @@ class FunDefWalker(InitialWalker):
     def _findParamTypes(self):
         if ast.get_docstring(self.root):
             return parseDocString(ast.get_docstring(self.root))
+        else:
+            return []
         
     def createFunBean(self):
         return Bean.FunDefBean(self._findParamTypes(), self.retType, self.name)
     
     def visit_FunctionDef(self, node):
         try:
-            for _, value in ast.iter_fields(node):
-                if isinstance(value, list):
-                    for arg in value:
-                        self.visit(arg)
-                elif value:
-                    self.visit(value)
+            self.visit(node.args)
         except Exceptions.PyDuckerException as ex:
             ex.lineNum = node.lineno
-            raise ex            
+            raise ex 
+        
+        for dec in node.decorator_list:
+            self.visit(dec)
+            
+        for bod in node.body:
+            self.visit(bod)           
             
     def visit_Return(self, node):
         self.retType = self.visit(node.value)
