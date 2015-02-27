@@ -12,6 +12,8 @@ The exception hierarchy for PyDucker is
               |--- IncorrectMethodException
         |--- OutOfScopeException
         |--- MissingDocStringException
+        |--- NonlocalReferenceException
+        |--- GlobalReferenceException
     |--- PyDuckerWarning
          |--- TypeMismatchException
          |--- HeteroCollectionException
@@ -168,4 +170,43 @@ class IncorrectMethodExcepiton(MissingMethodException):
     def __str__(self):
         ret = super().__str__()
         ret += "\n\tWith args: " + str(self.argLst)
+        return ret
+    
+    
+class NonlocalReferenceException(PyDuckerError):
+    
+    def __init__(self, aVarBeanLst, message, lineNo=-1):
+        """
+        @aVarBeanLst:VarBean*
+        @message:str
+        @lineNo:int
+        """
+        super().__init__(lineNo)
+        self.msg = message
+        self.varBeanList = aVarBeanLst
+        
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\tCouldn't make nonlocal call about "
+        for bean in self.varBeanList:
+            ret += bean.name
+        ret += "\n\t" + self.msg
+        return ret
+    
+class GlobalReferenceException(PyDuckerError):
+    
+    def __init__(self, nameBean, message, lineNo=-1):
+        """
+        @nameBean:VarBean
+        @message:str
+        @lineNo:int
+        """
+        super().__init__(lineNo)
+        self.msg = message
+        self.varBean = nameBean
+        
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\tCouldn't make global call for " + self.varBean.name
+        ret += "\n\t" + self.msg
         return ret
