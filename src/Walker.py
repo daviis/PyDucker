@@ -475,8 +475,8 @@ class InitialWalker(ast.NodeVisitor):
         """
         varNames = []
         for nameNode in node.names:
-            varNames.append(self.visit(nameNode))
-        
+            varNames.append(Bean.VarBean(None, nameNode))
+                    
         try:
             self.scope.makeGlobalReference(varNames)
         except Exceptions.PyDuckerException as ex:
@@ -644,7 +644,7 @@ class InitialWalker(ast.NodeVisitor):
         """
         varNames = []
         for nameNode in node.names:
-            varNames.append(self.visit(nameNode))
+            varNames.append(Bean.VarBean(None, nameNode))
             
         try:
             self.scope.makeNonlocalReference(varNames)
