@@ -223,6 +223,26 @@ class ScopeLevelBean(GenericBean):
         """
         self.levels.pop()
         
+    def makeNonlocalReference(self, names):
+        """
+        @names:VarBean*
+        """
+        if len(self.levels) < 2:
+            raise Exceptions.NonlocalReferenceException(names, "Not enough levels of scope to make a nonlocal reference. Maybe a 'global' call would work")
+        
+        
+    
+    def makeGlobalReference(self, names):
+        """
+        @names:VarBean*
+        """
+        globalLevel = self.levels[0]
+        if len(self.levels) == 1:
+            for nameBean in names:
+                if nameBean.name in globalLevel:
+                    raise Exceptions.GlobalReferenceException(nameBean, "Name assigned before global declaration.")
+        else:
+            pass
         
         
 class NameSpaceBean(GenericBean):
