@@ -82,7 +82,7 @@ class HeteroCollecionException(PyDuckerWarning):
 
 class OutOfScopeException(PyDuckerError):
     
-    def __init__(self, someName, lineNo):
+    def __init__(self, someName, lineNo=-1):
         """
         @someName:str
         @lineNo:int
@@ -107,7 +107,6 @@ class MissingDocStringException(PyDuckerError):
         self.aName = someName
         
     def __str__(self):
-        print(ret)
         ret = super().__str__()
         ret += "\n\tVarible name: " + self.aName + " in a DocString"
         return ret
