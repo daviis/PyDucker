@@ -468,7 +468,21 @@ class InitialWalker(ast.NodeVisitor):
             self.visit(gen)
             
         return self._generatorHelper(Bean.VarBean("generator"), node.elt)
- 
+    
+    def visit_Global(self, node):
+        """
+        @node:ast.ast
+        """
+        varNames = []
+        for nameNode in node.names:
+            varNames.append(self.visit(nameNode))
+        
+        try:
+            self.scope.makeGlobalReference(varNames)
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
+            raise ex
+        
     def visit_Gt(self, node):
         """
         @node:ast.ast
@@ -624,6 +638,20 @@ class InitialWalker(ast.NodeVisitor):
         """
         return Bean.VarBean(type(node.value).__name__)
         
+    def visit_Nonlocal(self, node):
+        """
+        @node:ast.ast
+        """
+        varNames = []
+        for nameNode in node.names:
+            varNames.append(self.visit(nameNode))
+            
+        try:
+            self.scope.makeNonlocalReference(varNames)
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
+            raise ex
+
     def visit_Not(self, node):
         """
         @node:ast.ast
