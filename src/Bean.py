@@ -160,9 +160,13 @@ class ScopeLevelBean(GenericBean):
         """
         @item:str
         """
-        currentLevel = self.levels.pop()
-        self.levels.append(currentLevel)
-        return currentLevel[item]
+        for level in reversed(self.levels):
+            if item in level:
+                return level[item]
+            
+        raise Exceptions.OutOfScopeException(item)
+            
+            
     
     def __setitem__(self, name, item):
         """

@@ -419,10 +419,14 @@ class InitialWalker(ast.NodeVisitor):
         """
         typeBean = self.visit(node.type)
         typeBean.name = node.name
+        
+        self.scope.goDownLevel()
+        
         self.scope.append(typeBean) #name will be a str var name that the exception will take on, we will need to add it to the scope then remove it from scope when the call completes.
         for bod in node.body:
             self.visit(bod)
         
+        self.scope.goUpLevel()
     
     def visit_Expr(self, node):
         """
@@ -606,13 +610,13 @@ class InitialWalker(ast.NodeVisitor):
         store = self.visit(node.ctx)
         
         try:
-            scopedVarBean = self.scope[node.id]
-            return scopedVarBean
-        except KeyError:
+            return self.scope[node.id]
+        except Exceptions.PyDuckerException as ex:
             if store:
                 return Bean.VarBean(None, node.id)
             else:
-                raise Exceptions.OutOfScopeException(node.id, node.lineno)
+                ex.lineNum = node.lineno
+                raise ex
             
     def visit_NameConstant(self, node):
         """
