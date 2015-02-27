@@ -149,62 +149,87 @@ class ScopeLevelBean(GenericBean):
     def __init__(self, incomingVars = []):
         """
         @incomingVars:*VarBean
+        The key in the levels dictionary will be the varName, value will be the VarBeanReference
         """
-        self.vars = {} #key will be the varName, value will be the VarBeanReference 
+        self.levels = [{}]
         for var in incomingVars:
             self.append(var)
+        
         
     def __getitem__(self, item):
         """
         @item:str
         """
-        return self.vars[item]
+        currentLevel = self.levels.pop()
+        self.levels.append(currentLevel)
+        return currentLevel[item]
     
     def __setitem__(self, name, item):
-        self.vars[name] = item
+        """
+        Set a variable in the highest level of scope
+        """
+        currentLevel = self.levels.pop()
+        currentLevel[name] = item
+        self.levels.append(currentLevel)
         
     def __delitem__(self,item):
         """
         @item:str
         Delete an entry from scope where item is the key
         """
-        del self.vars[item]
+        currentLevel = self.levels.pop()
+        del currentLevel[item]
+        self.levels.append(currentLevel)
         
     def __contains__(self, item):
         """
         @item:str
         @!bool
         """
-        return item in self.vars
+        currentLevel = self.levels.pop()
+        self.levels.append(currentLevel)
+        return item in currentLevel
         
     def __iter__(self):
-        return iter(self.vars)
+        currentLevel = self.levels.pop()
+        self.levels.append(currentLevel)
+        return iter(currentLevel)
         
     def append(self, item):
         """
         @item:VarBean
         """
-        if item.name in self.vars and item != self.vars[item.name]:
+        currentLevel = self.levels.pop()
+        
+        if item.name in currentLevel and item != currentLevel[item.name]:
             print("reassign of " + item.name, file=sys.stderr)
-        self.vars[item.name] = item
+            
+        currentLevel[item.name] = item
+        self.levels.append(currentLevel)
         
-    def copy(self):
+    def goDownLevel(self):
         """
-        Used to pass into a (class/fun)defWalker. When exited from the router it will pop off extra vars. 
+        Used when entering a function, it adds a dictionary to the stack of scope levels
         """
-        bean = ScopeLevelBean()
-        for varName in self.vars:
-            bean.append(self.vars[varName])
-        return bean
+        self.levels.append({})
+    
+    def goUpLevel(self):
+        """
+        Used when leaving a function, it pops a dictionary to the stack of scope levels
+        """
+        self.levels.pop()
         
         
         
-class NameSpaceBean(ScopeLevelBean):
+class NameSpaceBean(GenericBean):
     """
     This variation of ScopeLevelBean will wrap a dictionary where the key will be a string of the class/fun name
     and the value will be a ClassBean or FunDefBean. The look up will be different because if it hits on a value 
     in the dict that is initialized with None then it will attempt to make a bean.
     """
+    
+    def __init__(self):
+        self.vars = {}
      
     def put(self, name, bean=None):
         """

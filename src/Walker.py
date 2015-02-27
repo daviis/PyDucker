@@ -809,21 +809,27 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.AST
         """
-        clsWalker = ClassDefWalker(node, self.nameSpace, self.scope.copy())
+        self.scope.goDownLevel()
+        
+        clsWalker = ClassDefWalker(node, self.nameSpace, self.scope)
         clsWalker.walk()
         
         self.nameSpace.put(clsWalker.name, clsWalker.createClassBean())
         
+        self.scope.goUpLevel()
          
     def visit_FunctionDef(self, node):
         """
         @node:ast.AST
         """
-        funWalker = FunDefWalker(node, self.nameSpace, self.scope.copy())   
+        self.scope.goDownLevel()
+        
+        funWalker = FunDefWalker(node, self.nameSpace, self.scope)   
         funWalker.walk()
              
         self.nameSpace.put(funWalker.name, funWalker.createFunBean())
         
+        self.scope.goUpLevel()
             
 class ClassDefWalker(InitialWalker):
     
