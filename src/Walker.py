@@ -842,6 +842,7 @@ class ClassDefWalker(InitialWalker):
         self.name = classRoot.name
        
     def walk(self):
+        
         #first call should be a quick walk to snag all of the fun names and self var names
         for bod in self.root.body:
             self.visit(bod)
@@ -850,6 +851,7 @@ class ClassDefWalker(InitialWalker):
         """
         @node:ast.ast
         """
+        print(self.funs)
         self.funs.append(node)
         if(node.name == '__init__'):
             self.initFun = node

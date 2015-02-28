@@ -104,11 +104,14 @@ def handMakeNameSpace():
     generatorClass = ClassDefBean("generator", None)
     nameSpace.put(generatorClass.name, generatorClass)
     
+    rangeClass= ClassDefBean('range', None)
+    nameSpace.put(rangeClass.name, rangeClass)
     return nameSpace
 
 def handMakeScope():
     scope = ScopeLevelBean()
     
     scope.append(VarBean("Exception", "ValueError"))
+    scope.append(VarBean('range', 'range'))
     
     return scope
