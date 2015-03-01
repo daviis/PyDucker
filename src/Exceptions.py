@@ -11,6 +11,7 @@ The exception hierarchy for PyDucker is
               |--- MissingMagicMethodException
               |--- IncorrectMethodException
         |--- OutOfScopeException
+             |--- RefBeforeAssignException 
         |--- MissingDocStringException
         |--- NonlocalReferenceException
         |--- GlobalReferenceException
@@ -95,6 +96,13 @@ class OutOfScopeException(PyDuckerError):
     def __str__(self):
         ret = super().__str__()
         ret += "\n\tVariable name: " + self.aName + " is not in scope"
+        return ret
+    
+class RefBeforeAssignException(OutOfScopeException):
+    
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\tBecause it was referenced before it was assigned."
         return ret
     
 class MissingDocStringException(PyDuckerError):
