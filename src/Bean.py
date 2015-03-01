@@ -162,7 +162,10 @@ class ScopeLevelBean(GenericBean):
         """
         for level in reversed(self.levels):
             if item in level:
-                return level[item]
+                if level[item].varType:
+                    return level[item]
+                else:
+                    raise Exceptions.RefBeforeAssignException(item)
             
         raise Exceptions.OutOfScopeException(item)
             

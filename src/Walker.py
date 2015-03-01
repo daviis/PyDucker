@@ -134,7 +134,9 @@ class InitialWalker(ast.NodeVisitor):
         """
         tars = []
         for target in node.targets:
-            tars.append(self.visit(target))
+            newVarName = self.visit(target)
+            tars.append(newVarName)
+            self.scope.append(newVarName)
         
         try:
             value = self.visit(node.value)
@@ -153,7 +155,6 @@ class InitialWalker(ast.NodeVisitor):
                 
             elif varBean.typesMatch(value):
                 value.name = varBean.name
-                self.scope.append(value)
             
             else:
                 raise  Exceptions.TypeMisMatchException(varBean.name, varBean.varType, value.varType, node.lineno)
