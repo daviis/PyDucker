@@ -121,6 +121,7 @@ class VarBean(GenericBean):
         self.homo = False
         self.starred = False
         self.compType = []
+        self.scopeModifiers = "" #possible options for this will be global and nonlocal.
         
     def __eq__(self, other):
         return self.varType == other
@@ -224,7 +225,12 @@ class ScopeLevelBean(GenericBean):
         """
         Used when leaving a function, it pops a dictionary to the stack of scope levels
         """
-        self.levels.pop()
+        if len(self.levels) > 1:
+            self.levels.pop()
+        else:
+            raise Exception("Can't leave the global scope")
+        
+        
         
     def makeNonlocalReference(self, names):
         """
@@ -232,21 +238,53 @@ class ScopeLevelBean(GenericBean):
         """
         if len(self.levels) < 2:
             raise Exceptions.NonlocalReferenceException(names, "Not enough levels of scope to make a nonlocal reference. Maybe a 'global' call would work")
-        
-        
+        #there is the possibility of finding the variable name check everywhere but the global scope
+        for nameBean in names:
+            if self._nonlocalGlobalAlreadyUsedCheck(nameBean): #if the variable is already in scope at this level then it will not work.
+                raise Exceptions.NonlocalReferenceException([nameBean], "Name assigned before nonlocal declaration.")
+            else:
+                for level in reversed(self.levels[1:]): #look in every level except for the global scope
+                    if nameBean.name in level:
+                        if nameBean.scopeModifier == "global":
+                            raise Exceptions.NonlocalReferenceException([nameBean], "There variable was previously pulled out of the global scope. The global keyword may serve you better.")
+                        else:
+                            nameBean.recurseiveCopy(level[nameBean.name])
+                            nameBean.scopeModifier = "nonlocal"
+                            self.append(nameBean)
+                            return #don't need to return anything, just return so the last of the loop isn't used 
+                    else:
+                        continue #keep going until the end of the lists
+         
     
     def makeGlobalReference(self, names):
         """
         @names:VarBean*
         """
-        globalLevel = self.levels[0]
-        if len(self.levels) == 1:
-            for nameBean in names:
-                if nameBean.name in globalLevel:
-                    raise Exceptions.GlobalReferenceException(nameBean, "Name assigned before global declaration.")
-        else:
-            pass
+        for nameBean in names:
+            if self._nonlocalGlobalAlreadyUsedCheck(nameBean):
+                raise Exceptions.GlobalReferenceException(nameBean, "Name assigned before global declaration.")
+            else:
+                globSpace = self.levels[0]
+                if nameBean.name not in globSpace:
+                    raise Exceptions.ScopeNotFoundException("Global", nameBean)
+                else:
+                    nameBean.scopeModifier = "global"
+                    self.append(nameBean)
+                 
         
+    def _nonlocalGlobalAlreadyUsedCheck(self, nameBean):
+        """
+        @nameBean:VarBean
+        
+        Helper function for both global and nonlocal keywords.
+        """
+        currentLevel = self.levels.pop()
+        self.levels.append(currentLevel)
+        
+        if nameBean.name in currentLevel:
+            return True
+        else:
+            return False
         
 class NameSpaceBean(GenericBean):
     """

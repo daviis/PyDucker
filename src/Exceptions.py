@@ -18,6 +18,7 @@ The exception hierarchy for PyDucker is
     |--- PyDuckerWarning
          |--- TypeMismatchException
          |--- HeteroCollectionException
+         |--- ScopeNotFoundException
 '''
 
 class PyDuckerException(Exception):
@@ -217,4 +218,21 @@ class GlobalReferenceException(PyDuckerError):
         ret = super().__str__()
         ret += "\n\tCouldn't make global call for " + self.varBean.name
         ret += "\n\t" + self.msg
+        return ret
+    
+class ScopeNotFoundException(PyDuckerWarning):
+    
+    def __inti__(self, globNonLoc, aVarBean, lineNo=-1):
+        """
+        @globNonLoc:str
+        @aVarBean:Bean.VarBean
+        @lineNo:int
+        """
+        super().__init__(lineNo)
+        self.varBean = aVarBean
+        self.scopeType = globNonLoc
+        
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\tCould not find " + self.varBean.name + " in the scope of " + self.scopeType
         return ret
