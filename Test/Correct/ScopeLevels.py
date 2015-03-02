@@ -5,6 +5,11 @@ pass
 def cat():
     c = 1
     pass
+    print(c)
     
-b = 1
+b = 2
 pass
+
+if __name__ == '__main__':
+    cat()
+    print(c)
