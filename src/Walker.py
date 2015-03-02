@@ -861,6 +861,7 @@ class InitialWalker(ast.NodeVisitor):
         funWalker.walk()
              
         self.nameSpace.put(funWalker.name, funWalker.createFunBean())
+        self.scope.append(Bean.VarBean('function', funWalker.name))
         
         self.scope.goUpLevel()
             
@@ -910,7 +911,18 @@ class FunDefWalker(InitialWalker):
         self.nameSpace = nameSp
         
     def walk(self):
-        self.visit(self.root)
+        try:
+            self.visit(self.root.args)
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = self.root.lineno
+            raise ex 
+        
+        for dec in self.root.decorator_list:
+            self.visit(dec)
+            
+        for bod in self.root.body:
+            self.visit(bod)           
+            
         
     def _addPramsToScope(self):
         params = self._findParamsTypes()
@@ -926,19 +938,6 @@ class FunDefWalker(InitialWalker):
     def createFunBean(self):
         return Bean.FunDefBean(self._findParamTypes(), self.retType, self.name)
     
-    def visit_FunctionDef(self, node):
-        try:
-            self.visit(node.args)
-        except Exceptions.PyDuckerException as ex:
-            ex.lineNum = node.lineno
-            raise ex 
-        
-        for dec in node.decorator_list:
-            self.visit(dec)
-            
-        for bod in node.body:
-            self.visit(bod)           
-            
     def visit_Return(self, node):
         self.retType = self.visit(node.value)
         
