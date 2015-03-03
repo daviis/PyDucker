@@ -30,6 +30,7 @@ def testOne(aFile):
     
     firstWalker = InitialWalker(tree, nameSpace, scope)
     firstWalker.walk()
+    print("")
 
     #do some exception handling that will tell the user what went wrong in their project
 def testAllCorrect():

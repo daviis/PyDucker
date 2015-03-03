@@ -781,9 +781,15 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """ 
         var = self.visit(node.value) #Item being sliced
+        bean = None
+        if var.varType == 'list':
+            bean = Bean.VarBean(var.nextSubType())
         try:
             self.visit(node.slice)
-            return var#Return the varBean
+            if bean:
+                return bean#Return the varBean
+            else:
+                return var
         except Exceptions.PyDuckerException as ex:
             ex.lineNum = node.lineno
             raise ex      
