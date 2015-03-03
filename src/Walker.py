@@ -154,7 +154,9 @@ class InitialWalker(ast.NodeVisitor):
                     raise ex
                 
             elif varBean.typesMatch(value):
-                value.name = varBean.name
+                varBean.recursiveClone(value)
+#                 value.name = varBean.name
+                self.scope.append(varBean)
             
             else:
                 raise  Exceptions.TypeMisMatchException(varBean.name, varBean.varType, value.varType, node.lineno)
@@ -166,9 +168,10 @@ class InitialWalker(ast.NodeVisitor):
         Value is the varType of the object the function is being called on. node.attr is the str rep of 
         the method name
         """
-        value = self.visit(node.value)
-        ctx = self.visit(node.ctx)
-        return value, node.attr
+        return node.attr
+#         value = self.visit(node.value)
+#         ctx = self.visit(node.ctx)
+#         return value, node.attr
     
     def visit_AugAssign(self, node):
         """
@@ -258,7 +261,7 @@ class InitialWalker(ast.NodeVisitor):
         It can throw a MissingMethodException if the function isn't found in the class or if the number/types of paramiters is wrong
         @node:ast.ast
         """
-        cls, funcName = self.visit(node.func)
+        funcName = self.visit(node.func) #this will be an ast.Attribute for `'a'.upper()` or a ast.Name for `'a'() or print()`
         
         args = []
         for arg in node.args:
@@ -270,16 +273,30 @@ class InitialWalker(ast.NodeVisitor):
             
         starargs = self.visit(node.starargs)
         kwargs = self.visit(node.kwargs)
+
+        try:
+            #assume that the function will be part of a class, so try to look up the class type, then see if it has the function.
+            cls = self.visit(node.func.value)
+            clsBean = self.nameSpace[cls.varType]
+            funBean = Bean.FunDefBean(args, None, funcName)
+            return clsBean.acceptsFun(funBean)
         
-        clsBean = self.nameSpace[cls.varType]
-        if clsBean.hasFun(funcName):
-            #fundefbean will need to be extended to handle things other than just a fixed lenght number of params
-            if clsBean.funs[funcName].takes(args):
-                return clsBean.funs[funcName].returnType
-            else:
-                raise Exceptions.IncorrectMethodExcepiton(funcName, args, node.lineno, aCls=cls)
-        else:
-            raise Exceptions.MissingMethodException(cls, funcName, node.lineno)
+        except AttributeError:
+            #there wasn't a class to find (attribute error from ast.Attribute), check to see if it is a global
+            #todo look up in scope to make sure that the params match
+            #todo make it do a scope look up to see if the funcName is a str b/c then it will need to do a scope look up.
+            return funcName.returnType
+        
+            
+#         todo clean up
+#         if clsBean.hasFun(funcName):
+#             #fundefbean will need to be extended to handle things other than just a fixed lenght number of params
+#             if clsBean.funs[funcName].takes(args):
+#                 return clsBean.funs[funcName].returnType
+#             else:
+#                 raise Exceptions.IncorrectMethodExcepiton(funcName, args, node.lineno, aCls=cls)
+#         else:
+#             raise Exceptions.MissingMethodException(cls, funcName, node.lineno)
 
     def visit_Compare(self, node):
         """
@@ -860,8 +877,6 @@ class InitialWalker(ast.NodeVisitor):
         funWalker = FunDefWalker(node, self.nameSpace, self.scope)   
         funWalker.walk()
              
-        self.nameSpace.put(funWalker.name, funWalker.createFunBean())
-        
         self.scope.goUpLevel()
         self.scope.append(Bean.VarBean('function', funWalker.name))
             
