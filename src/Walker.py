@@ -152,7 +152,6 @@ class InitialWalker(ast.NodeVisitor):
                     raise ex
                 
             elif varBean.typesMatch(value):
-                print('value ' , value)
                 value.name = varBean.name
                 self.scope.append(value)
                     
@@ -811,9 +810,11 @@ class InitialWalker(ast.NodeVisitor):
             self.visit(orelse)
      
     def visit_Yield(self, node):
-        """
-        @node.ast.AST
-        """
+        '''
+        @node:ast.AST
+        '''
+        print('yield')
+        return self.visit(node.value)
         
      
     #These are initial walker independent, ie they should be over written in inheriting classes    
