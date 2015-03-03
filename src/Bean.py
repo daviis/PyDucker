@@ -144,6 +144,21 @@ class VarBean(GenericBean):
             else:
                 return True #currently the value of self.varType == None 
             
+    def recursiveClone(self, otherBean):
+        """
+        @otherBean:VarBean
+        Used for the assignment of objects so name shouldn't be cloned. 
+        """
+        self.homo = otherBean.homo
+        self.varType = otherBean.varType
+        self.starred = otherBean.starred
+        
+        #copy the contents of the sub lists
+        for compTypeObj in otherBean.compType:
+            internalBean = VarBean(None)
+            internalBean.recursiveClone(compTypeObj)
+            self.compType.append(internalBean)
+            
 
 class ScopeLevelBean(GenericBean):
     
@@ -163,10 +178,13 @@ class ScopeLevelBean(GenericBean):
         """
         for level in reversed(self.levels):
             if item in level:
-                if level[item].varType:
+                try:
+                    if level[item].varType:
+                        return level[item]
+                    else:
+                        raise Exceptions.RefBeforeAssignException(item)
+                except AttributeError: #it will get a attributeerror from FunDefBeans, but that isn't a big error so just return it.  
                     return level[item]
-                else:
-                    raise Exceptions.RefBeforeAssignException(item)
             
         raise Exceptions.OutOfScopeException(item)
             
@@ -248,7 +266,7 @@ class ScopeLevelBean(GenericBean):
                         if nameBean.scopeModifier == "global":
                             raise Exceptions.NonlocalReferenceException([nameBean], "There variable was previously pulled out of the global scope. The global keyword may serve you better.")
                         else:
-                            nameBean.recurseiveCopy(level[nameBean.name])
+                            nameBean.recurseiveClone(level[nameBean.name])
                             nameBean.scopeModifier = "nonlocal"
                             self.append(nameBean)
                             return #don't need to return anything, just return so the last of the loop isn't used 
