@@ -117,5 +117,6 @@ def handMakeScope():
     scope = ScopeLevelBean()
     
     scope.append(VarBean("Exception", "ValueError"))
+    scope.append(FunDefBean([VarBean('str')], None, "print"))
     
     return scope
