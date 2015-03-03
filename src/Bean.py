@@ -121,7 +121,7 @@ class VarBean(GenericBean):
         self.homo = False
         self.starred = False
         self.compType = []
-        self.scopeModifiers = "" #possible options for this will be global and nonlocal.
+        self.scopeModifier = "" #possible options for this will be global and nonlocal.
         
     def __eq__(self, other):
         return self.varType == other

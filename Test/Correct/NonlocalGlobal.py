@@ -6,6 +6,7 @@ def makeX():
     def makeY():
         x = 2
 #         print("makey: ", x)
+    pass
     makeY()
 #     print("makex: ", x)
 makeX()
