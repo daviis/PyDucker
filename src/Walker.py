@@ -413,6 +413,13 @@ class InitialWalker(ast.NodeVisitor):
         """
         return "__div__"
     
+    def visit_Ellipsis(self, node):
+        """
+        @node:ast.ast
+        This node does literally nothing. It's called in an Expr with Pass
+        """
+        return 
+    
     def visit_Eq(self, node):
         """
         @node:ast.ast        
