@@ -526,10 +526,13 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         var = self.visit(node.value)
+        
+        #Need to do some sort of checking against the super node
+        #To see if it is a dictionary
         if var.varType == 'int':
             return var
-        else:
-            raise Exceptions.NonIntIndexException(var)    
+        #else:
+            #raise Exceptions.NonIntIndexException(var)    
 
     def visit_Invert(self,node):
         """
@@ -783,6 +786,8 @@ class InitialWalker(ast.NodeVisitor):
         var = self.visit(node.value) #Item being sliced
         bean = None
         if var.varType == 'list':
+            bean = Bean.VarBean(var.nextSubType())
+        elif var.varType == 'dict':
             bean = Bean.VarBean(var.nextSubType())
         try:
             self.visit(node.slice)
