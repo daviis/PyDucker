@@ -69,7 +69,6 @@ def handMakeNameSpace():
     strClass.funs['split'] = FunDefBean([ VarBean('str') , VarBean('int')] ,  VarBean('list'), 'split')
     strClass.funs['splitlines'] = FunDefBean([ VarBean('boolean')] ,  VarBean('list'), 'splitlines')
     strClass.funs['upper'] = FunDefBean([] ,  VarBean('str'), 'upper')
-    #strClass.funs['range'] = FunDefBean([VarBean(int),VarBean(int),VarBean(int)], VarBean('range'), 'range' )
     nameSpace.put(strClass.name, strClass)
     
     boolClass = ClassDefBean('bool', None)
@@ -110,11 +109,6 @@ def handMakeNameSpace():
 
     generatorClass = ClassDefBean("generator", None)
     nameSpace.put(generatorClass.name, generatorClass)
-
-    
-    rangeClass = ClassDefBean("range", None)
-    rangeClass.funs['range'] = FunDefBean([VarBean(int),VarBean(int),VarBean(int)], VarBean('range'), 'range' )
-    nameSpace.put(rangeClass.name, rangeClass)
     
     return nameSpace
 
@@ -122,7 +116,5 @@ def handMakeScope():
     scope = ScopeLevelBean()
     
     scope.append(VarBean("Exception", "ValueError"))
-    #scope.append(VarBean("rangeClass", 'range'))
-    #scope.append(VarBean('str', 'range' ))
     
     return scope
