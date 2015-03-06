@@ -813,7 +813,12 @@ class InitialWalker(ast.NodeVisitor):
         '''
         @node:ast.AST
         '''
-        print('yield')
+        return self.visit(node.value)
+    
+    def visit_YieldFrom(self, node):
+        '''
+        @node:ast.AST
+        '''
         return self.visit(node.value)
         
      
