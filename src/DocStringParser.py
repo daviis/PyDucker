@@ -57,7 +57,7 @@ def parseDocString(docString,returnList = True):
                 #lists handled
         else:
             isHomo = False
-        
+
         for key in variables:
             currentVar = VarBean(currentType,key)
             if isHomo == False:

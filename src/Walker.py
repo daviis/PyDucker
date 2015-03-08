@@ -263,6 +263,7 @@ class InitialWalker(ast.NodeVisitor):
         """
         funcName = self.visit(node.func) #this will be an ast.Attribute for `'a'.upper()` or a ast.Name for `'a'() or print()`
         
+        
         args = []
         for arg in node.args:
             args.append(self.visit(arg))
@@ -853,6 +854,19 @@ class InitialWalker(ast.NodeVisitor):
             self.visit(bodyPart) #i dont think this needs to store what gets returned
         for orelse in node.orelse:
             self.visit(orelse)
+     
+    def visit_Yield(self, node):
+        '''
+        @node:ast.AST
+        '''
+        return self.visit(node.value)
+    
+    def visit_YieldFrom(self, node):
+        '''
+        @node:ast.AST
+        '''
+        return self.visit(node.value)
+        
      
     #These are initial walker independent, ie they should be over written in inheriting classes    
     def visit_ClassDef(self, node):
