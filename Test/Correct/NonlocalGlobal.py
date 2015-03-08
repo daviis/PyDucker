@@ -3,12 +3,15 @@ x = 0
 def makeX():
     global x
     x = 1
+    pass
     def makeY():
         x = 2
+        pass
 #         print("makey: ", x)
     pass
     makeY()
 #     print("makex: ", x)
+pass
 makeX()
 # print("global: ", x)
 
@@ -25,6 +28,7 @@ def makeA():
             nonlocal a
             a = 'd'
             b =2
+            pass
         makeC()
     makeB()
 makeA()
