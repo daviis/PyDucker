@@ -109,7 +109,6 @@ def handMakeNameSpace():
 
     generatorClass = ClassDefBean("generator", None)
     nameSpace.put(generatorClass.name, generatorClass)
-
     
     return nameSpace
 
