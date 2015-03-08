@@ -277,7 +277,6 @@ class InitialWalker(ast.NodeVisitor):
         if clsBean.hasFun(funcName):
             #fundefbean will need to be extended to handle things other than just a fixed lenght number of params
             if clsBean.funs[funcName].takes(args):
-                clsBean.funs[funcName].returntype
                 return clsBean.funs[funcName].returnType
             else:
                 raise Exceptions.IncorrectMethodExcepiton(funcName, args, node.lineno, aCls=cls)
