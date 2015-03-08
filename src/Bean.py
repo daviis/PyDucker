@@ -230,6 +230,12 @@ class ScopeLevelBean(GenericBean):
         if item.name in currentLevel and item != currentLevel[item.name]:
             print("reassign of " + item.name, file=sys.stderr)
             
+        try:
+            if currentLevel[item.name].scopeModifier:
+                item.scopeModifier = currentLevel[item.name].scopeModifier    
+        except KeyError:
+            pass #this will get hit by fundefbeans. Just let it pass
+        
         currentLevel[item.name] = item
         self.levels.append(currentLevel)
         
@@ -266,7 +272,7 @@ class ScopeLevelBean(GenericBean):
                         if nameBean.scopeModifier == "global":
                             raise Exceptions.NonlocalReferenceException([nameBean], "There variable was previously pulled out of the global scope. The global keyword may serve you better.")
                         else:
-                            nameBean.recurseiveClone(level[nameBean.name])
+                            nameBean.recursiveClone(level[nameBean.name])
                             nameBean.scopeModifier = "nonlocal"
                             self.append(nameBean)
                             return #don't need to return anything, just return so the last of the loop isn't used 
