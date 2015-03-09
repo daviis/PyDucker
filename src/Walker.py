@@ -532,14 +532,7 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.ast
         """
-        var = self.visit(node.value)
-        
-        #Need to do some sort of checking against the super node
-        #To see if it is a dictionary
-        if var.varType == 'int':
-            return var
-        #else:
-            #raise Exceptions.NonIntIndexException(var)    
+        return self.visit(node.value)  
 
     def visit_Invert(self,node):
         """
