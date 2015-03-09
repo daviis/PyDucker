@@ -785,19 +785,30 @@ class InitialWalker(ast.NodeVisitor):
         """ 
         var = self.visit(node.value) #Item being sliced
         bean = None
-        if var.varType == 'list':
-            bean = Bean.VarBean(var.nextSubType())
-        elif var.varType == 'dict':
-            bean = Bean.VarBean(var.nextSubType())
+        #Check 
         try:
+            #Not handling non-homo types
+            if var.varType == 'list':
+                bean = Bean.VarBean(var.nextSubType())
+            elif var.varType == 'dict':
+                keyBean = Bean.VarBean(var.nextSubType())
+                print(var)
+                valBean = Bean.VarBean(var.valType)
+                
+                #Var needs to be checked against valBean and keyBean
+                
+                
+                bean = Bean.VarBean(var.nextSubType())
+            
             self.visit(node.slice)
+            
             if bean:
                 return bean#Return the varBean
             else:
                 return var
         except Exceptions.PyDuckerException as ex:
             ex.lineNum = node.lineno
-            raise ex      
+            raise ex
     
     def visit_Try(self, node):
         """
