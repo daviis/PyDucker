@@ -34,18 +34,14 @@ def testOne(aFile):
     #do some exception handling that will tell the user what went wrong in their project
 def testAllCorrect():
     #Non-working tests are commented out    
-    files = ['../Test/Correct/AccPat.py',
-             '../Test/Correct/Call.py',
-#             '../Test/Correct/Collections.py',
-             '../Test/Correct/Compare.py',
-             '../Test/Correct/For.py',
-             #'../Test/Correct/If.py',
-             #'../Test/Correct/MethodDef.py',
-             #'../Test/Correct/MultiClassMultiFun.py',
+    files = ['../Test/Correct/Collections.py',
+             '../Test/Correct/control.py',
+#             '../Test/Correct/MethodDef.py',
+             '../Test/Correct/MultiClassMultiFun.py',
              '../Test/Correct/Ops.py',
-             '../Test/Correct/SliceIndex.py',
-             '../Test/Correct/StoreLoad.py',
-             '../Test/Correct/tryRaiseExcept.py'
+             #'../Test/Correct/tryRaiseExcept.py',
+             #'../Test/Correct/With.py',
+             #'../Test/Correct/yield.py',
              ]
     _testAll(files)
     
