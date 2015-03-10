@@ -87,7 +87,7 @@ def _testAll(listOfFiles):
             print()
     
 if __name__ == '__main__':
-    testOne("../Test/Correct/NonlocalGlobal.py")
-#     testAllCorrect()
+#     testOne("../Test/Correct/NonlocalGlobal.py")
+    testAllCorrect()
 #     testAllIncorrect()
     print("out main")
