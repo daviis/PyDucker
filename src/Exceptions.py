@@ -154,17 +154,17 @@ class IncorrectMethodExcepiton(MissingMethodException):
         ret += "\n\tWith args: " + str(self.argLst)
         return ret
     
-#class NonIntIndexException(PyDuckerError):
+class NonIndexableException(PyDuckerError):
     
-    #def __init__(self, varBean, lineNo=-1):
-        #"""
-        #@varBean:str
-        #@lineNo:int
-        #"""
-        #super().__init__(lineNo)
-        #self.varBean = varBean
+    def __init__(self, varBean, dictBean, lineNo=-1):
+        """
+        @varBean:str
+        @lineNo:int
+        """
+        super().__init__(lineNo)
+        self.varBean = varBean
         
-    #def __str__(self):
-        #ret = super().__str__()
-        #ret += "\n\tVariable name: " + self.varBean.name + " is an " + self.varBean.varType +" and needs to be an integer in order to index."
-        #return ret
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\tVariable name: " + self.varBean.name + " is an " + self.varBean.varType +" and needs to be a key or value for " + self.dictBean.name + " in order to index."
+        return ret

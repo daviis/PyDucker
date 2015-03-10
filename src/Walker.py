@@ -785,23 +785,23 @@ class InitialWalker(ast.NodeVisitor):
         """ 
         var = self.visit(node.value) #Item being sliced
         bean = None
-        #Check 
         try:
+            sliceBean = self.visit(node.slice)
             #Not handling non-homo types
             if var.varType == 'list':
                 bean = Bean.VarBean(var.nextSubType())
             elif var.varType == 'dict':
                 keyBean = Bean.VarBean(var.nextSubType())
-                print(var)
-                valBean = Bean.VarBean(var.valType)
+                valBeans = []
+                for i in var.valType: #Get all the types of various 
+                    valBeans.append(i.varType)
                 
-                #Var needs to be checked against valBean and keyBean
-                
-                
-                bean = Bean.VarBean(var.nextSubType())
-            
-            self.visit(node.slice)
-            
+                if sliceBean.varType == keyBean.varType:
+                    bean = Bean.VarBean(var.nextSubType())
+                elif sliceBean.varType in valBeans:
+                    bean = Bean.VarBean(sliceBean.varType) #? I guess return the type of what's being used?
+                else:
+                    raise Exceptions.NonIndexableException(sliceBean, var, node.lineno)
             if bean:
                 return bean#Return the varBean
             else:

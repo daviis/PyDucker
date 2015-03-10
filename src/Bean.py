@@ -64,10 +64,6 @@ class ClassDefBean(GenericBean):
     def isBoolean(self):
         if not "__bool__" in self.funs:
             raise Exceptions.MissingMethodException(VarBean(self.name), "__bool__")
-        
-    def isIndexable(self):
-        if not "__index__" in self.funs:
-            raise Exceptions.MissingMethodException(VarBean(self.name), "__index__")
             
 
 
@@ -125,6 +121,7 @@ class VarBean(GenericBean):
         self.homo = False
         self.starred = False
         self.compType = []
+        self.valType = None
         
     def __eq__(self, other):
         return self.varType == other
@@ -155,6 +152,8 @@ class VarBean(GenericBean):
         self.homo = otherBean.homo
         self.varType = otherBean.varType
         self.starred = otherBean.starred
+        if otherBean.valType:
+            self.valType = otherBean.valType
         
         #copy the contents of the sub lists
         for compTypeObj in otherBean.compType:
@@ -271,12 +270,6 @@ class NameSpaceBean(ScopeLevelBean):
         @varBean:VarBean
         """
         self.vars[varBean.varType].isIterable()
-        
-    def duckIndex(self, varBean):
-        """
-        @varBean:VarBean
-        """
-        self.vars[varBean.varType].isIndexable()
     
     def checkMagicMethod(self, lbean, rbean, op):
         """
