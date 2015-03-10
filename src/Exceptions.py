@@ -126,7 +126,7 @@ class MissingMethodException(PyDuckerError):
     
     def __init__(self, aVar, aFun, lineNo=-1):
         """
-        @aCls:VarBean
+        @aCls:ClassDefBean
         @aFun:str
         @lineNu:int
         """
@@ -137,7 +137,7 @@ class MissingMethodException(PyDuckerError):
     def __str__(self):
         ret = super().__str__()
         ret += "\n\tCan not find method: " + self.fun
-        ret += "\n\tIn class: " + self.cls.varType
+        ret += "\n\tIn class: " + self.cls.name
         return ret
     
     
@@ -178,7 +178,9 @@ class IncorrectMethodExcepiton(MissingMethodException):
         
     def __str__(self):
         ret = super().__str__()
-        ret += "\n\tWith args: " + str(self.argLst)
+        ret += "\n\tWith args: "
+        for item in self.argLst:
+            ret += item.varType
         return ret
     
     
