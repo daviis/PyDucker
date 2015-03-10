@@ -136,7 +136,7 @@ class InitialWalker(ast.NodeVisitor):
         for target in node.targets:
             newVarName = self.visit(target)
             tars.append(newVarName)
-            self.scope.append(newVarName)
+            self.scope.append(newVarName) #this is where global/nonlocal will be figured out
         
         try:
             value = self.visit(node.value)
@@ -155,8 +155,6 @@ class InitialWalker(ast.NodeVisitor):
                 
             elif varBean.typesMatch(value):
                 varBean.recursiveClone(value)
-#                 value.name = varBean.name
-                self.scope.append(varBean)
             
             else:
                 raise  Exceptions.TypeMisMatchException(varBean.name, varBean.varType, value.varType, node.lineno)
@@ -169,9 +167,6 @@ class InitialWalker(ast.NodeVisitor):
         the method name
         """
         return node.attr
-#         value = self.visit(node.value)
-#         ctx = self.visit(node.ctx)
-#         return value, node.attr
     
     def visit_AugAssign(self, node):
         """
