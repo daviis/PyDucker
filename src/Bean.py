@@ -226,11 +226,8 @@ class ScopeLevelBean(GenericBean):
         if item.name in currentLevel and item != currentLevel[item.name]:
             print("reassign of " + item.name, file=sys.stderr)
             
-        try:
-            if currentLevel[item.name].scopeModifier:
-                item.scopeModifier = currentLevel[item.name].scopeModifier    
-        except KeyError:
-            pass #this will get hit by fundefbeans. Just let it pass
+        if item.name in currentLevel and currentLevel[item.name].scopeModifier:
+            item.scopeModifier = currentLevel[item.name].scopeModifier    
         
         currentLevel[item.name] = item
         
@@ -248,8 +245,6 @@ class ScopeLevelBean(GenericBean):
             return self.levels.pop()
         else:
             raise Exception("Can't leave the global scope")
-        
-        
         
     def makeNonlocalReference(self, names):
         """
@@ -301,6 +296,7 @@ class ScopeLevelBean(GenericBean):
             return True
         else:
             return False
+        
         
 class NameSpaceBean(GenericBean):
     """
