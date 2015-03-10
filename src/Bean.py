@@ -194,38 +194,34 @@ class ScopeLevelBean(GenericBean):
         """
         Set a variable in the highest level of scope
         """
-        currentLevel = self.levels.pop()
+        currentLevel = self.levels[-1]
         currentLevel[name] = item
-        self.levels.append(currentLevel)
         
     def __delitem__(self,item):
         """
         @item:str
         Delete an entry from scope where item is the key
         """
-        currentLevel = self.levels.pop()
+        currentLevel = self.levels[-1]
         del currentLevel[item]
-        self.levels.append(currentLevel)
         
     def __contains__(self, item):
         """
         @item:str
         @!bool
         """
-        currentLevel = self.levels.pop()
-        self.levels.append(currentLevel)
+        currentLevel = self.levels[-1]
         return item in currentLevel
         
     def __iter__(self):
-        currentLevel = self.levels.pop()
-        self.levels.append(currentLevel)
+        currentLevel = self.levels[-1]
         return iter(currentLevel)
         
     def append(self, item):
         """
         @item:VarBean
         """
-        currentLevel = self.levels.pop()
+        currentLevel = self.levels[-1]
         
         if item.name in currentLevel and item != currentLevel[item.name]:
             print("reassign of " + item.name, file=sys.stderr)
@@ -237,7 +233,6 @@ class ScopeLevelBean(GenericBean):
             pass #this will get hit by fundefbeans. Just let it pass
         
         currentLevel[item.name] = item
-        self.levels.append(currentLevel)
         
     def goDownLevel(self):
         """
@@ -250,7 +245,7 @@ class ScopeLevelBean(GenericBean):
         Used when leaving a function, it pops a dictionary to the stack of scope levels
         """
         if len(self.levels) > 1:
-            self.levels.pop()
+            return self.levels.pop()
         else:
             raise Exception("Can't leave the global scope")
         
@@ -302,10 +297,7 @@ class ScopeLevelBean(GenericBean):
         
         Helper function for both global and nonlocal keywords.
         """
-        currentLevel = self.levels.pop()
-        self.levels.append(currentLevel)
-        
-        if nameBean.name in currentLevel:
+        if nameBean.name in self.levels[-1]:
             return True
         else:
             return False
