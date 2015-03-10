@@ -366,6 +366,19 @@ class NameSpaceBean(GenericBean):
         @varBean:VarBean
         """
         self.vars[varBean.varType].isIterable()
+        
+    def duckCallable(self, varBean):
+        """
+        @varBean:VarBean
+        """
+        self.vars[varBean.varType].isCallable()
+        
+    def addFirstClassFun(self, funDefBean):
+        """
+        @funDefBean:FunDefBean
+        """
+        funsClass = self.vars["$funs"]
+        funsClass.funs[funDefBean.name] = funDefBean
     
     def checkMagicMethod(self, lbean, rbean, op):
         """

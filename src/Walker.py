@@ -261,44 +261,43 @@ class InitialWalker(ast.NodeVisitor):
         It can throw a MissingMethodException if the function isn't found in the class or if the number/types of paramiters is wrong
         @node:ast.ast
         """
-        funcName = self.visit(node.func) #this will be an ast.Attribute for `'a'.upper()` or a ast.Name for `'a'() or print()`
-        
-        
-        args = []
-        for arg in node.args:
-            args.append(self.visit(arg))
-            
-        keywords = []
-        for key in node.keywords:
-            keywords.append(self.visit(key))
-            
-        starargs = self.visit(node.starargs)
-        kwargs = self.visit(node.kwargs)
-
         try:
-            #assume that the function will be part of a class, so try to look up the class type, then see if it has the function.
-            cls = self.visit(node.func.value)
-            clsBean = self.nameSpace[cls.varType]
-            funBean = Bean.FunDefBean(args, None, funcName)
-            return clsBean.acceptsFun(funBean)
-        
-        except AttributeError:
-            #there wasn't a class to find (attribute error from ast.Attribute), check to see if it is a global
-            #todo look up in scope to make sure that the params match
-            #todo make it do a scope look up to see if the funcName is a str b/c then it will need to do a scope look up.
-            return funcName.returnType
+            funcName = self.visit(node.func) #this will be an ast.Attribute for `'a'.upper()` or a ast.Name for `'a'() or print()`
+            
+            args = []
+            for arg in node.args:
+                args.append(self.visit(arg))
+                
+            keywords = []
+            for key in node.keywords:
+                keywords.append(self.visit(key))
+                
+            starargs = self.visit(node.starargs)
+            kwargs = self.visit(node.kwargs)
+    
+            try:
+                #assume that the function will be part of a class, so try to look up the class type, then see if it has the function.
+                cls = self.visit(node.func.value)
+                clsBean = self.nameSpace[cls.varType]
+                funBean = Bean.FunDefBean(args, None, funcName)
+                return clsBean.acceptsFun(funBean)
+            
+            except AttributeError:
+                if funcName.varType == "$funs":
+                    codedFun = Bean.FunDefBean(args, None, funcName.name)
+                    funsClass = self.nameSpace["$funs"] 
+                    return funsClass.acceptsFun(codedFun)
+                else:
+                
+                    codedFun = Bean.FunDefBean(args, None, "__call__")
+                    self.nameSpace.duckCallable(funcName)
+                    codedClass = self.nameSpace[funcName.varType]
+                    return codedClass.acceptsFun(codedFun)
+        except Exceptions.PyDuckerException as ex:
+                ex.lineNum = node.lineno
+                raise ex
         
             
-#         todo clean up
-#         if clsBean.hasFun(funcName):
-#             #fundefbean will need to be extended to handle things other than just a fixed lenght number of params
-#             if clsBean.funs[funcName].takes(args):
-#                 return clsBean.funs[funcName].returnType
-#             else:
-#                 raise Exceptions.IncorrectMethodExcepiton(funcName, args, node.lineno, aCls=cls)
-#         else:
-#             raise Exceptions.MissingMethodException(cls, funcName, node.lineno)
-
     def visit_Compare(self, node):
         """
         @node:ast.ast
@@ -892,7 +891,8 @@ class InitialWalker(ast.NodeVisitor):
         funWalker.walk()
              
         self.scope.goUpLevel()
-        self.scope.append(funWalker.createFunBean())
+        self.nameSpace.addFirstClassFun(funWalker.createFunBean())
+        self.scope.append(Bean.VarBean("$funs", funWalker.name))
             
 class ClassDefWalker(InitialWalker):
     

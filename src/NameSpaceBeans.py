@@ -101,7 +101,6 @@ def handMakeNameSpace():
     exceptionClass = ClassDefBean("Exception", None)
     nameSpace.put(exceptionClass.name, exceptionClass)
     
-
     floatClass = ClassDefBean('float', None)
     floatClass.funs['__add__'] = FunDefBean([VarBean('float')], VarBean('float'), '__add__')
     floatClass.funs['__sub__'] = FunDefBean([VarBean('float')], VarBean('float'), '__sub__' )
@@ -109,6 +108,15 @@ def handMakeNameSpace():
 
     generatorClass = ClassDefBean("generator", None)
     nameSpace.put(generatorClass.name, generatorClass)
+
+    funsClass = ClassDefBean("$funs", None)
+    funsClass.funs["print"] = FunDefBean([VarBean('str')], VarBean('None'), "print")
+    funsClass.funs["range"] = FunDefBean([VarBean('int')], VarBean('range'), "print")
+    nameSpace.put(funsClass.name, funsClass)
+    
+    rangeClass = ClassDefBean("range", None)
+    rangeClass.funs["__iter__"] = FunDefBean([], VarBean('int'), "__iter__")
+    nameSpace.put(rangeClass.name, rangeClass)
     
     return nameSpace
 
@@ -116,6 +124,7 @@ def handMakeScope():
     scope = ScopeLevelBean()
     
     scope.append(VarBean("Exception", "ValueError"))
-    scope.append(FunDefBean([VarBean('str')], None, "print"))
+    scope.append(VarBean("$funs", "print"))
+    scope.append(VarBean("$funs", "range"))
     
     return scope
