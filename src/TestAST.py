@@ -85,10 +85,32 @@ def _testAll(listOfFiles):
             print(ex)
         finally:
             print()
+            
+def testFiles(listOfFiles):
+    for i in listOfFiles:
+        aFile = i.name
+        
+        with open(aFile, 'r') as f:
+            fileCont = f.read()
+            
+        print("File name: ",aFile) 
+        tree = ast.parse(fileCont, aFile)
+        
+        try:
+            nameSpace = handMakeNameSpace()
+            scope = handMakeScope()
+            firstWalker = InitialWalker(tree, nameSpace, scope)
+            firstWalker.walk()
+        except Exceptions.PyDuckerException as ex:
+#             print(ex, file=sys.stderr) #printing to sys.stderr will need to be locked so output flows correctly, otherwise the messages come out interwoven.
+            print("\n", ex.__class__.__name__, end= "" )
+            print(ex)
+        finally:
+            print()
     
 if __name__ == '__main__':
 
-    testOne("../Test/Correct/yield.py")
-#     testAllCorrect()
+#    testOne("../Test/Correct/yield.py")
+    testAllCorrect()
     #testAllIncorrect()
     print("out main")
