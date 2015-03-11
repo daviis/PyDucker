@@ -121,6 +121,7 @@ class VarBean(GenericBean):
         self.homo = False
         self.starred = False
         self.compType = []
+        self.valType = None
         
     def __eq__(self, other):
         return self.varType == other
@@ -142,6 +143,23 @@ class VarBean(GenericBean):
                 return self.varType == other.varType
             else:
                 return True #currently the value of self.varType == None 
+            
+    def recursiveClone(self, otherBean):
+        """
+        @otherBean:VarBean
+        Used for the assignment of objects so name shouldn't be cloned. 
+        """
+        self.homo = otherBean.homo
+        self.varType = otherBean.varType
+        self.starred = otherBean.starred
+        if otherBean.valType:
+            self.valType = otherBean.valType
+        
+        #copy the contents of the sub lists
+        for compTypeObj in otherBean.compType:
+            internalBean = VarBean(None)
+            internalBean.recursiveClone(compTypeObj)
+            self.compType.append(internalBean)
             
 
 class ScopeLevelBean(GenericBean):

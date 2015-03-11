@@ -37,6 +37,7 @@ def handMakeNameSpace():
     intClass.funs['__sub__'] = FunDefBean([VarBean('int')] ,  VarBean('int'), '__sub__')
     intClass.funs['__pos__'] = FunDefBean([VarBean('int')] ,  VarBean('int'), '__pos__')
     intClass.funs['__neg__'] = FunDefBean([VarBean('int')] ,  VarBean('int'), '__neg__')
+    intClass.funs['__index__'] = FunDefBean([VarBean('int')] ,  VarBean('int'), '__index__')
     nameSpace.put(intClass.name, intClass)
     
     
