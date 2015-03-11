@@ -793,13 +793,13 @@ class InitialWalker(ast.NodeVisitor):
             elif var.varType == 'dict':
                 keyBean = Bean.VarBean(var.nextSubType())
                 valBeans = []
-                for i in var.valType: #Get all the types of various 
+                for i in var.valType: #Get all the types of various values to keys.
                     valBeans.append(i.varType)
                 
                 if sliceBean.varType == keyBean.varType:
-                    bean = Bean.VarBean(var.nextSubType())
-                elif sliceBean.varType in valBeans:
-                    bean = Bean.VarBean(sliceBean.varType) #? I guess return the type of what's being used?
+                    if len(valBeans) > 1:
+                        pass #Need to handle non-homogenous dicts here, for now we'll take the first value type.
+                    bean = Bean.VarBean(valbeans[0])
                 else:
                     raise Exceptions.NonIndexableException(sliceBean, var, node.lineno)
             if bean:
