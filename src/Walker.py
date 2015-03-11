@@ -151,7 +151,7 @@ class InitialWalker(ast.NodeVisitor):
                 except Exceptions.PyDuckerException as ex:
                     ex.lineNum = node.lineno
                     raise ex
-                
+            
             elif varBean.typesMatch(value):
                 varBean.recursiveClone(value)
             
@@ -317,10 +317,10 @@ class InitialWalker(ast.NodeVisitor):
             
             leftClass = self.nameSpace[left.varType]
             if leftClass.hasFun(op):
-                if leftClass.funs[op].takes([Bean.VarBean(arg)]):
+                if leftClass.funs[op].takes([arg]):
                     left = arg
                 else:
-                    raise Exceptions.IncorrectMethodExcepiton(op, arg.varType, node.lineno, left)
+                    raise Exceptions.IncorrectMethodExcepiton(op, [arg], node.lineno, left)
             else:
                 raise Exceptions.MissingMethodException(left, op, node.lineno)
         return Bean.VarBean('bool')

@@ -137,7 +137,7 @@ class MissingMethodException(PyDuckerError):
     def __str__(self):
         ret = super().__str__()
         ret += "\n\tCan not find method: " + self.fun
-        ret += "\n\tIn class: " + self.cls.name
+        ret += "\n\tIn class: " + self.cls.varType
         return ret
     
     

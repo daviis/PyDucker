@@ -124,7 +124,7 @@ class VarBean(GenericBean):
         self.scopeModifier = "" #possible options for this will be global and nonlocal.
         
     def __eq__(self, other):
-        return self.varType == other
+        return self.varType == other.varType
     
     def nextSubType(self):
         if self.homo:
