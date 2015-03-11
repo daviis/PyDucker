@@ -136,7 +136,6 @@ class InitialWalker(ast.NodeVisitor):
         for target in node.targets:
             newVarName = self.visit(target)
             tars.append(newVarName)
-            self.scope.append(newVarName) #this is where global/nonlocal will be figured out
         
         try:
             value = self.visit(node.value)
@@ -318,7 +317,7 @@ class InitialWalker(ast.NodeVisitor):
             
             leftClass = self.nameSpace[left.varType]
             if leftClass.hasFun(op):
-                if leftClass.funs[op].takes([arg]):
+                if leftClass.funs[op].takes([Bean.VarBean(arg)]):
                     left = arg
                 else:
                     raise Exceptions.IncorrectMethodExcepiton(op, arg.varType, node.lineno, left)
@@ -332,11 +331,8 @@ class InitialWalker(ast.NodeVisitor):
         @todo figure out what node.ifs is supposed to do.
         """
         targetVar = self.visit(node.target)
-        
-        for anIf in node.ifs:
-            self.visit(anIf)
-        
         iterVar = self.visit(node.iter)
+        
         try:
             self.nameSpace.duckIter(iterVar)
             if iterVar.homo:
@@ -345,10 +341,13 @@ class InitialWalker(ast.NodeVisitor):
                 self.scope.append(retVar)
             else:
                 print("Not sure how we are doing non homo lists.", file=sys.stderr)
+                
+            for anIf in node.ifs:
+                self.visit(anIf)
         except Exceptions.PyDuckerException as ex:
             ex.lineNum = node.lineno
             raise ex
-    
+        
     def visit_Continue(self, node):
         """
         @node:ast.ast
@@ -404,6 +403,8 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.ast
         """
+        self.scope.goDownLevel()
+        
         retBean = Bean.VarBean('dict')
         
         for gen in node.generators:
@@ -411,6 +412,7 @@ class InitialWalker(ast.NodeVisitor):
         retBean.compType = [self.visit(node.key)]
         retBean.valType = [self.visit(node.value)]
         
+        self.scope.goUpLevel()
         return retBean
     
     def visit_Div(self, node):
@@ -477,10 +479,14 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.ast
         """
+        self.scope.goDownLevel()
+    
         for gen in node.generators:
             self.visit(gen)
             
-        return self._generatorHelper(Bean.VarBean("generator"), node.elt)
+        retBean = self._generatorHelper(Bean.VarBean("generator"), node.elt)
+        self.scope.goUpLevel()
+        return retBean
     
     def visit_Global(self, node):
         """
@@ -585,10 +591,14 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.ast
         """
+        self.scope.goDownLevel()
+        
         for gen in node.generators:
             self.visit(gen)
             
-        return self._generatorHelper(Bean.VarBean('list'), node.elt)
+        retVar = self._generatorHelper(Bean.VarBean('list'), node.elt)
+        self.scope.goUpLevel()
+        return retVar
         
     def visit_Load(self, node):
         """
@@ -640,7 +650,9 @@ class InitialWalker(ast.NodeVisitor):
             return self.scope[node.id]
         except Exceptions.PyDuckerException as ex:
             if store:
-                return Bean.VarBean(None, node.id)
+                newBean = Bean.VarBean(None, node.id)
+                self.scope.append(newBean)
+                return newBean
             else:
                 ex.lineNum = node.lineno
                 raise ex
@@ -747,10 +759,13 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.ast
         """
+        self.scope.goDownLevel()
         for gen in node.generators:
             self.visit(gen)
         
-        return self._generatorHelper(Bean.VarBean('set'), node.elt)
+        retBean = self._generatorHelper(Bean.VarBean('set'), node.elt)
+        self.scope.goUpLevel()
+        return retBean
             
     def visit_Starred(self, node):
         """
