@@ -95,6 +95,12 @@ class InitialWalker(ast.NodeVisitor):
     Each individual vist_* will need to check if the result if a list, if so then 
     iterate over it. If not, then a single visit is needed
     """
+
+        
+
+
+                        
+        
  
         
     def visit_Add(self, node):
@@ -421,6 +427,13 @@ class InitialWalker(ast.NodeVisitor):
         """
         return "__div__"
     
+    def visit_Ellipsis(self, node):
+        """
+        @node:ast.ast
+        This node does literally nothing. It's called in an Expr with Pass
+        """
+        return 
+    
     def visit_Eq(self, node):
         """
         @node:ast.ast        
@@ -551,6 +564,12 @@ class InitialWalker(ast.NodeVisitor):
         '''
         return '__contains__'
     
+    def visit_Index(self, node):
+        """
+        @node:ast.ast
+        """
+        return self.visit(node.value)  
+
     def visit_Invert(self,node):
         """
         @node:ast.ast
@@ -740,6 +759,29 @@ class InitialWalker(ast.NodeVisitor):
         """
         return "__rshift__"
     
+    def visit_Slice(self, node):
+        """
+        @node:ast.ast
+        """
+        holder = [None,None,None]
+        #holder = [lower,upper,step]
+        if node.lower:
+            holder[0] = self.visit(node.lower)
+        if node.upper:
+            holder[1] = self.visit(node.upper)
+        if node.step:
+            holder[2] = self.visit(node.step)
+            
+        for i in holder:
+            if i:
+                #Check if it has a __index__ magic method
+                try:
+                    self.nameSpace.duckIndex(i)
+                    return
+                except Exceptions.PyDuckerException as ex:
+                    #No linenumber here
+                    raise ex  
+					
     def visit_Set(self, node):
         """
         @node:ast.ast
@@ -795,6 +837,37 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         return "__sub__"
+    
+    def visit_Subscript(self, node):
+        """
+        @node:ast.ast
+        """ 
+        var = self.visit(node.value) #Item being sliced
+        bean = None
+        try:
+            sliceBean = self.visit(node.slice)
+            #Not handling non-homo types
+            if var.varType == 'list':
+                bean = Bean.VarBean(var.nextSubType())
+            elif var.varType == 'dict':
+                keyBean = Bean.VarBean(var.nextSubType())
+                valBeans = []
+                for i in var.valType: #Get all the types of various values to keys.
+                    valBeans.append(i.varType)
+                
+                if sliceBean.varType == keyBean.varType:
+                    if len(valBeans) > 1:
+                        pass #Need to handle non-homogenous dicts here, for now we'll take the first value type.
+                    bean = Bean.VarBean(valBeans[0])
+                else:
+                    raise Exceptions.NonIndexableException(sliceBean, var, node.lineno)
+            if bean:
+                return bean#Return the varBean
+            else:
+                return var
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
+            raise ex
     
     def visit_Try(self, node):
         """

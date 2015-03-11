@@ -30,6 +30,7 @@ def testOne(aFile):
     
     firstWalker = InitialWalker(tree, nameSpace, scope)
     firstWalker.walk()
+    print("")
 
     #do some exception handling that will tell the user what went wrong in their project
 def testAllCorrect():
@@ -84,7 +85,7 @@ def _testAll(listOfFiles):
             print()
     
 if __name__ == '__main__':
-    testOne("../Test/Correct/Ops.py")
+    testOne("../Test/Correct/slice.py")
 #     testAllCorrect()
 #     testAllIncorrect()
     print("out main")

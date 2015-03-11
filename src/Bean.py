@@ -122,6 +122,7 @@ class VarBean(GenericBean):
         self.starred = False
         self.compType = []
         self.scopeModifier = "" #possible options for this will be global and nonlocal.
+        self.valType = None
         
     def __eq__(self, other):
         return self.varType == other.varType
@@ -152,6 +153,8 @@ class VarBean(GenericBean):
         self.homo = otherBean.homo
         self.varType = otherBean.varType
         self.starred = otherBean.starred
+        if otherBean.valType:
+            self.valType = otherBean.valType
         
         #copy the contents of the sub lists
         for compTypeObj in otherBean.compType:
