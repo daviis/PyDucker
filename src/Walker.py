@@ -799,7 +799,7 @@ class InitialWalker(ast.NodeVisitor):
                 if sliceBean.varType == keyBean.varType:
                     if len(valBeans) > 1:
                         pass #Need to handle non-homogenous dicts here, for now we'll take the first value type.
-                    bean = Bean.VarBean(valbeans[0])
+                    bean = Bean.VarBean(valBeans[0])
                 else:
                     raise Exceptions.NonIndexableException(sliceBean, var, node.lineno)
             if bean:
