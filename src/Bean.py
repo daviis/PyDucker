@@ -83,13 +83,13 @@ class FunDefBean(GenericBean):
 
     def takes(self, paramList):
         """
-        @paramList:str*
+        @paramList:VarBean*
         todo:expand so it can also take optional vars and list/dicts
         """
         if not len(paramList) == len(self.typesparams):
             return False
         for idx in range(len(paramList)):
-            if not paramList[idx].varType == self.typesparams[idx]:
+            if not paramList[idx] == self.typesparams[idx]:
                 return False
         return True
 
