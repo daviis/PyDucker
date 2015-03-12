@@ -125,7 +125,10 @@ class VarBean(GenericBean):
         self.valType = None
         
     def __eq__(self, other):
-        return self.varType == other.varType
+        if self.varType and other.varType:
+            return self.varType == other.varType
+        else:
+            return True
     
     def nextSubType(self):
         if self.homo:
