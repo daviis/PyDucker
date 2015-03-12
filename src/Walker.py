@@ -384,7 +384,7 @@ class InitialWalker(ast.NodeVisitor):
                 del self.scope[varBean.name]
             else: #Very small chance to actually get here
                 #the visit_Name function will catch out of scope first
-                raise Exceptions.OutOfScopeException(target.name, lineNo = node.lineno)
+                raise Exceptions.OutOfScopeException(varBean.name, lineNo = node.lineno)
     
     def visit_Dict(self, node):
         """
