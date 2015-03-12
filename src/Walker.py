@@ -326,7 +326,7 @@ class InitialWalker(ast.NodeVisitor):
                 if leftClass.funs[op].takes([arg]):
                     left = arg
                 else:
-                    raise Exceptions.IncorrectMethodExcepiton(op, [arg], node.lineno, left)
+                    raise Exceptions.IncorrectMethodException(op, [arg], node.lineno, left)
             else:
                 raise Exceptions.MissingMethodException(left, op, node.lineno)
         return Bean.VarBean('bool')
@@ -941,7 +941,7 @@ class InitialWalker(ast.NodeVisitor):
         '''
         @node:ast.AST
         '''
-        return self.visit(node.value)
+        raise Exceptions.PyDuckerSyntaxError("Keyword 'yield' cannot be outside of a function.", node.lineno)
     
     def visit_YieldFrom(self, node):
         '''
@@ -1066,6 +1066,12 @@ class FunDefWalker(InitialWalker):
             else:
                 Exceptions.MissingDocStringException(self.name)
                 
-            #Not the correct way to add it to the scope since we can't
-            #remove it when we're done!
-        
+    def visit_Yield(self, node):
+        """
+        @node:ast.ast
+        """
+        retBean = Bean.VarBean("generator")
+        retBean.homo = True
+        retBean.compType = [self.visit(node.value)]
+        self.retType = retBean
+    
