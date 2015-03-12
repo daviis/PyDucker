@@ -108,6 +108,7 @@ def handMakeNameSpace():
     nameSpace.put(floatClass.name, floatClass)
 
     generatorClass = ClassDefBean("generator", None)
+    generatorClass.funs['__iter__'] = FunDefBean([], VarBean('obj'), '__iter__')
     nameSpace.put(generatorClass.name, generatorClass)
 
     funsClass = ClassDefBean("$funs", None)
