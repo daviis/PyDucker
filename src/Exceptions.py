@@ -15,6 +15,7 @@ The exception hierarchy for PyDucker is
         |--- MissingDocStringException
         |--- NonlocalReferenceException
         |--- GlobalReferenceException
+        |--- SyntaxError
     |--- PyDuckerWarning
          |--- TypeMismatchException
          |--- HeteroCollectionException
@@ -126,7 +127,7 @@ class MissingMethodException(PyDuckerError):
     
     def __init__(self, aVar, aFun, lineNo=-1):
         """
-        @aCls:ClassDefBean
+        @aCls:VarBean
         @aFun:str
         @lineNu:int
         """
@@ -164,13 +165,13 @@ class MissingMagicMethodException(MissingMethodException):
     
     
     
-class IncorrectMethodExcepiton(MissingMethodException):
+class IncorrectMethodException(MissingMethodException):
     
     def __init__(self, aFun, someArgs, lineNo=-1, aCls=None):
         """
         @aCls:VarBean
         @aFun:str
-        @someArgs:^str
+        @someArgs:^VarBean
         @lineNo:int
         """
         super().__init__(aCls, aFun, lineNo)
@@ -180,7 +181,7 @@ class IncorrectMethodExcepiton(MissingMethodException):
         ret = super().__str__()
         ret += "\n\tWith args: "
         for item in self.argLst:
-            ret += item.varType
+            ret += str(item.varType)
         return ret
     
     
@@ -221,6 +222,22 @@ class GlobalReferenceException(PyDuckerError):
         ret += "\n\tCouldn't make global call for " + self.varBean.name
         ret += "\n\t" + self.msg
         return ret
+    
+class PyDuckerSyntaxError(PyDuckerError):
+    
+    def __init__(self, message, lineNo=-1):
+        """
+        @message:str
+        @lineNo:int
+        """
+        super().__init__(lineNo)
+        self.msg = message
+        
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\t" + self.msg
+        return ret
+    
     
 class ScopeNotFoundException(PyDuckerWarning):
     
