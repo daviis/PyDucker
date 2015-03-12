@@ -45,8 +45,8 @@ class ClassDefBean(GenericBean):
                 return self.funs[fun.name].returnType 
         except KeyError:
             raise Exceptions.MissingMethodException(self, fun.name)
-        except Exceptions.IncorrectMethodExcepiton as ex:
-            ex.cls = self
+        except Exceptions.IncorrectMethodException as ex:
+            ex.cls = VarBean(self.name)
             raise ex
             
     def isIterable(self):
@@ -101,7 +101,7 @@ class FunDefBean(GenericBean):
         if self.takes(funBean.typesparams):
             return True
         else:
-            raise Exceptions.IncorrectMethodExcepiton(funBean.name, funBean.typesparams)
+            raise Exceptions.IncorrectMethodException(funBean.name, funBean.typesparams)
 
 class VarBean(GenericBean):
     
