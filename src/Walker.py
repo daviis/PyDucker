@@ -803,7 +803,18 @@ class InitialWalker(ast.NodeVisitor):
             self.visit(bodyPart) #i dont think this needs to store what gets returned
         for orelse in node.orelse:
             self.visit(orelse)
-     
+    
+    def visit_With(self, node):
+        """
+        @node:ast.ast
+        """
+        #should have to vist items and a body both a list
+        for item in node.items:
+            self.visit(item)
+        #for bodypart in node.body:
+         #   print(node.body)
+          #  self.visit(bodypart)
+             
     #These are initial walker independent, ie they should be over written in inheriting classes    
     def visit_ClassDef(self, node):
         """
