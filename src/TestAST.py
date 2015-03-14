@@ -74,6 +74,7 @@ def _testAll(listOfFiles):
 
         try:
             nameSpace = handMakeNameSpace()
+            print(type(nameSpace))
             scope = handMakeScope()
             firstWalker = InitialWalker(tree, nameSpace, scope)
             firstWalker.walk()
