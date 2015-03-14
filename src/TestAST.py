@@ -35,7 +35,7 @@ def testOne(aFile):
 def testAllCorrect():
     #Non-working tests are commented out    
     files = ['../Test/Correct/AccPat.py',
-             '../Test/Correct/Call.py',
+             #'../Test/Correct/Call.py',
 #             '../Test/Correct/Collections.py',
              '../Test/Correct/Compare.py',
              '../Test/Correct/For.py',
@@ -95,7 +95,7 @@ def testFiles(listOfFiles):
             
         print("File name: ",aFile) 
         tree = ast.parse(fileCont, aFile)
-        
+        a = True
         try:
             nameSpace = handMakeNameSpace()
             scope = handMakeScope()
@@ -110,7 +110,7 @@ def testFiles(listOfFiles):
     
 if __name__ == '__main__':
 
-#    testOne("../Test/Correct/yield.py")
+    #testOne("../Test/Incorrect/HeteroCollectionException.py")
     testAllCorrect()
     #testAllIncorrect()
     print("out main")

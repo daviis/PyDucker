@@ -138,12 +138,13 @@ class InitialWalker(ast.NodeVisitor):
         
         try:
             value = self.visit(node.value)
+            
         except Exceptions.TypeMisMatchException as ex:
             ex.varName = tars[0].name
             raise ex
             
         for varBean in tars:
-            
+            print(varBean)
             if varBean.varType == "tuple" and varBean.starred:
                 try:
                     self._tupleUnpacking(varBean, value)
