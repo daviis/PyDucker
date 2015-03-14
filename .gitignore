@@ -113,3 +113,7 @@ docs/_build/
 target/
 *.project
 *.pydevproject
+
+*.c9
+
+.c9/*

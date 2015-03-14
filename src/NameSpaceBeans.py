@@ -37,6 +37,7 @@ def handMakeNameSpace():
     intClass.funs['__sub__'] = FunDefBean([VarBean('int')] ,  VarBean('int'), '__sub__')
     intClass.funs['__pos__'] = FunDefBean([VarBean('int')] ,  VarBean('int'), '__pos__')
     intClass.funs['__neg__'] = FunDefBean([VarBean('int')] ,  VarBean('int'), '__neg__')
+    intClass.funs['__index__'] = FunDefBean([VarBean('int')] ,  VarBean('int'), '__index__')
     nameSpace.put(intClass.name, intClass)
     
     
@@ -101,13 +102,30 @@ def handMakeNameSpace():
     exceptionClass = ClassDefBean("Exception", None)
     nameSpace.put(exceptionClass.name, exceptionClass)
     
+    floatClass = ClassDefBean('float', None)
+    floatClass.funs['__add__'] = FunDefBean([VarBean('float')], VarBean('float'), '__add__')
+    floatClass.funs['__sub__'] = FunDefBean([VarBean('float')], VarBean('float'), '__sub__' )
+    nameSpace.put(floatClass.name, floatClass)
+
     generatorClass = ClassDefBean("generator", None)
+    generatorClass.funs['__iter__'] = FunDefBean([], VarBean('obj'), '__iter__')
     nameSpace.put(generatorClass.name, generatorClass)
+
+    funsClass = ClassDefBean("$funs", None)
+    funsClass.funs["print"] = FunDefBean([VarBean('str')], VarBean('None'), "print")
+    funsClass.funs["range"] = FunDefBean([VarBean('int')], VarBean('range'), "print")
+    nameSpace.put(funsClass.name, funsClass)
+    
+    rangeClass = ClassDefBean("range", None)
+    rangeClass.funs["__iter__"] = FunDefBean([], VarBean('int'), "__iter__")
+    nameSpace.put(rangeClass.name, rangeClass)
     
 
 def handMakeScope():
     scope = ScopeLevelBean()
     
     scope.append(VarBean("Exception", "ValueError"))
+    scope.append(VarBean("$funs", "print"))
+    scope.append(VarBean("$funs", "range"))
     
     return scope

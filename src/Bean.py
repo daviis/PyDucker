@@ -45,8 +45,8 @@ class ClassDefBean(GenericBean):
                 return self.funs[fun.name].returnType 
         except KeyError:
             raise Exceptions.MissingMethodException(self, fun.name)
-        except Exceptions.IncorrectMethodExcepiton as ex:
-            ex.cls = self
+        except Exceptions.IncorrectMethodException as ex:
+            ex.cls = VarBean(self.name)
             raise ex
             
     def isIterable(self):
@@ -79,17 +79,17 @@ class FunDefBean(GenericBean):
         self.typesparams = paramsTypes
         self.returnType = returntype
         self.name = fundefname
-        self.numparams = len(self.typesparams) # this should be assigned after creation to be length of self.typesparams
+        
 
     def takes(self, paramList):
         """
-        @paramList:str*
+        @paramList:VarBean*
         todo:expand so it can also take optional vars and list/dicts
         """
         if not len(paramList) == len(self.typesparams):
             return False
         for idx in range(len(paramList)):
-            if not paramList[idx].varType == self.typesparams[idx]:
+            if not paramList[idx] == self.typesparams[idx]:
                 return False
         return True
 
@@ -101,7 +101,7 @@ class FunDefBean(GenericBean):
         if self.takes(funBean.typesparams):
             return True
         else:
-            raise Exceptions.IncorrectMethodExcepiton(funBean.name, funBean.typesparams)
+            raise Exceptions.IncorrectMethodException(funBean.name, funBean.typesparams)
 
 class VarBean(GenericBean):
     
@@ -121,9 +121,14 @@ class VarBean(GenericBean):
         self.homo = False
         self.starred = False
         self.compType = []
+        self.scopeModifier = "" #possible options for this will be global and nonlocal.
+        self.valType = None
         
     def __eq__(self, other):
-        return self.varType == other
+        if self.varType and other.varType:
+            return self.varType == other.varType
+        else:
+            return True
     
     def nextSubType(self):
         if self.homo:
@@ -143,68 +148,171 @@ class VarBean(GenericBean):
             else:
                 return True #currently the value of self.varType == None 
             
+    def recursiveClone(self, otherBean):
+        """
+        @otherBean:VarBean
+        Used for the assignment of objects so name shouldn't be cloned. 
+        """
+        self.homo = otherBean.homo
+        self.varType = otherBean.varType
+        self.starred = otherBean.starred
+        if otherBean.valType:
+            self.valType = otherBean.valType
+        
+        #copy the contents of the sub lists
+        for compTypeObj in otherBean.compType:
+            internalBean = VarBean(None)
+            internalBean.recursiveClone(compTypeObj)
+            self.compType.append(internalBean)
+            
 
 class ScopeLevelBean(GenericBean):
     
     def __init__(self, incomingVars = []):
         """
         @incomingVars:*VarBean
+        The key in the levels dictionary will be the varName, value will be the VarBeanReference
         """
-        self.vars = {} #key will be the varName, value will be the VarBeanReference 
+        self.levels = [{}]
         for var in incomingVars:
             self.append(var)
+        
         
     def __getitem__(self, item):
         """
         @item:str
         """
-        return self.vars[item]
+        for level in reversed(self.levels):
+            if item in level:
+                try:
+                    if level[item].varType:
+                        return level[item]
+                    else:
+                        raise Exceptions.RefBeforeAssignException(item)
+                except AttributeError: #it will get a attributeerror from FunDefBeans, but that isn't a big error so just return it.  
+                    return level[item]
+            
+        raise Exceptions.OutOfScopeException(item)
+            
+            
     
     def __setitem__(self, name, item):
-        self.vars[name] = item
+        """
+        Set a variable in the highest level of scope
+        """
+        currentLevel = self.levels[-1]
+        currentLevel[name] = item
         
     def __delitem__(self,item):
         """
         @item:str
         Delete an entry from scope where item is the key
         """
-        del self.vars[item]
+        currentLevel = self.levels[-1]
+        del currentLevel[item]
         
     def __contains__(self, item):
         """
         @item:str
         @!bool
         """
-        return item in self.vars
+        currentLevel = self.levels[-1]
+        return item in currentLevel
         
     def __iter__(self):
-        return iter(self.vars)
+        currentLevel = self.levels[-1]
+        return iter(currentLevel)
         
     def append(self, item):
         """
         @item:VarBean
         """
-        if item.name in self.vars and item != self.vars[item.name]:
+        currentLevel = self.levels[-1]
+        
+        if item.name in currentLevel and item != currentLevel[item.name]:
             print("reassign of " + item.name, file=sys.stderr)
-        self.vars[item.name] = item
+            
+        if item.name in currentLevel and currentLevel[item.name].scopeModifier:
+            item.scopeModifier = currentLevel[item.name].scopeModifier    
         
-    def copy(self):
+        currentLevel[item.name] = item
+        
+    def goDownLevel(self):
         """
-        Used to pass into a (class/fun)defWalker. When exited from the router it will pop off extra vars. 
+        Used when entering a function, it adds a dictionary to the stack of scope levels
         """
-        bean = ScopeLevelBean()
-        for varName in self.vars:
-            bean.append(self.vars[varName])
-        return bean
+        self.levels.append({})
+    
+    def goUpLevel(self):
+        """
+        Used when leaving a function, it pops a dictionary to the stack of scope levels
+        """
+        if len(self.levels) > 1:
+            return self.levels.pop()
+        else:
+            raise Exception("Can't leave the global scope")
+        
+    def makeNonlocalReference(self, names):
+        """
+        @names:VarBean*
+        """
+        if len(self.levels) < 2:
+            raise Exceptions.NonlocalReferenceException(names, "Not enough levels of scope to make a nonlocal reference. Maybe a 'global' call would work")
+        #there is the possibility of finding the variable name check everywhere but the global scope
+        for nameBean in names:
+            if self._nonlocalGlobalAlreadyUsedCheck(nameBean): #if the variable is already in scope at this level then it will not work.
+                raise Exceptions.NonlocalReferenceException([nameBean], "Name assigned before nonlocal declaration.")
+            else:
+                for level in reversed(self.levels[1:]): #look in every level except for the global scope
+                    if nameBean.name in level:
+                        if nameBean.scopeModifier == "global":
+                            raise Exceptions.NonlocalReferenceException([nameBean], "There variable was previously pulled out of the global scope. The global keyword may serve you better.")
+                        else:
+                            nameBean.recursiveClone(level[nameBean.name])
+                            nameBean.scopeModifier = "nonlocal"
+                            self.append(nameBean)
+                            return #don't need to return anything, just return so the last of the loop isn't used 
+                    else:
+                        continue #keep going until the end of the lists
+         
+    
+    def makeGlobalReference(self, names):
+        """
+        @names:VarBean*
+        """
+        for nameBean in names:
+            if self._nonlocalGlobalAlreadyUsedCheck(nameBean):
+                raise Exceptions.GlobalReferenceException(nameBean, "Name assigned before global declaration.")
+            else:
+                globSpace = self.levels[0]
+                if nameBean.name not in globSpace:
+                    raise Exceptions.ScopeNotFoundException("Global", nameBean)
+                else:
+                    nameBean.scopeModifier = "global"
+                    self.append(nameBean)
+                 
+        
+    def _nonlocalGlobalAlreadyUsedCheck(self, nameBean):
+        """
+        @nameBean:VarBean
+        
+        Helper function for both global and nonlocal keywords.
+        """
+        if nameBean.name in self.levels[-1]:
+            return True
+        else:
+            return False
         
         
-        
-class NameSpaceBean(ScopeLevelBean):
+class NameSpaceBean(GenericBean):
     """
     This variation of ScopeLevelBean will wrap a dictionary where the key will be a string of the class/fun name
     and the value will be a ClassBean or FunDefBean. The look up will be different because if it hits on a value 
     in the dict that is initialized with None then it will attempt to make a bean.
     """
+    
+    def __init__(self):
+        self.vars = {}
      
     def put(self, name, bean=None):
         """
@@ -252,6 +360,19 @@ class NameSpaceBean(ScopeLevelBean):
         @varBean:VarBean
         """
         self.vars[varBean.varType].isIterable()
+        
+    def duckCallable(self, varBean):
+        """
+        @varBean:VarBean
+        """
+        self.vars[varBean.varType].isCallable()
+        
+    def addFirstClassFun(self, funDefBean):
+        """
+        @funDefBean:FunDefBean
+        """
+        funsClass = self.vars["$funs"]
+        funsClass.funs[funDefBean.name] = funDefBean
     
     def checkMagicMethod(self, lbean, rbean, op):
         """
