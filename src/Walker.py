@@ -285,6 +285,8 @@ class InitialWalker(ast.NodeVisitor):
             except AttributeError:
                 if funcName.varType == "$funs":
                     codedFun = Bean.FunDefBean(args, None, funcName.name)
+                    print(self.nameSpace)
+                    #print(type(self.nameSpace))
                     funsClass = self.nameSpace["$funs"] 
                     return funsClass.acceptsFun(codedFun)
                 else:
@@ -936,7 +938,7 @@ class InitialWalker(ast.NodeVisitor):
             self.visit(bodyPart) #i dont think this needs to store what gets returned
         for orelse in node.orelse:
             self.visit(orelse)
-<<<<<<< HEAD
+
     
     def visit_With(self, node):
         """
@@ -945,10 +947,10 @@ class InitialWalker(ast.NodeVisitor):
         #should have to vist items and a body both a list
         for item in node.items:
             self.visit(item)
-        #for bodypart in node.body:
-         #   print(node.body)
-          #  self.visit(bodypart)
-             
+        for bodypart in node.body:
+            print(node.body)
+            self.visit(bodypart)
+              
      
     def visit_Yield(self, node):
         '''
