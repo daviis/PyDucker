@@ -140,7 +140,8 @@ class InitialWalker(ast.NodeVisitor):
         """
         tars = []
         for target in node.targets:
-            tars.append(self.visit(target))
+            newVarName = self.visit(target)
+            tars.append(newVarName)
         
         try:
             value = self.visit(node.value)
@@ -156,10 +157,9 @@ class InitialWalker(ast.NodeVisitor):
                 except Exceptions.PyDuckerException as ex:
                     ex.lineNum = node.lineno
                     raise ex
-                
+            
             elif varBean.typesMatch(value):
                 varBean.recursiveClone(value)
-                self.scope.append(varBean)
             
             else:
                 raise  Exceptions.TypeMisMatchException(varBean.name, varBean.varType, value.varType, node.lineno)
@@ -171,9 +171,7 @@ class InitialWalker(ast.NodeVisitor):
         Value is the varType of the object the function is being called on. node.attr is the str rep of 
         the method name
         """
-        value = self.visit(node.value)
-        ctx = self.visit(node.ctx)
-        return value, node.attr
+        return node.attr
     
     def visit_AugAssign(self, node):
         """
@@ -263,31 +261,43 @@ class InitialWalker(ast.NodeVisitor):
         It can throw a MissingMethodException if the function isn't found in the class or if the number/types of paramiters is wrong
         @node:ast.ast
         """
-      
-        cls, funcName = self.visit(node.func)
-        
-        
-        args = []
-        for arg in node.args:
-            args.append(self.visit(arg))
+        try:
+            funcName = self.visit(node.func) #this will be an ast.Attribute for `'a'.upper()` or a ast.Name for `'a'() or print()`
             
-        keywords = []
-        for key in node.keywords:
-            keywords.append(self.visit(key))
+            args = []
+            for arg in node.args:
+                args.append(self.visit(arg))
+                
+            keywords = []
+            for key in node.keywords:
+                keywords.append(self.visit(key))
+                
+            starargs = self.visit(node.starargs)
+            kwargs = self.visit(node.kwargs)
+    
+            try:
+                #assume that the function will be part of a class, so try to look up the class type, then see if it has the function.
+                cls = self.visit(node.func.value)
+                clsBean = self.nameSpace[cls.varType]
+                funBean = Bean.FunDefBean(args, None, funcName)
+                return clsBean.acceptsFun(funBean)
             
-        starargs = self.visit(node.starargs)
-        kwargs = self.visit(node.kwargs)
+            except AttributeError:
+                if funcName.varType == "$funs":
+                    codedFun = Bean.FunDefBean(args, None, funcName.name)
+                    funsClass = self.nameSpace["$funs"] 
+                    return funsClass.acceptsFun(codedFun)
+                else:
+                
+                    codedFun = Bean.FunDefBean(args, None, "__call__")
+                    self.nameSpace.duckCallable(funcName)
+                    codedClass = self.nameSpace[funcName.varType]
+                    return codedClass.acceptsFun(codedFun)
+        except Exceptions.PyDuckerException as ex:
+                ex.lineNum = node.lineno
+                raise ex
         
-        clsBean = self.nameSpace[cls.varType]
-        if clsBean.hasFun(funcName):
-            #fundefbean will need to be extended to handle things other than just a fixed lenght number of params
-            if clsBean.funs[funcName].takes(args):
-                return clsBean.funs[funcName].returnType
-            else:
-                raise Exceptions.IncorrectMethodExcepiton(funcName, args, node.lineno, aCls=cls)
-        else:
-            raise Exceptions.MissingMethodException(cls, funcName, node.lineno)
-
+            
     def visit_Compare(self, node):
         """
         @node:ast.ast
@@ -316,7 +326,7 @@ class InitialWalker(ast.NodeVisitor):
                 if leftClass.funs[op].takes([arg]):
                     left = arg
                 else:
-                    raise Exceptions.IncorrectMethodExcepiton(op, arg.varType, node.lineno, left)
+                    raise Exceptions.IncorrectMethodException(op, [arg], node.lineno, left)
             else:
                 raise Exceptions.MissingMethodException(left, op, node.lineno)
         return Bean.VarBean('bool')
@@ -327,11 +337,8 @@ class InitialWalker(ast.NodeVisitor):
         @todo figure out what node.ifs is supposed to do.
         """
         targetVar = self.visit(node.target)
-        
-        for anIf in node.ifs:
-            self.visit(anIf)
-        
         iterVar = self.visit(node.iter)
+        
         try:
             self.nameSpace.duckIter(iterVar)
             if iterVar.homo:
@@ -340,10 +347,13 @@ class InitialWalker(ast.NodeVisitor):
                 self.scope.append(retVar)
             else:
                 print("Not sure how we are doing non homo lists.", file=sys.stderr)
+                
+            for anIf in node.ifs:
+                self.visit(anIf)
         except Exceptions.PyDuckerException as ex:
             ex.lineNum = node.lineno
             raise ex
-    
+        
     def visit_Continue(self, node):
         """
         @node:ast.ast
@@ -374,7 +384,7 @@ class InitialWalker(ast.NodeVisitor):
                 del self.scope[varBean.name]
             else: #Very small chance to actually get here
                 #the visit_Name function will catch out of scope first
-                raise Exceptions.OutOfScopeException(target.name, lineNo = node.lineno)
+                raise Exceptions.OutOfScopeException(varBean.name, lineNo = node.lineno)
     
     def visit_Dict(self, node):
         """
@@ -399,6 +409,8 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.ast
         """
+        self.scope.goDownLevel()
+        
         retBean = Bean.VarBean('dict')
         
         for gen in node.generators:
@@ -406,6 +418,7 @@ class InitialWalker(ast.NodeVisitor):
         retBean.compType = [self.visit(node.key)]
         retBean.valType = [self.visit(node.value)]
         
+        self.scope.goUpLevel()
         return retBean
     
     def visit_Div(self, node):
@@ -434,10 +447,14 @@ class InitialWalker(ast.NodeVisitor):
         """
         typeBean = self.visit(node.type)
         typeBean.name = node.name
+        
+        self.scope.goDownLevel()
+        
         self.scope.append(typeBean) #name will be a str var name that the exception will take on, we will need to add it to the scope then remove it from scope when the call completes.
         for bod in node.body:
             self.visit(bod)
         
+        self.scope.goUpLevel()
     
     def visit_Expr(self, node):
         """
@@ -475,11 +492,29 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.ast
         """
+        self.scope.goDownLevel()
+    
         for gen in node.generators:
             self.visit(gen)
             
-        return self._generatorHelper(Bean.VarBean("generator"), node.elt)
- 
+        retBean = self._generatorHelper(Bean.VarBean("generator"), node.elt)
+        self.scope.goUpLevel()
+        return retBean
+    
+    def visit_Global(self, node):
+        """
+        @node:ast.ast
+        """
+        varNames = []
+        for nameNode in node.names:
+            varNames.append(Bean.VarBean(None, nameNode))
+                    
+        try:
+            self.scope.makeGlobalReference(varNames)
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
+            raise ex
+        
     def visit_Gt(self, node):
         """
         @node:ast.ast
@@ -575,10 +610,14 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.ast
         """
+        self.scope.goDownLevel()
+        
         for gen in node.generators:
             self.visit(gen)
             
-        return self._generatorHelper(Bean.VarBean('list'), node.elt)
+        retVar = self._generatorHelper(Bean.VarBean('list'), node.elt)
+        self.scope.goUpLevel()
+        return retVar
         
     def visit_Load(self, node):
         """
@@ -627,14 +666,15 @@ class InitialWalker(ast.NodeVisitor):
         store = self.visit(node.ctx)
         
         try:
-            
-            scopedVarBean = self.scope[node.id]
-            return scopedVarBean
-        except KeyError:
+            return self.scope[node.id]
+        except Exceptions.PyDuckerException as ex:
             if store:
-                return Bean.VarBean(None, node.id)
+                newBean = Bean.VarBean(None, node.id)
+                self.scope.append(newBean)
+                return newBean
             else:
-                raise Exceptions.OutOfScopeException(node.id, node.lineno)
+                ex.lineNum = node.lineno
+                raise ex
             
     def visit_NameConstant(self, node):
         """
@@ -642,6 +682,20 @@ class InitialWalker(ast.NodeVisitor):
         """
         return Bean.VarBean(type(node.value).__name__)
         
+    def visit_Nonlocal(self, node):
+        """
+        @node:ast.ast
+        """
+        varNames = []
+        for nameNode in node.names:
+            varNames.append(Bean.VarBean(None, nameNode))
+            
+        try:
+            self.scope.makeNonlocalReference(varNames)
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
+            raise ex
+
     def visit_Not(self, node):
         """
         @node:ast.ast
@@ -747,10 +801,13 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.ast
         """
+        self.scope.goDownLevel()
         for gen in node.generators:
             self.visit(gen)
         
-        return self._generatorHelper(Bean.VarBean('set'), node.elt)
+        retBean = self._generatorHelper(Bean.VarBean('set'), node.elt)
+        self.scope.goUpLevel()
+        return retBean
             
     def visit_Starred(self, node):
         """
@@ -884,7 +941,7 @@ class InitialWalker(ast.NodeVisitor):
         '''
         @node:ast.AST
         '''
-        return self.visit(node.value)
+        raise Exceptions.PyDuckerSyntaxError("Keyword 'yield' cannot be outside of a function.", node.lineno)
     
     def visit_YieldFrom(self, node):
         '''
@@ -898,21 +955,27 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.AST
         """
-        clsWalker = ClassDefWalker(node, self.nameSpace, self.scope.copy())
+        self.scope.goDownLevel()
+        
+        clsWalker = ClassDefWalker(node, self.nameSpace, self.scope)
         clsWalker.walk()
         
         self.nameSpace.put(clsWalker.name, clsWalker.createClassBean())
         
+        self.scope.goUpLevel()
          
     def visit_FunctionDef(self, node):
         """
         @node:ast.AST
         """
-        funWalker = FunDefWalker(node, self.nameSpace, self.scope.copy())   
+        self.scope.goDownLevel()
+        
+        funWalker = FunDefWalker(node, self.nameSpace, self.scope)   
         funWalker.walk()
              
-        self.nameSpace.put(funWalker.name, funWalker.createFunBean())
-        
+        self.scope.goUpLevel()
+        self.nameSpace.addFirstClassFun(funWalker.createFunBean())
+        self.scope.append(Bean.VarBean("$funs", funWalker.name))
             
 class ClassDefWalker(InitialWalker):
     
@@ -960,7 +1023,18 @@ class FunDefWalker(InitialWalker):
         self.nameSpace = nameSp
         
     def walk(self):
-        self.visit(self.root)
+        try:
+            self.visit(self.root.args)
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = self.root.lineno
+            raise ex 
+        
+        for dec in self.root.decorator_list:
+            self.visit(dec)
+            
+        for bod in self.root.body:
+            self.visit(bod)           
+            
         
     def _addPramsToScope(self):
         params = self._findParamsTypes()
@@ -976,19 +1050,6 @@ class FunDefWalker(InitialWalker):
     def createFunBean(self):
         return Bean.FunDefBean(self._findParamTypes(), self.retType, self.name)
     
-    def visit_FunctionDef(self, node):
-        try:
-            self.visit(node.args)
-        except Exceptions.PyDuckerException as ex:
-            ex.lineNum = node.lineno
-            raise ex 
-        
-        for dec in node.decorator_list:
-            self.visit(dec)
-            
-        for bod in node.body:
-            self.visit(bod)           
-            
     def visit_Return(self, node):
         self.retType = self.visit(node.value)
         
@@ -1005,6 +1066,12 @@ class FunDefWalker(InitialWalker):
             else:
                 Exceptions.MissingDocStringException(self.name)
                 
-            #Not the correct way to add it to the scope since we can't
-            #remove it when we're done!
-        
+    def visit_Yield(self, node):
+        """
+        @node:ast.ast
+        """
+        retBean = Bean.VarBean("generator")
+        retBean.homo = True
+        retBean.compType = [self.visit(node.value)]
+        self.retType = retBean
+    

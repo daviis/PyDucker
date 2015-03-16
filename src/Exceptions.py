@@ -11,10 +11,15 @@ The exception hierarchy for PyDucker is
               |--- MissingMagicMethodException
               |--- IncorrectMethodException
         |--- OutOfScopeException
+             |--- RefBeforeAssignException 
         |--- MissingDocStringException
+        |--- NonlocalReferenceException
+        |--- GlobalReferenceException
+        |--- SyntaxError
     |--- PyDuckerWarning
          |--- TypeMismatchException
          |--- HeteroCollectionException
+         |--- ScopeNotFoundException
 '''
 
 class PyDuckerException(Exception):
@@ -82,7 +87,7 @@ class HeteroCollecionException(PyDuckerWarning):
 
 class OutOfScopeException(PyDuckerError):
     
-    def __init__(self, someName, lineNo):
+    def __init__(self, someName, lineNo=-1):
         """
         @someName:str
         @lineNo:int
@@ -93,6 +98,13 @@ class OutOfScopeException(PyDuckerError):
     def __str__(self):
         ret = super().__str__()
         ret += "\n\tVariable name: " + self.aName + " is not in scope"
+        return ret
+    
+class RefBeforeAssignException(OutOfScopeException):
+    
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\tBecause it was referenced before it was assigned."
         return ret
     
 class MissingDocStringException(PyDuckerError):
@@ -153,13 +165,13 @@ class MissingMagicMethodException(MissingMethodException):
     
     
     
-class IncorrectMethodExcepiton(MissingMethodException):
+class IncorrectMethodException(MissingMethodException):
     
     def __init__(self, aFun, someArgs, lineNo=-1, aCls=None):
         """
         @aCls:VarBean
         @aFun:str
-        @someArgs:^str
+        @someArgs:^VarBean
         @lineNo:int
         """
         super().__init__(aCls, aFun, lineNo)
@@ -167,9 +179,83 @@ class IncorrectMethodExcepiton(MissingMethodException):
         
     def __str__(self):
         ret = super().__str__()
-        ret += "\n\tWith args: " + str(self.argLst)
+        ret += "\n\tWith args: "
+        for item in self.argLst:
+            ret += str(item.varType)
         return ret
     
+    
+class NonlocalReferenceException(PyDuckerError):
+    
+    def __init__(self, aVarBeanLst, message, lineNo=-1):
+        """
+        @aVarBeanLst:VarBean*
+        @message:str
+        @lineNo:int
+        """
+        super().__init__(lineNo)
+        self.msg = message
+        self.varBeanList = aVarBeanLst
+        
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\tCouldn't make nonlocal call about "
+        for bean in self.varBeanList:
+            ret += bean.name
+        ret += "\n\t" + self.msg
+        return ret
+    
+class GlobalReferenceException(PyDuckerError):
+    
+    def __init__(self, nameBean, message, lineNo=-1):
+        """
+        @nameBean:VarBean
+        @message:str
+        @lineNo:int
+        """
+        super().__init__(lineNo)
+        self.msg = message
+        self.varBean = nameBean
+        
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\tCouldn't make global call for " + self.varBean.name
+        ret += "\n\t" + self.msg
+        return ret
+    
+class PyDuckerSyntaxError(PyDuckerError):
+    
+    def __init__(self, message, lineNo=-1):
+        """
+        @message:str
+        @lineNo:int
+        """
+        super().__init__(lineNo)
+        self.msg = message
+        
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\t" + self.msg
+        return ret
+    
+    
+class ScopeNotFoundException(PyDuckerWarning):
+    
+    def __inti__(self, globNonLoc, aVarBean, lineNo=-1):
+        """
+        @globNonLoc:str
+        @aVarBean:Bean.VarBean
+        @lineNo:int
+        """
+        super().__init__(lineNo)
+        self.varBean = aVarBean
+        self.scopeType = globNonLoc
+        
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\tCould not find " + self.varBean.name + " in the scope of " + self.scopeType
+        return ret
+
 class NonIndexableException(PyDuckerError):
     
     def __init__(self, varBean, dictBean, lineNo=-1):
