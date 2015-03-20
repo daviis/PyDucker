@@ -16,3 +16,10 @@ class Animal():
             things = 'stuff'
         def doThings(self):
             print('i probably broke this')
+            
+x = Animal()
+# x.speak()
+
+class cat(Animal):
+    def fall(self):
+        print('i fell')

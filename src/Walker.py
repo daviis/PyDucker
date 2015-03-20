@@ -8,6 +8,7 @@ import sys
 import Bean
 import Exceptions
 from DocStringParser import parseDocString
+from Bean import ClassDefBean
 
 class InitialWalker(ast.NodeVisitor):
     def __init__(self, astNode, nameSp, scopeBean):
@@ -277,6 +278,8 @@ class InitialWalker(ast.NodeVisitor):
     
             try:
                 #assume that the function will be part of a class, so try to look up the class type, then see if it has the function.
+                print(ast.dump(node))
+                print(ast.dump(node.func))
                 cls = self.visit(node.func.value)
                 clsBean = self.nameSpace[cls.varType]
                 funBean = Bean.FunDefBean(args, None, funcName)
@@ -955,14 +958,24 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.AST
         """
+        print('found class')
+        print(ast.dump(node))
         self.scope.goDownLevel()
         
         clsWalker = ClassDefWalker(node, self.nameSpace, self.scope)
         clsWalker.walk()
+        clsBean = clsWalker.createClassBean()
+#         self.nameSpace.put(clsWalker.name, clsWalker.createClassBean())
         
-        self.nameSpace.put(clsWalker.name, clsWalker.createClassBean())
+        self.nameSpace.put(clsWalker.name, clsBean)
+        self.scope.append(Bean.VarBean("$funs",clsBean.name))
+        if clsBean.funs:
+            for i in clsBean.funs:
+                self.scope.append(Bean.VarBean("$funs",i))
+        print('all funs should be added')
+#         self.funs.put(clsWalker.name,clsBean)
         
-        self.scope.goUpLevel()
+#         self.scope.goUpLevel()
          
     def visit_FunctionDef(self, node):
         """
@@ -1021,10 +1034,9 @@ class ClassDefWalker(InitialWalker):
         clsWalker.walk()
         clsBean = clsWalker.createClassBean()
         self.nameSpace.put(clsWalker.name, clsBean)
-        self.scope.append(clsBean)
-        self.funs.put(clsWalker.name,clsBean)
+        self.scope.append(Bean.VarBean("$funs",clsBean.name))
+        self.funs.put(clsWalker.name,Bean.VarBean("$funs",clsBean.name))
 #         self.scope.goUpLevel()
-        return(clsBean)
     
     def createClassBean(self):
         bean = Bean.ClassDefBean(self.name, self.scope, self.parent)
