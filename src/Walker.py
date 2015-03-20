@@ -986,7 +986,7 @@ class ClassDefWalker(InitialWalker):
         @scopeCopy:bean.ScopeBean
         """
         super().__init__(classRoot, nameSp, scopeCopy)
-        self.initFun = None
+       # self.initFun = None
         self.parent = None
         self.funs = Bean.NameSpaceBean()
         self.name = classRoot.name
@@ -1000,15 +1000,38 @@ class ClassDefWalker(InitialWalker):
         """
         @node:ast.ast
         """
-        self.funs.append(node)
-        if(node.name == '__init__'):
-            self.initFun = node
+        self.scope.goDownLevel()
+        
+        funWalker = FunDefWalker(node, self.nameSpace, self.scope)   
+        funWalker.walk()
+             
+        self.scope.goUpLevel()
+        self.nameSpace.addFirstClassFun(funWalker.createFunBean())
+        self.scope.append(Bean.VarBean("$funs", funWalker.name))
+        self.funs.put(funWalker.name,Bean.VarBean("$funs", funWalker.name))
+        
+#     def visit_ClassDef(self, node):
+#         """
+#         @node:ast.AST
+#         """
+#         print('found class')
+#         print(ast.dump(node))
+#         self.scope.goDownLevel()
+#         
+#         clsWalker = ClassDefWalker(node, self.nameSpace, self.scope)
+#         clsWalker.parent = self.name
+#         clsWalker.walk()
+#         self.nameSpace.put(clsWalker.name, clsWalker.createClassBean())
+#         self.scope.append(Bean.VarBean("$cls", clsWalker.name))
+#         self.scope.goUpLevel()
     
     def createClassBean(self):
-        bean = Bean.ClassDefBean(self.name, self.funs, self.parent)
-#         stuff about making the bean
+        bean = Bean.ClassDefBean(self.name, self.scope, self.parent)
+        for i in self.funs.vars:
+            bean.funs[i] = self.funs.vars[i]
+            
         return bean
-    
+            
 class FunDefWalker(InitialWalker):
     def __init__(self, funRoot, nameSp, scopeLevel):
         """
