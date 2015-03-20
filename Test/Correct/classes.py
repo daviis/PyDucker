@@ -17,7 +17,7 @@ class Animal():
         def doThings(self):
             print('i probably broke this')
             
-x = Animal()
+x = Animal(1)
 # x.speak()
 
 class cat(Animal):

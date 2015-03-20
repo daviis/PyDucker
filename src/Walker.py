@@ -291,7 +291,6 @@ class InitialWalker(ast.NodeVisitor):
                     funsClass = self.nameSpace["$funs"] 
                     return funsClass.acceptsFun(codedFun)
                 else:
-                
                     codedFun = Bean.FunDefBean(args, None, "__call__")
                     self.nameSpace.duckCallable(funcName)
                     codedClass = self.nameSpace[funcName.varType]
@@ -968,11 +967,15 @@ class InitialWalker(ast.NodeVisitor):
 #         self.nameSpace.put(clsWalker.name, clsWalker.createClassBean())
         
         self.nameSpace.put(clsWalker.name, clsBean)
-        self.scope.append(Bean.VarBean("$funs",clsBean.name))
-        if clsBean.funs:
-            for i in clsBean.funs:
-                self.scope.append(Bean.VarBean("$funs",i))
+        
+        self.scope.append(Bean.VarBean(clsBean.name, clsBean.name))
+#         self.scope.append(Bean.VarBean("$funs",clsBean.name))
+# #         self.nameSpace.addClass()
+#         if clsBean.funs:
+#             for i in clsBean.funs:
+#                 self.scope.append(Bean.VarBean("$funs",i))
         print('all funs should be added')
+        
 #         self.funs.put(clsWalker.name,clsBean)
         
 #         self.scope.goUpLevel()
@@ -1019,7 +1022,7 @@ class ClassDefWalker(InitialWalker):
         funWalker.walk()
              
         self.scope.goUpLevel()
-        self.nameSpace.addClassFun(funWalker.createFunBean())
+#         self.nameSpace.addClassFun(funWalker.createFunBean())
         self.scope.append(Bean.VarBean("$funs", funWalker.name))
         self.funs.put(funWalker.name,Bean.VarBean("$funs", funWalker.name))
         

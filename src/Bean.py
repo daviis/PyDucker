@@ -373,14 +373,6 @@ class NameSpaceBean(GenericBean):
         """
         funsClass = self.vars["$funs"]
         funsClass.funs[funDefBean.name] = funDefBean
-        
-    def addClassFun(self, funDefBean):
-        """
-        @funDefBean:FunDefBean
-        """
-        funsClass = self.vars["$funs"]
-        funDefBean.partOfClass = True
-        funsClass.funs[funDefBean.name] = funDefBean
     
     def checkMagicMethod(self, lbean, rbean, op):
         """
