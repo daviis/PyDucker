@@ -968,7 +968,7 @@ class InitialWalker(ast.NodeVisitor):
         
         self.nameSpace.put(clsWalker.name, clsBean)
         
-        self.scope.append(Bean.VarBean(clsBean.name, clsBean.name))
+#         self.scope.append(Bean.VarBean(clsBean.name, clsBean.name))
 #         self.scope.append(Bean.VarBean("$funs",clsBean.name))
 # #         self.nameSpace.addClass()
 #         if clsBean.funs:
@@ -978,7 +978,7 @@ class InitialWalker(ast.NodeVisitor):
         
 #         self.funs.put(clsWalker.name,clsBean)
         
-#         self.scope.goUpLevel()
+        self.scope.goUpLevel()
          
     def visit_FunctionDef(self, node):
         """
@@ -1022,7 +1022,6 @@ class ClassDefWalker(InitialWalker):
         funWalker.walk()
              
         self.scope.goUpLevel()
-#         self.nameSpace.addClassFun(funWalker.createFunBean())
         self.scope.append(Bean.VarBean("$funs", funWalker.name))
         self.funs.put(funWalker.name,Bean.VarBean("$funs", funWalker.name))
         
@@ -1037,8 +1036,8 @@ class ClassDefWalker(InitialWalker):
         clsWalker.walk()
         clsBean = clsWalker.createClassBean()
         self.nameSpace.put(clsWalker.name, clsBean)
-        self.scope.append(Bean.VarBean("$funs",clsBean.name))
-        self.funs.put(clsWalker.name,Bean.VarBean("$funs",clsBean.name))
+#         self.scope.append(Bean.VarBean("$funs",clsBean.name))
+#         self.funs.put(clsWalker.name,Bean.VarBean("$funs",clsBean.name))
 #         self.scope.goUpLevel()
     
     def createClassBean(self):
