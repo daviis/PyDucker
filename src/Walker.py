@@ -274,6 +274,7 @@ class InitialWalker(ast.NodeVisitor):
                 
             starargs = self.visit(node.starargs)
             kwargs = self.visit(node.kwargs)
+               
     
             try:
                 #assume that the function will be part of a class, so try to look up the class type, then see if it has the function.
@@ -285,8 +286,6 @@ class InitialWalker(ast.NodeVisitor):
             except AttributeError:
                 if funcName.varType == "$funs":
                     codedFun = Bean.FunDefBean(args, None, funcName.name)
-                    print(self.nameSpace)
-                    #print(type(self.nameSpace))
                     funsClass = self.nameSpace["$funs"] 
                     return funsClass.acceptsFun(codedFun)
                 else:
@@ -666,7 +665,6 @@ class InitialWalker(ast.NodeVisitor):
         It will return a VarBean related to the assign 
         """
         store = self.visit(node.ctx)
-        
         try:
             return self.scope[node.id]
         except Exceptions.PyDuckerException as ex:
@@ -945,12 +943,19 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         #should have to vist items and a body both a list
+        
         for item in node.items:
             self.visit(item)
         for bodypart in node.body:
-            print(node.body)
             self.visit(bodypart)
-              
+        
+                     
+    def visit_withitem(self, node):
+        """
+        @node:ast.ast
+        """
+        self.visit(node.context_expr)
+        self.visit(node.optional_vars)
      
     def visit_Yield(self, node):
         '''
@@ -1015,7 +1020,6 @@ class ClassDefWalker(InitialWalker):
         """
         @node:ast.ast
         """
-        print(self.funs)
         self.funs.append(node)
         if(node.name == '__init__'):
             self.initFun = node

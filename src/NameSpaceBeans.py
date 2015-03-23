@@ -114,7 +114,8 @@ def handMakeNameSpace():
     funsClass = ClassDefBean("$funs", None)
     funsClass.funs["print"] = FunDefBean([VarBean('str')], VarBean('None'), "print")
     funsClass.funs["range"] = FunDefBean([VarBean('int')], VarBean('range'), "print")
-    funsClass.funs["open"]  = FunDefBean([VarBean('str'), VarBean('str')], VarBean("_io.TextIOWarpper"), "open")
+    funsClass.funs["open"]  = FunDefBean([VarBean('str'), VarBean('str')], VarBean("str"), "open")
+    funsClass.funs["write"] = FunDefBean([VarBean('str')], VarBean('None'), "write")
     nameSpace.put(funsClass.name, funsClass)
     
     rangeClass = ClassDefBean("range", None)
@@ -130,5 +131,6 @@ def handMakeScope():
     scope.append(VarBean("$funs", "print"))
     scope.append(VarBean("$funs", "range"))
     scope.append(VarBean("$funs", "open"))
+    scope.append(VarBean("$funs", "write"))
     
     return scope

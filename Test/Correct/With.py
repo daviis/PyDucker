@@ -2,7 +2,6 @@
 with open('text.txt', 'w') as f:
     f.write('hi there!')
 
-
 #class doStuff():
  #   def __enter__(self):
   #      pass
