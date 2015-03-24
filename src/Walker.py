@@ -89,7 +89,21 @@ class InitialWalker(ast.NodeVisitor):
                 compBean = target.compType[0] 
                 compBean.name = varBean.name
                 self.scope.append(compBean)
-            
+         
+    def _unpackCallKwargs(self, node):
+        """
+        @node:ast.Dictionary
+        We can not let the key be a looked up variable because we are not storing the contents of vars, only types. So it will raise an exception that it cant be done.
+        Called by visit_Call
+        """
+        args = {}
+        for key, value in zip(node.keys, node.values):
+            if isinstance(key, ast.Name):
+                raise Exceptions.KeyWordFromAVariable(self.visit(key))
+            else:
+                args[key.s] = self.visit(value)
+        return args
+        
                  
     """
     Each individual vist_* will need to check if the result if a list, if so then 
@@ -259,6 +273,8 @@ class InitialWalker(ast.NodeVisitor):
         """
         When a method is called on a class it generates one of these. This will attempt to return the str rep of the return varType of the function.
         It can throw a MissingMethodException if the function isn't found in the class or if the number/types of paramiters is wrong
+        
+        A call will have ([arg[s]], [starargs], [kwargs])
         @node:ast.ast
         """
         try:
@@ -268,31 +284,34 @@ class InitialWalker(ast.NodeVisitor):
             for arg in node.args:
                 args.append(self.visit(arg))
                 
-            keywords = []
-            for key in node.keywords:
-                keywords.append(self.visit(key))
+            keywords = {}
+            for keyword in node.keywords:
+                key, val = self.visit(keyword)
+                keywords[key] = val
+            if node.kwargs:
+                keywords.update(self._unpackCallKwargs(node.kwargs)) #update does clobbar existing keys. todo check if that breaks things
                 
-            starargs = self.visit(node.starargs)
-            kwargs = self.visit(node.kwargs)
-    
+            starargs = self.visit(node.starargs) #these should be unpacked into the args list
+#             args.extned(starargs.compType) #but len is important so we cant really do this
+            
             try:
                 #assume that the function will be part of a class, so try to look up the class type, then see if it has the function.
                 cls = self.visit(node.func.value)
                 clsBean = self.nameSpace[cls.varType]
-                funBean = Bean.FunDefBean(args, None, funcName)
-                return clsBean.acceptsFun(funBean)
+                funBean = Bean.FunDefBean(args, None, funcName, keywords, starargs)
+                return clsBean.acceptsFun(funBean, self.nameSpace)
             
             except AttributeError:
                 if funcName.varType == "$funs":
-                    codedFun = Bean.FunDefBean(args, None, funcName.name)
+                    codedFun = Bean.FunDefBean(args, None, funcName.name, keywords, starargs)
                     funsClass = self.nameSpace["$funs"] 
-                    return funsClass.acceptsFun(codedFun)
+                    return funsClass.acceptsFun(codedFun, self.nameSpace)
                 else:
                 
-                    codedFun = Bean.FunDefBean(args, None, "__call__")
+                    codedFun = Bean.FunDefBean(args, None, "__call__", keywords, starargs)
                     self.nameSpace.duckCallable(funcName)
                     codedClass = self.nameSpace[funcName.varType]
-                    return codedClass.acceptsFun(codedFun)
+                    return codedClass.acceptsFun(codedFun, self.nameSpace)
         except Exceptions.PyDuckerException as ex:
                 ex.lineNum = node.lineno
                 raise ex
@@ -591,6 +610,12 @@ class InitialWalker(ast.NodeVisitor):
         """
         return "isnot"
         
+    def visit_keyword(self, node):
+        """
+        @node:ast.keyword
+        """
+        value = self.visit(node.value)
+        return node.arg, value
     
     def visit_List(self, node):
         """
