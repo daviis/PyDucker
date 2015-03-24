@@ -341,14 +341,21 @@ class InitialWalker(ast.NodeVisitor):
                 continue
             
             leftClass = self.nameSpace[left.varType]
-            if leftClass.hasFun(op):
-                if leftClass.funs[op].takes([arg]):
-                    left = arg
-                else:
-                    raise Exceptions.IncorrectMethodException(op, [arg], node.lineno, left)
+            calledFun = Bean.FunDefBean([arg], None, op)
+            if leftClass.acceptsFun(calledFun, self.nameSpace):
+                left = arg
             else:
                 raise Exceptions.MissingMethodException(left, op, node.lineno)
         return Bean.VarBean('bool')
+            
+#             if leftClass.hasFun(op):
+#                 if leftClass.funs[op].equals(self.nameSpace, [arg]):
+#                     left = arg
+#                 else:
+#                     raise Exceptions.IncorrectMethodException(op, [arg], node.lineno, left)
+#             else:
+#                 raise Exceptions.MissingMethodException(left, op, node.lineno)
+#         return Bean.VarBean('bool')
     
     def visit_comprehension(self, node):
         """

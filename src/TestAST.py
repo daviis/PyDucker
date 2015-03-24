@@ -38,6 +38,7 @@ def testAllCorrect():
     files = [
             '../Test/Correct/Collections.py',
              '../Test/Correct/control.py',
+             '../Test/Correct/Call.py'
             '../Test/Correct/MethodDef.py',
 #              '../Test/Correct/MultiClassMultiFun.py',
             '../Test/Correct/Ops.py',
@@ -85,7 +86,7 @@ def _testAll(listOfFiles):
             print()
     
 if __name__ == '__main__':
-    testOne("../Test/Correct/yield.py")
-#     testAllCorrect()
+#     testOne("../Test/Correct/Call.py")
+    testAllCorrect()
 #     testAllIncorrect()
     print("out main")
