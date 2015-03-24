@@ -968,6 +968,10 @@ class InitialWalker(ast.NodeVisitor):
         
         self.nameSpace.put(clsWalker.name, clsBean)
         
+        #self.scope.goUpLevel()
+        #self.scope.append(VarBean(classname))
+        #add __init__ to self.namespace.addClassesClass() - isaac
+        
 #         self.scope.append(Bean.VarBean(clsBean.name, clsBean.name))
 #         self.scope.append(Bean.VarBean("$funs",clsBean.name))
 # #         self.nameSpace.addClass()

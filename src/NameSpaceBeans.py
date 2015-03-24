@@ -116,6 +116,10 @@ def handMakeNameSpace():
     funsClass.funs["range"] = FunDefBean([VarBean('int')], VarBean('range'), "print")
     nameSpace.put(funsClass.name, funsClass)
     
+    classesClass = ClassDefBean("$classes", None)
+    classesClass.funs["byte"] = FunDefBean([], VarBean("byte"), "byte")
+    nameSpace.put(classesClass.name, classesClass)
+    
     rangeClass = ClassDefBean("range", None)
     rangeClass.funs["__iter__"] = FunDefBean([], VarBean('int'), "__iter__")
     nameSpace.put(rangeClass.name, rangeClass)

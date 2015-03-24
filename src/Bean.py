@@ -373,7 +373,15 @@ class NameSpaceBean(GenericBean):
         """
         funsClass = self.vars["$funs"]
         funsClass.funs[funDefBean.name] = funDefBean
-    
+        
+    def addClassesClass(self, funDefClass):
+        """
+        @funDefClass:FunDefBean
+        fundefbean will be a copy of __init__ fundefbean who's name has been changed to the classes name.
+        """
+        classesClass = self.vars["$class"]
+        classesClass.funs[funDefClass.name] = funDefClass
+     
     def checkMagicMethod(self, lbean, rbean, op):
         """
         A method for visit_Binop and visit_AugAssign. It does exception raising and namespace checks.
