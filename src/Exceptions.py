@@ -10,6 +10,7 @@ The exception hierarchy for PyDucker is
          |--- MissingMethodException
               |--- MissingMagicMethodException
               |--- IncorrectMethodException
+              |--- IncorrectMethodKeywordException
         |--- OutOfScopeException
              |--- RefBeforeAssignException 
         |--- MissingDocStringException
@@ -18,8 +19,9 @@ The exception hierarchy for PyDucker is
         |--- SyntaxError
     |--- PyDuckerWarning
          |--- TypeMismatchException
-         |--- HeteroCollectionException
+         |--- HeteroCollecionException
          |--- ScopeNotFoundException
+         |--- KeyWordFromAVariable
 '''
 
 class PyDuckerException(Exception):
@@ -34,7 +36,7 @@ class PyDuckerException(Exception):
     
     
 class PyDuckerError(PyDuckerException):
-    def __init__(self, lineNo):
+    def __init__(self, lineNo=-1):
         """
         @lineNo:int
         """
@@ -167,23 +169,48 @@ class MissingMagicMethodException(MissingMethodException):
     
 class IncorrectMethodException(MissingMethodException):
     
-    def __init__(self, aFun, someArgs, lineNo=-1, aCls=None):
+    def __init__(self, aFun, someArgs, lineNo=-1, aCls=None, kws={}, star=None):
         """
         @aCls:VarBean
         @aFun:str
         @someArgs:^VarBean
         @lineNo:int
+        @kws:str**VarBean
+        @star:VarBean
         """
         super().__init__(aCls, aFun, lineNo)
         self.argLst = someArgs
+        self.kwargs = kws
+        self.starargs = star
         
     def __str__(self):
         ret = super().__str__()
-        ret += "\n\tWith args: "
+        ret += "\n\tWith args:"
         for item in self.argLst:
-            ret += str(item.varType)
+            ret += " " + item.varType + ","
+        if self.starargs:
+            ret += "\n\tAnd starred args:" 
+            for comp in self.starargs.compType:
+                ret += " " + comp.varType
+        for key in self.kwargs:
+            ret += "\n\tAnd keyword args: '" + key + "' = " + self.kwargs[key].varType + ","
         return ret
     
+    
+class IncorrectMethodKeywordException(MissingMethodException):
+    
+    def __init__(self, missingKeyword, aFun=None, aCls = None, lineNo=-1):
+        """
+        @missingKeyword:VarBean
+        """
+        super().__init__(aCls, aFun, lineNo)
+        self.keyword = missingKeyword
+        
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\tWith keyword: " + self.keyword.name
+        ret += "\n\tOf type: " + self.keyword.varType
+        return ret
     
 class NonlocalReferenceException(PyDuckerError):
     
@@ -254,6 +281,22 @@ class ScopeNotFoundException(PyDuckerWarning):
     def __str__(self):
         ret = super().__str__()
         ret += "\n\tCould not find " + self.varBean.name + " in the scope of " + self.scopeType
+        return ret
+    
+class KeyWordFromAVariable(PyDuckerWarning):
+    
+    def __init__(self, aVar, lineNo=-1):
+        """
+        @aVar:Bean.VarBean
+        @lineNo:int
+        """
+        super().__init__(lineNo)
+        self.varBean = aVar
+         
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\tUnable to check to see if a keyword is acceptable when read out of a variable."
+        ret += "\n\tThe variable found was: " + self.varBean.name
         return ret
 
 class NonIndexableException(PyDuckerError):
