@@ -41,8 +41,6 @@ class ClassDefBean(GenericBean):
         @fun:FunDefBean
         """
         try:
-            print(fun.name)
-            print(self.funs[fun.name])
             if self.funs[fun.name] == fun:
                 return self.funs[fun.name].returnType 
         except KeyError:
