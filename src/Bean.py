@@ -396,5 +396,7 @@ class NameSpaceBean(GenericBean):
                 return resultType
             except Exceptions.MissingMethodException:
                 pass
+            finally:
+                print()
         raise Exceptions.MissingMagicMethodException(lbean, rbean, op, rOp)
             

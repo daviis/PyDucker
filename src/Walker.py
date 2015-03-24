@@ -599,7 +599,6 @@ class InitialWalker(ast.NodeVisitor):
         bean = Bean.VarBean('list')
         
         elements = self._makeCompType(node.elts)
-        
         if len(elements) == 1:
             bean.homo = True
         bean.compType = elements

@@ -14,12 +14,12 @@ def main():
     parser.add_argument('-n', dest='accumulate', action='store_const',
                    const=sum, default=max,
                    help='check the variable names in the file only')
-    parser.add_argument('-w', help = 'turns of PyDucker warnings')
+    parser.add_argument('-w', action='store_const', const = 'false', help = 'turns of PyDucker warnings')
     args = parser.parse_args()
     
     if args.files:
-        testFiles(args.files)
-        
+        testFiles(args.files, args.w) #args.w well tell if PyDuckerWarning should be on or off
+    
 
 
 

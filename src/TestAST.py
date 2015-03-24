@@ -84,7 +84,7 @@ def _testAll(listOfFiles):
         finally:
             print()
             
-def testFiles(listOfFiles):
+def testFiles(listOfFiles, PyduckerWarningOff):
     for i in listOfFiles:
         aFile = i.name
         
@@ -93,21 +93,33 @@ def testFiles(listOfFiles):
             
         print("File name: ",aFile) 
         tree = ast.parse(fileCont, aFile)
-        a = True
-        try:
-            nameSpace = handMakeNameSpace()
-            scope = handMakeScope()
-            firstWalker = InitialWalker(tree, nameSpace, scope)
-            firstWalker.walk()
-        except Exceptions.PyDuckerException as ex:
-#             print(ex, file=sys.stderr) #printing to sys.stderr will need to be locked so output flows correctly, otherwise the messages come out interwoven.
-            print("\n", ex.__class__.__name__, end= "" )
-            print(ex)
-        finally:
-            print()
+        if PyduckerWarningOff:
+            try:
+                nameSpace = handMakeNameSpace()
+                scope = handMakeScope()
+                firstWalker = InitialWalker(tree, nameSpace, scope)
+                firstWalker.walk()
+      
+            except Exceptions.PyDuckerError as ex:
+                print("\n", ex.__class__.__name__, end = "")
+                print(ex)
+            finally:
+                print()
+        else:        
+            try:
+                nameSpace = handMakeNameSpace()
+                scope = handMakeScope()
+                firstWalker = InitialWalker(tree, nameSpace, scope)
+                firstWalker.walk()
+      
+            except Exceptions.PyDuckerException as ex:
+                print("\n", ex.__class__.__name__, end = "")
+                print(ex)
+            finally:
+                print()
     
 if __name__ == '__main__':
     testOne("../Test/Incorrect/GlobalAndNonLocal.py")
 #     testAllCorrect()
-    #testAllIncorrect()
+#    testAllIncorrect()
     print("out main")
