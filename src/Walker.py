@@ -943,19 +943,20 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         #should have to vist items and a body both a list
-        
+        self.scope.goDownLevel()
         for item in node.items:
             self.visit(item)
         for bodypart in node.body:
             self.visit(bodypart)
-        
+        self.scope.goUpLevel()
                      
     def visit_withitem(self, node):
         """
         @node:ast.ast
         """
-        self.visit(node.context_expr)
-        self.visit(node.optional_vars)
+        retBean = self.visit(node.context_expr)
+        nameBean =self.visit(node.optional_vars)
+        nameBean.recursiveClone(retBean)
      
     def visit_Yield(self, node):
         '''
