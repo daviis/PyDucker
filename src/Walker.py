@@ -620,6 +620,7 @@ class InitialWalker(ast.NodeVisitor):
     def visit_keyword(self, node):
         """
         @node:ast.keyword
+        todo add gracefull error
         """
         value = self.visit(node.value)
         return node.arg, value
