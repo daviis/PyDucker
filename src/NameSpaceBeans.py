@@ -112,7 +112,7 @@ def handMakeNameSpace():
     nameSpace.put(generatorClass.name, generatorClass)
 
     funsClass = ClassDefBean("$funs", None)
-    funsClass.funs["print"] = FunDefBean([VarBean('str')], VarBean('None'), "print")
+    funsClass.funs["print"] = FunDefBean([VarBean('str'), VarBean("$rept")], VarBean('None'), "print", {'end' : VarBean('str'), "file" : VarBean("file"),"flush":VarBean("bool")})
     funsClass.funs["range"] = FunDefBean([VarBean('int')], VarBean('range'), "print")
     nameSpace.put(funsClass.name, funsClass)
     
