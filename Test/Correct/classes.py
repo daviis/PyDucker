@@ -1,6 +1,6 @@
 
 class Animal():
-    x = 1
+    #x = 1
     def __init__(self, idNum):
         """
         @idNum:int

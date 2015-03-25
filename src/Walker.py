@@ -278,8 +278,6 @@ class InitialWalker(ast.NodeVisitor):
     
             try:
                 #assume that the function will be part of a class, so try to look up the class type, then see if it has the function.
-                print(ast.dump(node))
-                print(ast.dump(node.func))
                 cls = self.visit(node.func.value)
                 clsBean = self.nameSpace[cls.varType]
                 funBean = Bean.FunDefBean(args, None, funcName)
@@ -290,6 +288,10 @@ class InitialWalker(ast.NodeVisitor):
                     codedFun = Bean.FunDefBean(args, None, funcName.name)
                     funsClass = self.nameSpace["$funs"] 
                     return funsClass.acceptsFun(codedFun)
+                elif funcName.varType == "$classes":
+                    clsBean = self.nameSpace[funcName.name]
+                    funBean = Bean.FunDefBean(args, None, funcName)
+                    return clsBean.acceptsFun(funBean)
                 else:
                     codedFun = Bean.FunDefBean(args, None, "__call__")
                     self.nameSpace.duckCallable(funcName)
@@ -957,32 +959,20 @@ class InitialWalker(ast.NodeVisitor):
         """
         @node:ast.AST
         """
-        print('found class')
-        print(ast.dump(node))
         self.scope.goDownLevel()
         
         clsWalker = ClassDefWalker(node, self.nameSpace, self.scope)
         clsWalker.walk()
         clsBean = clsWalker.createClassBean()
-#         self.nameSpace.put(clsWalker.name, clsWalker.createClassBean())
         
         self.nameSpace.put(clsWalker.name, clsBean)
         
-        #self.scope.goUpLevel()
-        #self.scope.append(VarBean(classname))
-        #add __init__ to self.namespace.addClassesClass() - isaac
-        
-#         self.scope.append(Bean.VarBean(clsBean.name, clsBean.name))
-#         self.scope.append(Bean.VarBean("$funs",clsBean.name))
-# #         self.nameSpace.addClass()
-#         if clsBean.funs:
-#             for i in clsBean.funs:
-#                 self.scope.append(Bean.VarBean("$funs",i))
-        print('all funs should be added')
-        
-#         self.funs.put(clsWalker.name,clsBean)
-        
         self.scope.goUpLevel()
+        self.scope.append(Bean.VarBean("$classes",clsBean.name))
+        initFun = clsBean.initFun
+        self.nameSpace.addClassesClass(initFun)
+        initFun.name = "__call__"
+        self.nameSpace.addClassesClass(initFun)
          
     def visit_FunctionDef(self, node):
         """
@@ -1006,7 +996,7 @@ class ClassDefWalker(InitialWalker):
         @scopeCopy:bean.ScopeBean
         """
         super().__init__(classRoot, nameSp, scopeCopy)
-       # self.initFun = None
+        self.initFun = None
         self.parent = None
         self.funs = Bean.NameSpaceBean()
         self.name = classRoot.name
@@ -1024,6 +1014,9 @@ class ClassDefWalker(InitialWalker):
         
         funWalker = FunDefWalker(node, self.nameSpace, self.scope)   
         funWalker.walk()
+        if funWalker.name == '__init__':
+            print('found init')
+            self.initFun = funWalker.createFunBean()
              
         self.scope.goUpLevel()
         self.scope.append(Bean.VarBean("$funs", funWalker.name))
@@ -1040,14 +1033,12 @@ class ClassDefWalker(InitialWalker):
         clsWalker.walk()
         clsBean = clsWalker.createClassBean()
         self.nameSpace.put(clsWalker.name, clsBean)
-#         self.scope.append(Bean.VarBean("$funs",clsBean.name))
-#         self.funs.put(clsWalker.name,Bean.VarBean("$funs",clsBean.name))
-#         self.scope.goUpLevel()
     
     def createClassBean(self):
         bean = Bean.ClassDefBean(self.name, self.scope, self.parent)
         for i in self.funs.vars:
             bean.funs[i] = self.funs.vars[i]
+        bean.initFun = self.initFun
             
         return bean
             

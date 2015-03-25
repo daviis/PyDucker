@@ -25,6 +25,7 @@ class ClassDefBean(GenericBean):
         @selfVars:ScopeLevelBean
         @rent:str
         """
+        self.initFun = None
         self.name = classname
         self.varinfo = selfVars
         self.funs = {} #of key = Fundef.name, FunDefBean for faster look up
@@ -379,7 +380,7 @@ class NameSpaceBean(GenericBean):
         @funDefClass:FunDefBean
         fundefbean will be a copy of __init__ fundefbean who's name has been changed to the classes name.
         """
-        classesClass = self.vars["$class"]
+        classesClass = self.vars["$classes"]
         classesClass.funs[funDefClass.name] = funDefClass
      
     def checkMagicMethod(self, lbean, rbean, op):
