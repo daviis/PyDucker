@@ -120,7 +120,8 @@ def handMakeNameSpace():
     
     fileClass = ClassDefBean("file", None)
     fileClass.funs["read"] = FunDefBean([], VarBean("list"), "read")
-    nameSpace.put(fileClass)
+    fileClass.funs["write"] = FunDefBean([VarBean('str')], VarBean('None'), 'write')
+    nameSpace.put(fileClass.name, fileClass)
     
     rangeClass = ClassDefBean("range", None)
     rangeClass.funs["__iter__"] = FunDefBean([], VarBean('int'), "__iter__")

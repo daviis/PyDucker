@@ -263,7 +263,7 @@ class InitialWalker(ast.NodeVisitor):
         """
         try:
             funcName = self.visit(node.func) #this will be an ast.Attribute for `'a'.upper()` or a ast.Name for `'a'() or print()`
-            
+
             args = []
             for arg in node.args:
                 args.append(self.visit(arg))
