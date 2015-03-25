@@ -103,6 +103,8 @@ def testFiles(listOfFiles, PyduckerWarningOff):
             except Exceptions.PyDuckerError as ex:
                 print("\n", ex.__class__.__name__, end = "")
                 print(ex)
+            except Exceptions.PyDuckerWarning as ex:
+                pass
             finally:
                 print()
         else:        
@@ -119,7 +121,7 @@ def testFiles(listOfFiles, PyduckerWarningOff):
                 print()
     
 if __name__ == '__main__':
-    testOne("../Test/Incorrect/GlobalAndNonLocal.py")
+#    testOne("../Test/Incorrect/Slice.py")
 #     testAllCorrect()
-#    testAllIncorrect()
+    testAllIncorrect()
     print("out main")
