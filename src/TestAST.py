@@ -86,7 +86,7 @@ def _testAll(listOfFiles):
             print()
     
 if __name__ == '__main__':
-#     testOne("../Test/Correct/Call.py")
-    testAllCorrect()
+    testOne("../Test/Correct/MethodDef.py")
+#     testAllCorrect()
 #     testAllIncorrect()
     print("out main")
