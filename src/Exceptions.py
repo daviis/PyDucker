@@ -22,6 +22,7 @@ The exception hierarchy for PyDucker is
          |--- HeteroCollecionException
          |--- ScopeNotFoundException
          |--- KeyWordFromAVariable
+         |--- MultiReturnTypeException
 '''
 
 class PyDuckerException(Exception):
@@ -96,10 +97,12 @@ class OutOfScopeException(PyDuckerError):
         """
         super().__init__(lineNo)
         self.aName = someName
+        self.extraMessage = ""
         
     def __str__(self):
         ret = super().__str__()
         ret += "\n\tVariable name: " + self.aName + " is not in scope"
+        ret += "\n\t" + self.extraMessage
         return ret
     
 class RefBeforeAssignException(OutOfScopeException):
@@ -297,6 +300,24 @@ class KeyWordFromAVariable(PyDuckerWarning):
         ret = super().__str__()
         ret += "\n\tUnable to check to see if a keyword is acceptable when read out of a variable."
         ret += "\n\tThe variable found was: " + self.varBean.name
+        return ret
+    
+class MultiReturnTypeException(PyDuckerWarning):
+    
+    def __init__(self, anOldType, aNewType, lineNo=-1):
+        """
+        @anOldType:Bean.VarBean
+        @aNewType:Bean.VarBean
+        @lineNo:int
+        """
+        super().__init__(lineNo)
+        self.oldType = anOldType
+        self.newType = aNewType
+        
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\tOld type: " + self.oldType.varType
+        ret += "\n\tNew type: " + self.newType.varType
         return ret
 
 class NonIndexableException(PyDuckerError):
