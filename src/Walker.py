@@ -814,7 +814,7 @@ class InitialWalker(ast.NodeVisitor):
                 except Exceptions.PyDuckerException as ex:
                     #No linenumber here
                     raise ex  
-					
+
     def visit_Set(self, node):
         """
         @node:ast.ast
@@ -1054,6 +1054,8 @@ class FunDefWalker(InitialWalker):
         self.name = funRoot.name
         self.retType = None
         self.nameSpace = nameSp
+        self.kwargs = {}
+        self.starargs = []
         
     def walk(self):
         try:
@@ -1081,24 +1083,71 @@ class FunDefWalker(InitialWalker):
             return []
         
     def createFunBean(self):
-        return Bean.FunDefBean(self._findParamTypes(), self.retType, self.name)
+        paramList = self._findParamTypes()
+        if self.starargs:
+            paramList.extend(self.starargs)
+        return Bean.FunDefBean(paramList, self.retType, self.name, someKwargs=self.kwargs)
     
     def visit_Return(self, node):
-        self.retType = self.visit(node.value)
+        if self.retType:
+            newRetType = self.visit(node.value)
+            if newRetType == self.retType:
+                self.retType = newRetType
+            else:
+                raise Exceptions.MultiReturnTypeException(self.retType, newRetType, node.lineno)
+        else:
+            self.retType = self.visit(node.value)
         
-    def visit_arguments(self,node):
+    def visit_arguments(self, node):
         """
         @node:ast.ast
         """
-        arglist = node.args
-        if arglist != []:    
-            if ast.get_docstring(self.root) != None:
+        #some of the arugments have default values, find them if they do
+        defaultValuedArgs = self._collectDefaultValuedArgs(node.args, node.defaults)
+        self.kwargs = defaultValuedArgs
+        
+        #these are just the regular args without default values
+        for arg in defaultValuedArgs:
+            self.scope.append(defaultValuedArgs[arg])
+        if node.args:    
+            if ast.get_docstring(self.root):
                 arguments = parseDocString(ast.get_docstring(self.root))
                 for i in arguments:
                     self.scope.append(i)
             else:
                 Exceptions.MissingDocStringException(self.name)
                 
+        #it found a * argument, add a tuple to scope with that type, just check to see if it is in scope, if it isn't then riase an exception
+        if node.vararg:
+            try:
+                tupleType = self.scope[node.vararg.arg]
+                #becuase we dont do length tracking, just add in the type and a rept to the end of it.
+                self.starargs.append(tupleType.nextSubType())
+                self.starargs.append(Bean.VarBean("$rept"))
+            except Exceptions.OutOfScopeException as ex:
+                ex.extraMessage = "The vararg argument " + node.vararg.arg + " was not hinted at in the doc string. Therefore cannot be typed" 
+                raise ex
+            
+        #it found a ** argument is found check to see if it is in scope atm.
+        if node.kwarg:
+            try:
+                theKwarg = self.scope[node.kwarg.arg] #try to look up the keywarg by name out of scope. It may have been placed in by the docstring parser.
+                self.kwargs[theKwarg.name] = theKwarg
+            except Exceptions.OutOfScopeException as ex:
+                ex.extraMessage = "The keyword argument " + node.kwarg.arg + " was not hinted at in the doc string. Therefore cannot be typed" 
+                raise ex
+    
+    def _collectDefaultValuedArgs(self, argNames, argValues):
+        """
+        
+        """
+        defaultedArgs = {}
+        for arg, defaultType in zip(reversed(argNames), reversed(argValues)):
+            argType = self.visit(defaultType)
+            argType.name = arg.arg
+            defaultedArgs[argType.name] = argType
+        return defaultedArgs
+    
     def visit_Yield(self, node):
         """
         @node:ast.ast
@@ -1106,5 +1155,12 @@ class FunDefWalker(InitialWalker):
         retBean = Bean.VarBean("generator")
         retBean.homo = True
         retBean.compType = [self.visit(node.value)]
-        self.retType = retBean
+        
+        if self.retType:
+            if retBean == self.retType:
+                self.retType = retBean
+            else:
+                raise Exceptions.MultiReturnTypeException(self.retType, retBean, node.lineno)
+        else:
+            self.retType = retBean
     
