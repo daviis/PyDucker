@@ -85,7 +85,7 @@ def _testAll(listOfFiles):
             print()
     
 if __name__ == '__main__':
-    testOne("../Test/Incorrect/LocalFun.py")
+    testOne("../Test/Incorrect/Warnings.py")
 #     testAllCorrect()
 #     testAllIncorrect()
     print("out main")
