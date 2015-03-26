@@ -131,6 +131,10 @@ class FunDefBean(GenericBean):
             return True
         #there are not any starred arguments so just check the args one for one. 
         else:
+            #Check to see if there are the right number of paramaters, keeping in mind the kwargs that were passed in.
+            if len(paramList) < self._getRequiredNumberOfParameters():
+                raise Exceptions.IncorrectMethodException()
+#             for bothIdx in range(len(self.typesparams)):
             for bothIdx in range(len(paramList)):
                 if not namespace.checkImplicitTypeConversion(paramList[bothIdx], self.getParamType(bothIdx)):
 #                 if not paramList[bothIdx] == self.getParamType(bothIdx):
@@ -149,6 +153,12 @@ class FunDefBean(GenericBean):
             if kwargs[key] != self.kwargs[key]:
                 raise Exception.IncorrectMethodKeywordException(aVarBean)
              
+    def _getRequiredNumberOfParameters(self):
+        minNeeded = self.typesparams
+        minNeeded -= (self.kwargs)
+          
+        return minNeeded
+        
 
 class VarBean(GenericBean):
     

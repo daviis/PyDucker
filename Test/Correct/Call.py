@@ -1,3 +1,7 @@
+a = 'a'
+b = a.upper()
+pass
+
 print("hi")
 print("hi" + "hi")
 print("hi", "hi")
