@@ -1,3 +1,4 @@
+'''
 aTuple = (1, 2, 3) #tuple
 aTupleComp = (x for x in [1,2])  #generatorexp
   
@@ -23,8 +24,9 @@ b = x[0]
 y = [1,2,3]
 y[0]
 c = y[1]
-
+'''
 d = {'a':1, 'b':2}
+
 e = d['a']
 
 pass
