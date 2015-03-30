@@ -79,6 +79,7 @@ class FunDefBean(GenericBean):
         @fundefname:str
         @someKwargs:str**VarBean
         @someStarargs:VarBean
+        @minParams:int
         """
         self.partOfClass = False
         self.typesparams = paramsTypes
@@ -132,7 +133,7 @@ class FunDefBean(GenericBean):
         else:
             #Check to see if there are the right number of paramaters, keeping in mind the kwargs that were passed in.
             if len(paramList) < self.minNumParams:
-                raise Exceptions.IncorrectMethodException()
+                return False #could possibly make a more helpful statemetn here, but its functional for now.
             for bothIdx in range(len(paramList)):
                 if not namespace.checkImplicitTypeConversion(paramList[bothIdx], self.getParamType(bothIdx)):
                     return False

@@ -1076,6 +1076,7 @@ class FunDefWalker(InitialWalker):
         self.nameSpace = nameSp
         self.kwargs = {}
         self.starargs = []
+        self.minNumParams = 0
         
     def walk(self):
         try:
@@ -1106,7 +1107,7 @@ class FunDefWalker(InitialWalker):
         paramList = self._findParamTypes()
         if self.starargs:
             paramList.extend(self.starargs)
-        return Bean.FunDefBean(paramList, self.retType, self.name, someKwargs=self.kwargs)
+        return Bean.FunDefBean(paramList, self.retType, self.name, someKwargs=self.kwargs, minParams = self.minNumParams)
     
     def visit_Return(self, node):
         if self.retType:
@@ -1125,6 +1126,9 @@ class FunDefWalker(InitialWalker):
         #some of the arugments have default values, find them if they do
         defaultValuedArgs = self._collectDefaultValuedArgs(node.args, node.defaults)
         self.kwargs = defaultValuedArgs
+        
+        #figure out what the minimum number of params this might take is
+        self.minNumParams = len(node.args) - len(node.defaults)
         
         #these are just the regular args without default values
         for arg in defaultValuedArgs:
