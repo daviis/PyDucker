@@ -263,7 +263,7 @@ class InitialWalker(ast.NodeVisitor):
         """
         try:
             funcName = self.visit(node.func) #this will be an ast.Attribute for `'a'.upper()` or a ast.Name for `'a'() or print()`
-            
+
             args = []
             for arg in node.args:
                 args.append(self.visit(arg))
@@ -274,6 +274,7 @@ class InitialWalker(ast.NodeVisitor):
                 
             starargs = self.visit(node.starargs)
             kwargs = self.visit(node.kwargs)
+               
     
             try:
                 #assume that the function will be part of a class, so try to look up the class type, then see if it has the function.
@@ -664,7 +665,6 @@ class InitialWalker(ast.NodeVisitor):
         It will return a VarBean related to the assign 
         """
         store = self.visit(node.ctx)
-        
         try:
             return self.scope[node.id]
         except Exceptions.PyDuckerException as ex:
@@ -936,6 +936,27 @@ class InitialWalker(ast.NodeVisitor):
             self.visit(bodyPart) #i dont think this needs to store what gets returned
         for orelse in node.orelse:
             self.visit(orelse)
+
+    
+    def visit_With(self, node):
+        """
+        @node:ast.ast
+        """
+        #should have to vist items and a body both a list
+        self.scope.goDownLevel()
+        for item in node.items:
+            self.visit(item)
+        for bodypart in node.body:
+            self.visit(bodypart)
+        self.scope.goUpLevel()
+                     
+    def visit_withitem(self, node):
+        """
+        @node:ast.ast
+        """
+        retBean = self.visit(node.context_expr)
+        nameBean =self.visit(node.optional_vars)
+        nameBean.recursiveClone(retBean)
      
     def visit_Yield(self, node):
         '''
@@ -949,7 +970,6 @@ class InitialWalker(ast.NodeVisitor):
         '''
         return self.visit(node.value)
         
-     
     #These are initial walker independent, ie they should be over written in inheriting classes    
     def visit_ClassDef(self, node):
         """
@@ -992,6 +1012,7 @@ class ClassDefWalker(InitialWalker):
         self.name = classRoot.name
        
     def walk(self):
+        
         #first call should be a quick walk to snag all of the fun names and self var names
         for bod in self.root.body:
             self.visit(bod)
