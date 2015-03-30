@@ -74,7 +74,6 @@ def _testAll(listOfFiles):
 
         try:
             nameSpace = handMakeNameSpace()
-            print(type(nameSpace))
             scope = handMakeScope()
             firstWalker = InitialWalker(tree, nameSpace, scope)
             firstWalker.walk()
@@ -86,8 +85,7 @@ def _testAll(listOfFiles):
             print()
     
 if __name__ == '__main__':
-    testOne("../Test/Correct/With.py")
-    #testOne("../Test/Correct/With.py")
-    #testAllCorrect()
+#     testOne("../Test/Correct/With.py")
+    testAllCorrect()
 #     testAllIncorrect()
     print("out main")
