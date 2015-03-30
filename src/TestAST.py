@@ -132,7 +132,7 @@ def testFiles(listOfFiles, PyduckerWarningOff):
                 print()
     
 if __name__ == '__main__':
-    testOne("../Test/Incorrect/ASTParseError.py")
+    testOne("../Test/Correct/Collections.py")
 #     testAllCorrect()
 #    testAllIncorrect()
     print("out main")
