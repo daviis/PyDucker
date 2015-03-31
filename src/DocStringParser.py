@@ -33,39 +33,48 @@ def parseDocString(docString,returnList = True):
                 isHomo = False
                 if currentType == '*':
                     print('**Warning** List(s) '+str(variables)+ ' are inhomogeneous.',file=sys.stderr)
+                    mainVarType = 'list'
                 elif currentType == '^':
                     print('**Warning** Tuple(s) '+str(variables)+ ' are unknown.',file=sys.stderr)
+                    mainVarType = 'tuple'
                 elif currentType == '**':
                     print("**Warning** Dictionary(s) "+str(variables)+ ' are inhomogeneous.',file=sys.stderr)
+                    mainVarType = 'dict'
             else:
                 isHomo = True
                 #We'll handle Tuples first.
                 if currentType[0] == '^':
                     compType = currentType[1:]
+                    mainVarType = 'tuple'
                 elif currentType[-1] == '^':
                     compType = currentType[:-1]
+                    mainVarType = 'tuple'
                 #Tuple handled.
                 elif currentType[-2] == '*':
                     compType = currentType[:-2].split(':')
+                    mainVarType = 'dict'
                 elif currentType[1] == '*':
                     compType = currentType[2:].split(':')
+                    mainVarType = 'dict'
                 #Dicts handled
                 elif currentType[0] == '*':
                     compType = currentType[1:]
+                    mainVarType = 'list'
                 elif currentType[-1] == '*':
                     compType = currentType[:-1]
+                    mainVarType = 'list'
                 #lists handled
         else:
             isHomo = False
 
         for key in variables:
-            currentVar = VarBean(currentType,key)
+            currentVar = VarBean(mainVarType, key)
             if isHomo == False:
                 currentVar.homo = False
             else:
                 if compType:
                     currentVar.homo = True
-                    currentVar.compType = compType
+                    currentVar.compType = [VarBean(compType)]
             finalList.append(currentVar)
     
     if returnList == False:
