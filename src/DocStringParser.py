@@ -47,6 +47,7 @@ def parseDocString(docString,returnList = True):
                 #Tuple handled.
                 elif currentType[-2] == '*':
                     compType = currentType[:-2].split(':')
+                    print(compType)
                 elif currentType[1] == '*':
                     compType = currentType[2:].split(':')
                 #Dicts handled
@@ -64,6 +65,7 @@ def parseDocString(docString,returnList = True):
                 currentVar.homo = False
             else:
                 if compType:
+                    print(compType)
                     currentVar.homo = True
                     currentVar.compType = compType
             finalList.append(currentVar)
@@ -73,3 +75,4 @@ def parseDocString(docString,returnList = True):
     else:
         return finalList
     
+parseDocString("@a:int**")
