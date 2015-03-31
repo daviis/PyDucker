@@ -289,9 +289,10 @@ class InitialWalker(ast.NodeVisitor):
                     funsClass = self.nameSpace["$funs"] 
                     return funsClass.acceptsFun(codedFun)
                 elif funcName.varType == "$classes":
-                    clsBean = self.nameSpace[funcName.name]
-                    funBean = Bean.FunDefBean(args, None, funcName)
-                    return clsBean.acceptsFun(funBean)
+                    classesClsBean = self.nameSpace["$classes"]
+                    myClassBean = classesClsBean[funcName.name]
+                    funBean = Bean.FunDefBean(args, None, "__init__")
+                    return myClassBean.acceptsFun(funBean) 
                 else:
                     codedFun = Bean.FunDefBean(args, None, "__call__")
                     self.nameSpace.duckCallable(funcName)
@@ -1020,8 +1021,10 @@ class ClassDefWalker(InitialWalker):
             self.initFun = funWalker.createFunBean()
              
         self.scope.goUpLevel()
-        self.scope.append(Bean.VarBean("$funs", funWalker.name))
-        self.funs.put(funWalker.name,Bean.VarBean("$funs", funWalker.name))
+#         self.scope.append(Bean.VarBean("$funs", funWalker.name))
+#         self.funs.put(funWalker.name,Bean.VarBean("$funs", funWalker.name))
+        
+        self.funs.put(funWalker.name, funWalker.createFunBean()) #this should be what to do instead of the two above it.
         
     def visit_ClassDef(self, node):
         """
