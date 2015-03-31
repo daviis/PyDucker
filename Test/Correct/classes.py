@@ -17,10 +17,12 @@ class Animal():
         def doThings(self):
             print('i probably broke this')
             
-pass
 x = Animal(1)
-# x.speak()
+x.speak()
 
 class cat(Animal):
     def fall(self):
         print('i fell')
+
+    
+pass

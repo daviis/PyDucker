@@ -290,7 +290,7 @@ class InitialWalker(ast.NodeVisitor):
                     return funsClass.acceptsFun(codedFun)
                 elif funcName.varType == "$classes":
                     classesClsBean = self.nameSpace["$classes"]
-                    myClassBean = classesClsBean[funcName.name]
+                    myClassBean = classesClsBean.funs[funcName.name]
                     funBean = Bean.FunDefBean(args, None, "__init__")
                     return myClassBean.acceptsFun(funBean) 
                 else:
@@ -969,9 +969,9 @@ class InitialWalker(ast.NodeVisitor):
         self.nameSpace.put(clsWalker.name, clsBean)
         
         self.scope.goUpLevel()
-        self.scope.append(Bean.VarBean("$classes",clsBean.name))
-        initFun = clsBean.initFun
-        self.nameSpace.addClassesClass(initFun)
+        self.scope.append(Bean.VarBean("$classes", clsBean.name))
+#         initFun = clsBean.initFun
+#         self.nameSpace.addClassesClass(initFun)
         self.nameSpace.addClassesClass(clsBean)
         #initFun.name = "__call__"
         #self.nameSpace.addClassesClass(initFun)
@@ -1017,15 +1017,16 @@ class ClassDefWalker(InitialWalker):
         
         funWalker = FunDefWalker(node, self.nameSpace, self.scope)   
         funWalker.walk()
-        if funWalker.name == '__init__':
-            self.initFun = funWalker.createFunBean()
-             
         self.scope.goUpLevel()
 #         self.scope.append(Bean.VarBean("$funs", funWalker.name))
 #         self.funs.put(funWalker.name,Bean.VarBean("$funs", funWalker.name))
-        
-        self.funs.put(funWalker.name, funWalker.createFunBean()) #this should be what to do instead of the two above it.
-        
+
+        if funWalker.name == '__init__':
+            self.initFun = funWalker.createFunBean()
+            self.initFun.returnType = Bean.VarBean(self.name)        
+            self.funs.put(funWalker.name, self.initFun) #this should be what to do instead of the two above it.
+        else:
+            self.funs.put(funWalker.name, funWalker.createFunBean()) #this should be what to do instead of the two above it.
     def visit_ClassDef(self, node):
         """
         @node:ast.AST
