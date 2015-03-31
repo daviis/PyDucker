@@ -7,7 +7,7 @@ This file is where the command line option parser should direct to for the heavy
 '''
 import ast
 import sys
-import traceback
+
 
 import Bean
 import Exceptions
@@ -85,51 +85,7 @@ def _testAll(listOfFiles):
         finally:
             print()
             
-def testFiles(listOfFiles, PyduckerWarningOff):
-    for i in listOfFiles:
-        aFile = i.name
-        
-        with open(aFile, 'r') as f:
-            fileCont = f.read()
-            
-        print("File name: ",aFile)
-        try: 
-            tree = ast.parse(fileCont, aFile)
-            
-        #except ast.parser.ParseError:
-         #   print('hit')
-        except BaseException:
-            type, value, tb = sys.exc_info()
-            print("Unable to parser file due to" ,type.__name__) 
-            print(  type.__name__, ":"  , value)
-            
-            tree = None
-        if PyduckerWarningOff:
-            try:
-                nameSpace = handMakeNameSpace()
-                scope = handMakeScope()
-                firstWalker = InitialWalker(tree, nameSpace, scope)
-                firstWalker.walk()
-      
-            except Exceptions.PyDuckerError as ex:
-                print("\n", ex.__class__.__name__, end = "")
-                print(ex)
-            except Exceptions.PyDuckerWarning as ex:
-                pass
-            finally:
-                print()
-        else:        
-            try:
-                nameSpace = handMakeNameSpace()
-                scope = handMakeScope()
-                firstWalker = InitialWalker(tree, nameSpace, scope)
-                firstWalker.walk()
-      
-            except Exceptions.PyDuckerException as ex:
-                print("\n", ex.__class__.__name__, end = "")
-                print(ex)
-            finally:
-                print()
+
     
 if __name__ == '__main__':
     testOne("../Test/Correct/Collections.py")
