@@ -1027,16 +1027,11 @@ class ClassDefWalker(InitialWalker):
         """
         @node:ast.AST
         """
-        #self.scope.goDownLevel()
-         
         clsWalker = ClassDefWalker(node, self.nameSpace, self.scope)
         clsWalker.parent = self.name
         clsWalker.walk()
         clsBean = clsWalker.createClassBean()
         self.interClasses.append(clsBean)
-        
-        
-        #self.nameSpace.put(clsWalker.name, clsBean)
     
     def createClassBean(self):
         bean = Bean.ClassDefBean(self.name, self.scope, self.parent)
