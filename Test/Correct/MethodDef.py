@@ -17,6 +17,12 @@ def sub(a, b=666, c="w", *d, **e):
 def noPrams():
     return 5
 
+def takeList(lst):
+    """
+    @lst:int*
+    """
+    return lst
+
 #test the set up functions
 
 pass
@@ -24,6 +30,7 @@ pass
 x = add(3)
 w = add(2, 3)
 z = add(2, b=4)
+v = takeList([1,2,3])
 
 #incorrect ones 
 #todo move to incorrect dir
@@ -31,4 +38,4 @@ t = add() #Exceptions.IncorrectMethodException, should raise an exception about 
 y = add('w') #Exceptions.IncorrectMethodException b/c str
 s = add(3, z=2) #Exceptions.IncorrectMethodKeywordException b/c 'z'
 
-pass
+
