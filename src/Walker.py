@@ -971,6 +971,7 @@ class InitialWalker(ast.NodeVisitor):
         self.scope.append(Bean.VarBean("$classes",clsBean.name))
         initFun = clsBean.initFun
         self.nameSpace.addClassesClass(initFun)
+        self.nameSpace.addClassesClass(clsBean)
         #initFun.name = "__call__"
         #self.nameSpace.addClassesClass(initFun)
          
@@ -1000,6 +1001,7 @@ class ClassDefWalker(InitialWalker):
         self.parent = None
         self.funs = Bean.NameSpaceBean()
         self.name = classRoot.name
+        self.interClasses = []
        
     def walk(self):
         #first call should be a quick walk to snag all of the fun names and self var names
@@ -1031,13 +1033,17 @@ class ClassDefWalker(InitialWalker):
         clsWalker.parent = self.name
         clsWalker.walk()
         clsBean = clsWalker.createClassBean()
-        self.nameSpace.put(clsWalker.name, clsBean)
+        self.interClasses.append(clsBean)
+        
+        
+        #self.nameSpace.put(clsWalker.name, clsBean)
     
     def createClassBean(self):
         bean = Bean.ClassDefBean(self.name, self.scope, self.parent)
         for i in self.funs.vars:
             bean.funs[i] = self.funs.vars[i]
         bean.initFun = self.initFun
+        bean.interClasses = self.interClasses
             
         return bean
             
