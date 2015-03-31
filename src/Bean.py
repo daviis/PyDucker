@@ -42,7 +42,10 @@ class ClassDefBean(GenericBean):
         @fun:FunDefBean
         """
         try:
-            if self.funs[fun.name] == fun:
+            if isinstance(fun.name,VarBean):
+                #print("found something")
+                return(self.initFun.returnType)
+            elif self.funs[fun.name] == fun:
                 return self.funs[fun.name].returnType 
         except KeyError:
             raise Exceptions.MissingMethodException(self, fun.name)

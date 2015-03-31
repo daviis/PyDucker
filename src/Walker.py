@@ -971,8 +971,8 @@ class InitialWalker(ast.NodeVisitor):
         self.scope.append(Bean.VarBean("$classes",clsBean.name))
         initFun = clsBean.initFun
         self.nameSpace.addClassesClass(initFun)
-        initFun.name = "__call__"
-        self.nameSpace.addClassesClass(initFun)
+        #initFun.name = "__call__"
+        #self.nameSpace.addClassesClass(initFun)
          
     def visit_FunctionDef(self, node):
         """
@@ -1015,7 +1015,6 @@ class ClassDefWalker(InitialWalker):
         funWalker = FunDefWalker(node, self.nameSpace, self.scope)   
         funWalker.walk()
         if funWalker.name == '__init__':
-            print('found init')
             self.initFun = funWalker.createFunBean()
              
         self.scope.goUpLevel()
