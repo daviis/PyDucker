@@ -277,6 +277,7 @@ class ScopeLevelBean(GenericBean):
         """
         @item:VarBean
         """
+
         currentLevel = self.levels[-1]
         
         if item.name in currentLevel and item != currentLevel[item.name]:
@@ -284,6 +285,7 @@ class ScopeLevelBean(GenericBean):
             
         if item.name in currentLevel and currentLevel[item.name].scopeModifier:
             item.scopeModifier = currentLevel[item.name].scopeModifier    
+
         
         currentLevel[item.name] = item
         
@@ -459,5 +461,7 @@ class NameSpaceBean(GenericBean):
                 return resultType
             except Exceptions.MissingMethodException:
                 pass
+            finally:
+                print()
         raise Exceptions.MissingMagicMethodException(lbean, rbean, op, rOp)
             
