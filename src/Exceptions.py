@@ -65,7 +65,9 @@ class TypeMisMatchException(PyDuckerWarning):
     
     def __str__(self):
         ret = super().__str__()
-        ret += "\n\tVar name : " + self.varName + "\n\told type: " + self.oldType.varType + "\n\tnew type: " + self.newType.varType
+        print("\n\tVar name : " + self.varName + "\n\told type: " + self.oldType.varType + "\n\new type: " + self.newType.varType)
+        ret += "\n\tVar name : " + self.varName + "\n\told type: " + self.oldType.varType + "\n\new type: " + self.newType.varType
+        
         return ret
     
     
