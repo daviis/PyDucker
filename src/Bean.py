@@ -37,19 +37,19 @@ class ClassDefBean(GenericBean):
         """
         return op in self.funs
     
-    def acceptsFun(self, fun):
+    def acceptsFun(self, fun, namespace):
         """
         @fun:FunDefBean
         """
         try:
-            if isinstance(fun.name,VarBean):
-                #print("found something")
-                return(self.initFun.returnType)
-            elif self.funs[fun.name] == fun:
-                return self.funs[fun.name].returnType 
+            if self.funs[fun.name].equals(namespace, fun):
+                return self.funs[fun.name].returnType
+            else:
+                raise Exceptions.IncorrectMethodException(fun.name, fun.typesparams, aCls = VarBean(self.name), kws = fun.kwargs, star = fun.starargs)
         except KeyError:
             raise Exceptions.MissingMethodException(self, fun.name)
-        except Exceptions.IncorrectMethodException as ex:
+        except Exceptions.IncorrectMethodKeywordException as ex:
+            ex.fun = fun.name
             ex.cls = VarBean(self.name)
             raise ex
             
@@ -73,39 +73,85 @@ class ClassDefBean(GenericBean):
 
 class FunDefBean(GenericBean):
     
-    def __init__(self, paramsTypes, returntype, fundefname):
+    def __init__(self, paramsTypes, returntype, fundefname, someKwargs = {}, someStarargs = None, minParams = 0):
         """
         @paramsTypes:*VarBean
         @returnType:VarBean
         @fundefname:str
+        @someKwargs:str**VarBean
+        @someStarargs:VarBean
+        @minParams:int
         """
         self.partOfClass = False
         self.typesparams = paramsTypes
         self.returnType = returntype
         self.name = fundefname
+        self.starargs = someStarargs
+        self.kwargs = someKwargs
+        self.minNumParams = minParams
         
-
-    def takes(self, paramList):
+    def getParamType(self, idx):
         """
-        @paramList:VarBean*
-        todo:expand so it can also take optional vars and list/dicts
+        @idx:int
         """
-        if not len(paramList) == len(self.typesparams):
-            return False
-        for idx in range(len(paramList)):
-            if not paramList[idx] == self.typesparams[idx]:
-                return False
-        return True
-
-    def __eq__(self, funBean):
-        """
-        @funBean:FunDefBean
-        Like takes but uses a fundefbean instead of a string
-        """
-        if self.takes(funBean.typesparams):
-            return True
+        if idx < len(self.typesparams)-1:
+            return self.typesparams[idx]
         else:
-            raise Exceptions.IncorrectMethodException(funBean.name, funBean.typesparams)
+            if self.typesparams[-1].varType == '$rept':
+                return self.typesparams[-2]
+            else:
+                return self.typesparams[-1]
+            
+    def equals(self, namespace, fun):
+        """
+        @namespace:NameSpaceBean
+        @fun:FunDefBean
+        """
+        return self._takes(namespace, fun.typesparams, fun.kwargs, fun.starargs)
+
+    def _takes(self, namespace, paramList, kwargs, starargs):
+        """
+        @namespace:NameSpaceBean
+        @paramList:VarBean*
+        @kwargs:str**VarBean
+        @starargs:VarBean*
+        todo clean up this wayyyyyyyy to complicated logic
+        """
+        self._checkKwargs(kwargs)
+        #there were starred arguments passed into the called function but, we can't check the length of them yet so just kind of go with the flow. 
+        if starargs:
+            for bothIdx in range(len(paramList)):
+                if not namespace.checkImplicitTypeConversion(paramList[bothIdx], self.getParamType(bothIdx)):
+                    return False
+            bothIdx += 1
+            if bothIdx == len(self.typesparams) and self.typesparams[-1] != VarBean("$rept"): #there are too many args when the starred args are unpacked. Figure that out here and return false because of it
+                return False
+            for selfIdx in range(bothIdx, len(self.typesparams)):
+                if not namespace.checkImplicitTypeConversion(starargs.nextSubType(), self.getParamType(selfIdx)):
+                    return False
+            return True
+        #there are not any starred arguments so just check the args one for one. 
+        else:
+            #Check to see if there are the right number of paramaters, keeping in mind the kwargs that were passed in.
+            if len(paramList) < self.minNumParams:
+                return False #could possibly make a more helpful statemetn here, but its functional for now.
+            for bothIdx in range(len(paramList)):
+                if not namespace.checkImplicitTypeConversion(paramList[bothIdx], self.getParamType(bothIdx)):
+                    return False
+            return True
+    
+    def _checkKwargs(self, kwargs):
+        """
+        @kwargs:str**VarBean
+        """
+        for key in kwargs:
+            aVarBean = kwargs[key]
+            aVarBean.name = key
+            if key not in self.kwargs:
+                raise Exceptions.IncorrectMethodKeywordException(aVarBean)
+            if kwargs[key] != self.kwargs[key]:
+                raise Exception.IncorrectMethodKeywordException(aVarBean)
+             
 
 class VarBean(GenericBean):
     
@@ -136,9 +182,10 @@ class VarBean(GenericBean):
     
     def nextSubType(self):
         if self.homo:
-            return self.compType[0].varType
+            return self.compType[0]
         else:
-            return self.compType
+            raise Exceptions.HeteroCollecionException(self.name)
+#             return self.compType
             
     def typesMatch(self, other):
         if self.compType:
@@ -379,6 +426,22 @@ class NameSpaceBean(GenericBean):
         """
         funsClass = self.vars["$funs"]
         funsClass.funs[funDefBean.name] = funDefBean
+    
+    def checkImplicitTypeConversion(self, typeFound, typeNeeded):
+        """
+        @typeFound:VarBean
+        @typeNeeded:VarBean
+        """
+        if typeFound.varType == typeNeeded.varType:
+            return True
+        else:
+            foundCls = self.vars[typeFound.varType]
+            neededConverter = "__" + typeNeeded.varType + "__"
+            if foundCls.hasFun(neededConverter):
+                return True
+            else:
+                return False
+    
         
     def addClassesClass(self, funDefClass):
         """
@@ -404,7 +467,7 @@ class NameSpaceBean(GenericBean):
         #if not, raise missingMagicMethodException
         for bean, fun in ((lbean, fstFun), (rbean, sndFun)):
             try:
-                resultType = self.vars[bean.varType].acceptsFun(fun)
+                resultType = self.vars[bean.varType].acceptsFun(fun, self)
                 return resultType
             except Exceptions.MissingMethodException:
                 pass

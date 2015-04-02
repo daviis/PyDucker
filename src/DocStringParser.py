@@ -66,7 +66,7 @@ def parseDocString(docString,returnList = True):
                 #lists handled
         else:
             isHomo = False
-            mainVarType = compType
+            mainVarType = currentType
 
         for key in variables:
             currentVar = VarBean(mainVarType, key)
