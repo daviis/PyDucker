@@ -327,35 +327,31 @@ class InitialWalker(ast.NodeVisitor):
         left = self.visit(node.left)
         
         zipped = zip(node.ops, node.comparators)
-
-        for pair in zipped:
-            op = self.visit(pair[0])
-            arg = self.visit(pair[1])
-            
-            if op == "__contains__":
-                temp = arg
-                arg = left
-                left = temp
+        
+        try:
+            for pair in zipped:
+                op = self.visit(pair[0])
+                arg = self.visit(pair[1])
                 
-            elif op == "is" or op == "isnot":
-                continue
+                if op == "__contains__":
+                    temp = arg
+                    arg = left
+                    left = temp
+                    
+                elif op == "is" or op == "isnot":
+                    continue
+                
+                leftClass = self.nameSpace[left.varType]
+                calledFun = Bean.FunDefBean([arg], None, op)
+                if leftClass.acceptsFun(calledFun, self.nameSpace):
+                    left = arg
+                else:
+                    raise Exceptions.MissingMethodException(left, op, node.lineno)
+            return Bean.VarBean('bool')
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
+            raise ex
             
-            leftClass = self.nameSpace[left.varType]
-            calledFun = Bean.FunDefBean([arg], None, op)
-            if leftClass.acceptsFun(calledFun, self.nameSpace):
-                left = arg
-            else:
-                raise Exceptions.MissingMethodException(left, op, node.lineno)
-        return Bean.VarBean('bool')
-            
-#             if leftClass.hasFun(op):
-#                 if leftClass.funs[op].equals(self.nameSpace, [arg]):
-#                     left = arg
-#                 else:
-#                     raise Exceptions.IncorrectMethodException(op, [arg], node.lineno, left)
-#             else:
-#                 raise Exceptions.MissingMethodException(left, op, node.lineno)
-#         return Bean.VarBean('bool')
     
     def visit_comprehension(self, node):
         """
@@ -507,7 +503,7 @@ class InitialWalker(ast.NodeVisitor):
             ex.lineNum = node.lineno
             raise ex
         
-        target.varType = anIter.nextSubType()
+        target.recursiveClone(anIter.nextSubType())
         self.scope.append(target)
         
         for bod in node.body:
@@ -879,9 +875,9 @@ class InitialWalker(ast.NodeVisitor):
             sliceBean = self.visit(node.slice)
             #Not handling non-homo types
             if var.varType == 'list':
-                bean = Bean.VarBean(var.nextSubType())
+                bean = var.nextSubType()
             elif var.varType == 'dict':
-                keyBean = Bean.VarBean(var.nextSubType())
+                keyBean = var.nextSubType()
                 valBeans = []
                 for i in var.valType: #Get all the types of various values to keys.
                     valBeans.append(i.varType)
