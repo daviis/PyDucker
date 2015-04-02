@@ -311,7 +311,7 @@ class InitialWalker(ast.NodeVisitor):
                     classesClsBean = self.nameSpace["$classes"]
                     myClassBean = classesClsBean.funs[funcName.name]
                     funBean = Bean.FunDefBean(args, None, "__init__")
-                    return myClassBean.acceptsFun(funBean) 
+                    return myClassBean.acceptsFun(funBean, self.nameSpace) 
                 else:
                     codedFun = Bean.FunDefBean(args, None, "__call__")
                     self.nameSpace.duckCallable(funcName)
