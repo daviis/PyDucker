@@ -1111,6 +1111,9 @@ class FunDefWalker(InitialWalker):
         self.minNumParams = 0
         
     def walk(self):
+        for preVar in self._findParamTypes():
+            self.scope.append(preVar)
+            
         try:
             self.visit(self.root.args)
         except Exceptions.PyDuckerException as ex:
