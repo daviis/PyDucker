@@ -8,6 +8,7 @@ import sys
 import Bean
 import Exceptions
 from DocStringParser import parseDocString
+from Bean import ClassDefBean
 
 class InitialWalker(ast.NodeVisitor):
     def __init__(self, astNode, nameSp, scopeBean):
@@ -306,9 +307,13 @@ class InitialWalker(ast.NodeVisitor):
                     codedFun = Bean.FunDefBean(args, None, funcName.name, keywords, starargs)
                     funsClass = self.nameSpace["$funs"] 
                     return funsClass.acceptsFun(codedFun, self.nameSpace)
+                elif funcName.varType == "$classes":
+                    classesClsBean = self.nameSpace["$classes"]
+                    myClassBean = classesClsBean.funs[funcName.name]
+                    funBean = Bean.FunDefBean(args, None, "__init__")
+                    return myClassBean.acceptsFun(funBean) 
                 else:
-                
-                    codedFun = Bean.FunDefBean(args, None, "__call__", keywords, starargs)
+                    codedFun = Bean.FunDefBean(args, None, "__call__")
                     self.nameSpace.duckCallable(funcName)
                     codedClass = self.nameSpace[funcName.varType]
                     return codedClass.acceptsFun(codedFun, self.nameSpace)
@@ -1006,10 +1011,17 @@ class InitialWalker(ast.NodeVisitor):
         
         clsWalker = ClassDefWalker(node, self.nameSpace, self.scope)
         clsWalker.walk()
+        clsBean = clsWalker.createClassBean()
         
-        self.nameSpace.put(clsWalker.name, clsWalker.createClassBean())
+        self.nameSpace.put(clsWalker.name, clsBean)
         
         self.scope.goUpLevel()
+        self.scope.append(Bean.VarBean("$classes", clsBean.name))
+#         initFun = clsBean.initFun
+#         self.nameSpace.addClassesClass(initFun)
+        self.nameSpace.addClassesClass(clsBean)
+        #initFun.name = "__call__"
+        #self.nameSpace.addClassesClass(initFun)
          
     def visit_FunctionDef(self, node):
         """
@@ -1037,6 +1049,7 @@ class ClassDefWalker(InitialWalker):
         self.parent = None
         self.funs = Bean.NameSpaceBean()
         self.name = classRoot.name
+        self.interClasses = []
        
     def walk(self):
         
@@ -1048,15 +1061,39 @@ class ClassDefWalker(InitialWalker):
         """
         @node:ast.ast
         """
-        self.funs.append(node)
-        if(node.name == '__init__'):
-            self.initFun = node
+        self.scope.goDownLevel()
+        
+        funWalker = FunDefWalker(node, self.nameSpace, self.scope)   
+        funWalker.walk()
+        self.scope.goUpLevel()
+#         self.scope.append(Bean.VarBean("$funs", funWalker.name))
+#         self.funs.put(funWalker.name,Bean.VarBean("$funs", funWalker.name))
+
+        if funWalker.name == '__init__':
+            self.initFun = funWalker.createFunBean()
+            self.initFun.returnType = Bean.VarBean(self.name)        
+            self.funs.put(funWalker.name, self.initFun) #this should be what to do instead of the two above it.
+        else:
+            self.funs.put(funWalker.name, funWalker.createFunBean()) #this should be what to do instead of the two above it.
+    def visit_ClassDef(self, node):
+        """
+        @node:ast.AST
+        """
+        clsWalker = ClassDefWalker(node, self.nameSpace, self.scope)
+        clsWalker.parent = self.name
+        clsWalker.walk()
+        clsBean = clsWalker.createClassBean()
+        self.interClasses.append(clsBean)
     
     def createClassBean(self):
-        bean = Bean.ClassDefBean(self.name, self.funs, self.parent)
-#         stuff about making the bean
+        bean = Bean.ClassDefBean(self.name, self.scope, self.parent)
+        for i in self.funs.vars:
+            bean.funs[i] = self.funs.vars[i]
+        bean.initFun = self.initFun
+        bean.interClasses = self.interClasses
+            
         return bean
-    
+            
 class FunDefWalker(InitialWalker):
     def __init__(self, funRoot, nameSp, scopeLevel):
         """
