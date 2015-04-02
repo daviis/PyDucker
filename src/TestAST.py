@@ -8,6 +8,7 @@ This file is where the command line option parser should direct to for the heavy
 import ast
 import sys
 
+
 import Bean
 import Exceptions
 from Walker import InitialWalker
@@ -83,9 +84,16 @@ def _testAll(listOfFiles):
             print(ex)
         finally:
             print()
+            
+
     
 if __name__ == '__main__':
+<<<<<<< HEAD
     testOne("../Test/Correct/classes.py")
+=======
+    #testOne("../Test/Correct/MethodDef.py")
+    testAllCorrect()
+>>>>>>> 96d7266c865af0ad2076dd6100641e7f42ce95f0
 #     testAllIncorrect()
 #      testAllCorrect()
     print("out main")

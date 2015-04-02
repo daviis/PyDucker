@@ -113,12 +113,21 @@ def handMakeNameSpace():
 
     funsClass = ClassDefBean("$funs", None)
     funsClass.funs["print"] = FunDefBean([VarBean('str')], VarBean('None'), "print")
-    funsClass.funs["range"] = FunDefBean([VarBean('int')], VarBean('range'), "print")
+    funsClass.funs["range"] = FunDefBean([VarBean('int')], VarBean('range'), "range")
+    funsClass.funs["open"]  = FunDefBean([VarBean('str'), VarBean('str')], VarBean("file"), "open")
+    funsClass.funs["write"] = FunDefBean([VarBean('str')], VarBean('None'), "write")
     nameSpace.put(funsClass.name, funsClass)
     
+
     classesClass = ClassDefBean("$classes", None)
     classesClass.funs["byte"] = FunDefBean([], VarBean("byte"), "byte")
     nameSpace.put(classesClass.name, classesClass)
+
+    fileClass = ClassDefBean("file", None)
+    fileClass.funs["read"] = FunDefBean([], VarBean("list"), "read")
+    fileClass.funs["write"] = FunDefBean([VarBean('str')], VarBean('None'), 'write')
+    nameSpace.put(fileClass.name, fileClass)
+
     
     rangeClass = ClassDefBean("range", None)
     rangeClass.funs["__iter__"] = FunDefBean([], VarBean('int'), "__iter__")
@@ -132,5 +141,7 @@ def handMakeScope():
     scope.append(VarBean("Exception", "ValueError"))
     scope.append(VarBean("$funs", "print"))
     scope.append(VarBean("$funs", "range"))
+    scope.append(VarBean("$funs", "open"))
+    scope.append(VarBean("$funs", "write"))
     
     return scope
