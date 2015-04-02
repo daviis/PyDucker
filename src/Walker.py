@@ -159,12 +159,12 @@ class InitialWalker(ast.NodeVisitor):
         
         try:
             value = self.visit(node.value)
+            
         except Exceptions.TypeMisMatchException as ex:
             ex.varName = tars[0].name
             raise ex
             
         for varBean in tars:
-            
             if varBean.varType == "tuple" and varBean.starred:
                 try:
                     self._tupleUnpacking(varBean, value)
@@ -632,7 +632,6 @@ class InitialWalker(ast.NodeVisitor):
         bean = Bean.VarBean('list')
         
         elements = self._makeCompType(node.elts)
-        
         if len(elements) == 1:
             bean.homo = True
         bean.compType = elements

@@ -25,7 +25,7 @@ def takeList(lst):
 
 #test the set up functions
 
-pass
+
 
 x = add(3)
 w = add(2, 3)
@@ -38,4 +38,4 @@ t = add() #Exceptions.IncorrectMethodException, should raise an exception about 
 y = add('w') #Exceptions.IncorrectMethodException b/c str
 s = add(3, z=2) #Exceptions.IncorrectMethodKeywordException b/c 'z'
 
-
+pass
