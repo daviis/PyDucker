@@ -4,7 +4,6 @@ Updated: 2014/11/12
 @author: Jake Albee
 '''
 import re
-import sys
 from Bean import VarBean
 from Bean import ScopeLevelBean
 import Exceptions
