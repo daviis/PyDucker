@@ -3,7 +3,7 @@ class Animal():
 		"""
 		@idNum:int
 		"""
-		self.id = idNum
+		id = idNum
 		
 	def speak(self):
 		print("i dont talk")

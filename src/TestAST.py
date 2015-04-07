@@ -8,6 +8,7 @@ This file is where the command line option parser should direct to for the heavy
 import ast
 import sys
 
+
 import Bean
 import Exceptions
 from Walker import InitialWalker
@@ -36,10 +37,11 @@ def testOne(aFile):
 def testAllCorrect():
     #Non-working tests are commented out    
     files = [
+            '../Test/Correct/Call.py',
             '../Test/Correct/Collections.py',
-             '../Test/Correct/control.py',
+            '../Test/Correct/control.py',
             '../Test/Correct/MethodDef.py',
-#              '../Test/Correct/MultiClassMultiFun.py',
+#             '../Test/Correct/MultiClassMultiFun.py',
             '../Test/Correct/Ops.py',
             '../Test/Correct/tryRaiseExcept.py',
             '../Test/Correct/With.py',
@@ -83,6 +85,8 @@ def _testAll(listOfFiles):
             print(ex)
         finally:
             print()
+            
+
     
 if __name__ == '__main__':
     testOne("../Test/Incorrect/MultiCol.py")
