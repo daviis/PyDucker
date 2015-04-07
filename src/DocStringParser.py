@@ -65,7 +65,7 @@ def parseDocString(docString,returnList = True):
             if isHomo == False:
                 currentVar.homo = False
             else:
-                if compType < 2:
+                if len(compType) < 2:
                     currentVar.homo = True
                     currentVar.compType = compType
                 else:
