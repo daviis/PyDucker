@@ -71,7 +71,7 @@ class TypeMisMatchException(PyDuckerWarning):
     
 class HeteroCollecionException(PyDuckerWarning):
     
-    def __init__(self, var, lineNu):
+    def __init__(self, var, lineNu=-1):
         """
         @var:str
         @lineNu:int

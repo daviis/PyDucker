@@ -7,6 +7,7 @@ import re
 import sys
 from Bean import VarBean
 from Bean import ScopeLevelBean
+import Exceptions
 
 def parseDocString(docString,returnList = True):
     """Takes in a doc string in the form of a string and returns a list of VarBeans
@@ -26,17 +27,16 @@ def parseDocString(docString,returnList = True):
         current = current.split(':',maxsplit=1)
         variables = current[0].split(',')
         currentType = current[1]
-        
         compType = None
         if re.search(matchPattern,currentType):
             if len(currentType) <= 2:
                 isHomo = False
                 if currentType == '*':
-                    print('**Warning** List(s) '+str(variables)+ ' are inhomogeneous.',file=sys.stderr)
+                    raise Exceptions.HeteroCollecionException(variables,-1)
                 elif currentType == '^':
-                    print('**Warning** Tuple(s) '+str(variables)+ ' are unknown.',file=sys.stderr)
+                    raise Exceptions.HeteroCollecionException(variables,-1)
                 elif currentType == '**':
-                    print("**Warning** Dictionary(s) "+str(variables)+ ' are inhomogeneous.',file=sys.stderr)
+                    raise Exceptions.HeteroCollecionException(variables,-1)
             else:
                 isHomo = True
                 #We'll handle Tuples first.
@@ -47,9 +47,10 @@ def parseDocString(docString,returnList = True):
                 #Tuple handled.
                 elif currentType[-2] == '*':
                     compType = currentType[:-2].split(':')
-                    print(compType)
+                    #List is [key,value]
                 elif currentType[1] == '*':
                     compType = currentType[2:].split(':')
+                    #List is [key,value]
                 #Dicts handled
                 elif currentType[0] == '*':
                     compType = currentType[1:]
@@ -64,15 +65,15 @@ def parseDocString(docString,returnList = True):
             if isHomo == False:
                 currentVar.homo = False
             else:
-                if compType:
-                    print(compType)
+                if compType < 2:
                     currentVar.homo = True
                     currentVar.compType = compType
+                else:
+                    currentVar.homo = True
+                    #Handle dict here, not sure how to set keys or values
             finalList.append(currentVar)
     
     if returnList == False:
         return ScopeLevelBean(finalList)
     else:
         return finalList
-    
-parseDocString("@a:int**")
