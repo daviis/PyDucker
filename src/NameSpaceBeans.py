@@ -113,7 +113,10 @@ def handMakeNameSpace():
 
     funsClass = ClassDefBean("$funs", None)
     funsClass.funs["print"] = FunDefBean([VarBean('str'), VarBean("$rept")], VarBean('None'), "print", someKwargs={"end": VarBean("str"), "sep": VarBean("str"), "file": VarBean("file"), "flush" : VarBean("bool")})
-    funsClass.funs["range"] = FunDefBean([VarBean('int')], VarBean('range'), "range")
+    rangeType = VarBean('range')
+    rangeType.homo = True
+    rangeType.compType = [VarBean("int")]
+    funsClass.funs["range"] = FunDefBean([VarBean('int')], rangeType, "range")
     funsClass.funs["open"]  = FunDefBean([VarBean('str'), VarBean('str')], VarBean("file"), "open")
     funsClass.funs["write"] = FunDefBean([VarBean('str')], VarBean('None'), "write")
     nameSpace.put(funsClass.name, funsClass)
