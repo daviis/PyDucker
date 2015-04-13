@@ -47,11 +47,19 @@ def parseDocString(docString,returnList = True):
                     mainVarType = 'tuple'
                 #Tuple handled.
                 elif currentType[-2] == '*':
-                    compType, valueType = currentType[:-2].split(':')
+                    try:
+                        compType, valueType = currentType[:-2].split(':')
+                    except:
+                        compType = currentType[:-2]
+                        valueType = compType
                     #List is [key,value]
                     mainVarType = 'dict'
                 elif currentType[1] == '*':
-                    compType, valueType = currentType[2:].split(':')
+                    try:
+                        compType, valueType = currentType[2:].split(':')
+                    except:
+                        compType = currentType[2:]
+                        valueType = compType
                     mainVarType = 'dict'
                 #Dicts handled
                 elif currentType[0] == '*':
