@@ -57,6 +57,10 @@ class InitialWalker(ast.NodeVisitor):
         @varBean:Bean.VarBean
         @ele:ast.ast
         """
+        #catch the case of attempting to unpack a for loop with a yield from
+        if ele.__class__.__name__ == "YieldFrom":
+            raise Exceptions.PyDuckerSyntaxError("PyDucker will not allow yield from to be used to unpack for loops, look to documentation as per why.")
+        
         varBean.compType = [self.visit(ele)]
         
         for internalType in varBean.compType:
@@ -505,12 +509,11 @@ class InitialWalker(ast.NodeVisitor):
         
         try:
             self.nameSpace.duckIter(anIter)
+            target.recursiveClone(anIter.nextSubType())
+            self.scope.append(target)
         except Exceptions.PyDuckerException as ex:
             ex.lineNum = node.lineno
             raise ex
-        
-        target.recursiveClone(anIter.nextSubType())
-        self.scope.append(target)
         
         for bod in node.body:
             self.visit(bod)
@@ -649,7 +652,12 @@ class InitialWalker(ast.NodeVisitor):
         for gen in node.generators:
             self.visit(gen)
             
-        retVar = self._generatorHelper(Bean.VarBean('list'), node.elt)
+        try:
+            retVar = self._generatorHelper(Bean.VarBean('list'), node.elt)
+        except Exceptions.PyDuckerException as ex:
+            ex.lineNum = node.lineno
+            raise ex
+        
         self.scope.goUpLevel()
         return retVar
         

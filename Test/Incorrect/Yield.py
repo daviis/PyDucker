@@ -1,0 +1,1 @@
+values = [(yield from (i, i + 1, i)) for i in [0,1,2,3,4]] #this is not the common use of yield from so it breaks the generator creation.

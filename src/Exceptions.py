@@ -16,7 +16,7 @@ The exception hierarchy for PyDucker is
         |--- MissingDocStringException
         |--- NonlocalReferenceException
         |--- GlobalReferenceException
-        |--- SyntaxError
+        |--- PyDuckerSyntaxError
     |--- PyDuckerWarning
          |--- TypeMismatchException
          |--- HeteroCollecionException
