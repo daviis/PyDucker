@@ -1047,8 +1047,7 @@ class InitialWalker(ast.NodeVisitor):
         funWalker.walk()
              
         self.scope.goUpLevel()
-        self.nameSpace.addFirstClassFun(funWalker.createFunBean())
-        self.scope.append(Bean.VarBean("$funs", funWalker.name))
+        self.scope.append(funWalker.createFunBean())
             
 class ClassDefWalker(InitialWalker):
     

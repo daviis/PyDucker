@@ -10,7 +10,7 @@ def sub(a, b=666, c="w", *d, **e):
     @a:float
     @b:int
     @d:str*
-    @e:int**
+    @e:int**str
     '''
     return a - b
   

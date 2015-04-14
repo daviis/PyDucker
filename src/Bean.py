@@ -335,7 +335,7 @@ class ClassDefBean(GenericBean):
         """
         @op:str
         """
-        return op in self.funs
+        return op in self.dataMembers
     
     def acceptsFun(self, fun, namespace):
         """
