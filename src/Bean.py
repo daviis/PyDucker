@@ -17,59 +17,6 @@ class GenericBean():
         self.name = name
         self.initialize = initialize
 
-class ClassDefBean(GenericBean):
-    
-    def __init__(self, classname, selfVars, rent = 'object'):
-        """
-        @className:str
-        @selfVars:ScopeLevelBean
-        @rent:str
-        """
-        self.initFun = None
-        self.name = classname
-        self.varinfo = selfVars
-        self.funs = {} #of key = Fundef.name, FunDefBean for faster look up
-        self.parent = rent #the name of the parent varType
-        
-    def hasFun(self, op):
-        """
-        @op:str
-        """
-        return op in self.funs
-    
-    def acceptsFun(self, fun, namespace):
-        """
-        @fun:FunDefBean
-        """
-        try:
-            if self.funs[fun.name].equals(namespace, fun):
-                return self.funs[fun.name].returnType
-            else:
-                raise Exceptions.IncorrectMethodException(fun.name, fun.typesparams, aCls = VarBean(self.name), kws = fun.kwargs, star = fun.starargs)
-        except KeyError:
-            raise Exceptions.MissingMethodException(self, fun.name)
-        except Exceptions.IncorrectMethodKeywordException as ex:
-            ex.fun = fun.name
-            ex.cls = VarBean(self.name)
-            raise ex
-            
-    def isIterable(self):
-        if not "__iter__" in self.funs:
-            raise Exceptions.MissingMethodException(VarBean(self.name), "__iter__")
-
-    def isCallable(self):
-        if not "__call__" in self.funs:
-            raise Exceptions.MissingMethodException(VarBean(self.name), "__call__")
-    
-    def isString(self):
-        if not "__str__" in self.funs:
-            raise Exceptions.MissingMethodException(VarBean(self.name), "__str__")
-    
-    def isBoolean(self):
-        if not "__bool__" in self.funs:
-            raise Exceptions.MissingMethodException(VarBean(self.name), "__bool__")
-            
-
 
 class FunDefBean(GenericBean):
     
@@ -82,13 +29,17 @@ class FunDefBean(GenericBean):
         @someStarargs:VarBean
         @minParams:int
         """
-        self.partOfClass = False
         self.typesparams = paramsTypes
         self.returnType = returntype
         self.name = fundefname
         self.starargs = someStarargs
         self.kwargs = someKwargs
         self.minNumParams = minParams
+        self.scopeModifier = ""
+        
+    def clone(self):
+        retBean = FunDefBean(self.typesparams, self.returnType, self.name, self.kwargs, self.starargs, self.minNumParams)
+        return retBean
         
     def getParamType(self, idx):
         """
@@ -283,6 +234,7 @@ class ScopeLevelBean(GenericBean):
         
         if item.name in currentLevel and item != currentLevel[item.name]:
             print("reassign of " + item.name, file=sys.stderr)
+            raise Exception()
             
         if item.name in currentLevel and currentLevel[item.name].scopeModifier:
             item.scopeModifier = currentLevel[item.name].scopeModifier    
@@ -356,6 +308,67 @@ class ScopeLevelBean(GenericBean):
         else:
             return False
         
+    def addClassInit(self, clsWalker):
+        """
+        @clsWalker:Walker.ClassDefWalker
+        """
+        initFun = clsWalker.initFun.clone()
+        initFun.name = clsWalker.name
+        self.append(initFun)
+     
+class ClassDefBean(GenericBean):
+    
+    def __init__(self, classname, selfVars, someDataMembers, rent = 'object'):
+        """
+        @className:str
+        @selfVars:ScopeLevelBean
+        @rent:str
+        @someDataMembers:ScopeLevelBean
+        """
+        self.initFun = None
+        self.name = classname
+        self.varinfo = selfVars
+        self.dataMembers = someDataMembers
+        self.parent = rent #the name of the parent varType
+        
+    def hasFun(self, op):
+        """
+        @op:str
+        """
+        return op in self.funs
+    
+    def acceptsFun(self, fun, namespace):
+        """
+        @fun:FunDefBean
+        """
+        try:
+            if self.dataMembers[fun.name].equals(namespace, fun):
+                return self.dataMembers[fun.name].returnType
+            else:
+                raise Exceptions.IncorrectMethodException(fun.name, fun.typesparams, aCls = VarBean(self.name), kws = fun.kwargs, star = fun.starargs)
+        except KeyError:
+            raise Exceptions.MissingMethodException(self, fun.name)
+        except Exceptions.IncorrectMethodKeywordException as ex:
+            ex.fun = fun.name
+            ex.cls = VarBean(self.name)
+            raise ex
+            
+    def isIterable(self):
+        if not "__iter__" in self.dataMembers:
+            raise Exceptions.MissingMethodException(VarBean(self.name), "__iter__")
+
+    def isCallable(self):
+        if not "__call__" in self.dataMembers:
+            raise Exceptions.MissingMethodException(VarBean(self.name), "__call__")
+    
+    def isString(self):
+        if not "__str__" in self.dataMembers:
+            raise Exceptions.MissingMethodException(VarBean(self.name), "__str__")
+    
+    def isBoolean(self):
+        if not "__bool__" in self.dataMembers:
+            raise Exceptions.MissingMethodException(VarBean(self.name), "__bool__")
+               
         
 class NameSpaceBean(GenericBean):
     """
@@ -449,7 +462,7 @@ class NameSpaceBean(GenericBean):
         fundefbean will be a copy of __init__ fundefbean who's name has been changed to the classes name.
         """
         classesClass = self.vars["$classes"]
-        classesClass.funs[funDefClass.name] = funDefClass
+        classesClass.dataMembers.append(funDefClass)
      
     def checkMagicMethod(self, lbean, rbean, op):
         """

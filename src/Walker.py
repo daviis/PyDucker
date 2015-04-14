@@ -210,11 +210,9 @@ class InitialWalker(ast.NodeVisitor):
                 return self.containingClass.dataMembers[node.attr]
         #this is just an object that is having something within it referenced
         else:
-            classType = self.nameSpace[name.varType]
-            if store:
-                return classType.dataMembers[node.attr]
-            else:
-                return classType.dataMembers[node.attr]
+            #no need to look at load or store becuase if it isn't there then it shouldn't be added.
+            #grad the classdefbean out of the namespace then grab the data member out of it
+            return self.nameSpace[name.varType].dataMembers[node.attr]
 
     
     def visit_AugAssign(self, node):
@@ -308,7 +306,7 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         try:
-            funcName = self.visit(node.func) #this will be an ast.Attribute for `'a'.upper()` or a ast.Name for `'a'() or print()`
+            funcBean = self.visit(node.func) #this will be an ast.Attribute for `'a'.upper()` or a ast.Name for `'a'() or print()`
 
             args = []
             for arg in node.args:
@@ -323,46 +321,17 @@ class InitialWalker(ast.NodeVisitor):
                 
             starargs = self.visit(node.starargs) #these should be unpacked into the args list
 
-            
-            if funcName.varType == "$funs":
-                codedFun = Bean.FunDefBean(args, None, funcName.name, keywords, starargs)
-                funsClass = self.nameSpace["$funs"] 
-                return funsClass.acceptsFun(codedFun, self.nameSpace)
-            elif funcName.varType == "$classes":
-                classesClsBean = self.nameSpace["$classes"]
-                myClassBean = classesClsBean.funs[funcName.name]
-                funBean = Bean.FunDefBean(args, None, "__init__")
-                return myClassBean.acceptsFun(funBean, self.nameSpace) 
-            else:
+            try:
+                codedFun = Bean.FunDefBean(args, None, funcBean.name, keywords, starargs)
+                if funcBean.equals(self.nameSpace, codedFun):
+                    return funcBean.returnType
+            except AttributeError:
                 codedFun = Bean.FunDefBean(args, None, "__call__")
-                self.nameSpace.duckCallable(funcName)
-                codedClass = self.nameSpace[funcName.varType]
+                self.nameSpace.duckCallable(funcBean)
+                codedClass = self.nameSpace[funcBean.varType]
                 return codedClass.acceptsFun(codedFun, self.nameSpace)
+                
             
-######################## Old way of doing fun calls  
-#             try:
-#                 #assume that the function will be part of a class, so try to look up the class type, then see if it has the function.
-#                 cls = self.visit(node.func.value)
-#                 clsBean = self.nameSpace[cls.varType]
-#                 funBean = Bean.FunDefBean(args, None, funcName, keywords, starargs)
-#                 return clsBean.acceptsFun(funBean, self.nameSpace)
-#             
-#             except AttributeError:
-#                 if funcName.varType == "$funs":
-#                     codedFun = Bean.FunDefBean(args, None, funcName.name, keywords, starargs)
-#                     funsClass = self.nameSpace["$funs"] 
-#                     return funsClass.acceptsFun(codedFun, self.nameSpace)
-#                 elif funcName.varType == "$classes":
-#                     classesClsBean = self.nameSpace["$classes"]
-#                     myClassBean = classesClsBean.funs[funcName.name]
-#                     funBean = Bean.FunDefBean(args, None, "__init__")
-#                     return myClassBean.acceptsFun(funBean, self.nameSpace) 
-#                 else:
-#                     codedFun = Bean.FunDefBean(args, None, "__call__")
-#                     self.nameSpace.duckCallable(funcName)
-#                     codedClass = self.nameSpace[funcName.varType]
-#                     return codedClass.acceptsFun(codedFun, self.nameSpace)
-################
         except Exceptions.PyDuckerException as ex:
                 ex.lineNum = node.lineno
                 raise ex
@@ -1066,12 +1035,7 @@ class InitialWalker(ast.NodeVisitor):
         self.nameSpace.put(clsWalker.name, clsBean)
         
         self.scope.goUpLevel()
-        self.scope.append(Bean.VarBean("$classes", clsBean.name))
-#         initFun = clsBean.initFun
-#         self.nameSpace.addClassesClass(initFun)
-        self.nameSpace.addClassesClass(clsBean)
-        #initFun.name = "__call__"
-        #self.nameSpace.addClassesClass(initFun)
+        self.scope.addClassInit(clsWalker)
          
     def visit_FunctionDef(self, node):
         """
@@ -1097,7 +1061,7 @@ class ClassDefWalker(InitialWalker):
         super().__init__(classRoot, nameSp, scopeCopy)
         self.initFun = None
         self.parent = None
-        self.funs = Bean.NameSpaceBean()
+#         self.funs = Bean.NameSpaceBean()
         self.name = classRoot.name
         self.interClasses = []
         self.dataMembers = Bean.ScopeLevelBean()
@@ -1117,15 +1081,15 @@ class ClassDefWalker(InitialWalker):
         funWalker = FunDefWalker(node, self.nameSpace, self.scope, contClass = self)   
         funWalker.walk()
         self.scope.goUpLevel()
-#         self.scope.append(Bean.VarBean("$funs", funWalker.name))
-#         self.funs.put(funWalker.name,Bean.VarBean("$funs", funWalker.name))
 
         if funWalker.name == '__init__':
             self.initFun = funWalker.createFunBean()
-            self.initFun.returnType = Bean.VarBean(self.name)        
-            self.funs.put(funWalker.name, self.initFun) #this should be what to do instead of the two above it.
+            self.initFun.returnType = Bean.VarBean(self.name)       
+#             self.funs.put(initFun.name, self.initFun) 
+            self.dataMembers.append(self.initFun) #this should be what to do instead of the two above it.
         else:
-            self.funs.put(funWalker.name, funWalker.createFunBean()) #this should be what to do instead of the two above it.
+            self.dataMembers.append(funWalker.createFunBean())
+#             self.funs.put(funWalker.name, funWalker.createFunBean()) #this should be what to do instead of the two above it.
     
     def visit_ClassDef(self, node):
         """
@@ -1138,9 +1102,7 @@ class ClassDefWalker(InitialWalker):
         self.interClasses.append(clsBean)
     
     def createClassBean(self):
-        bean = Bean.ClassDefBean(self.name, self.scope, self.parent)
-        for i in self.funs.vars:
-            bean.funs[i] = self.funs.vars[i]
+        bean = Bean.ClassDefBean(self.name, self.scope, self.dataMembers, self.parent)
         bean.initFun = self.initFun
         bean.interClasses = self.interClasses
             
@@ -1165,9 +1127,6 @@ class FunDefWalker(InitialWalker):
         self.containingClass = contClass
         
     def walk(self):
-#         for preVar in self._findParamTypes():
-#             self.scope.append(preVar)
-            
         try:
             self.visit(self.root.args)
         except Exceptions.PyDuckerException as ex:
