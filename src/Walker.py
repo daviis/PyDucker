@@ -325,6 +325,8 @@ class InitialWalker(ast.NodeVisitor):
                 codedFun = Bean.FunDefBean(args, None, funcBean.name, keywords, starargs)
                 if funcBean.equals(self.nameSpace, codedFun):
                     return funcBean.returnType
+                else:
+                    raise Exceptions.IncorrectMethodException(codedFun.name, args, aCls = Bean.VarBean("$first class functions$"), kws = keywords, star = starargs)
             except AttributeError:
                 codedFun = Bean.FunDefBean(args, None, "__call__")
                 self.nameSpace.duckCallable(funcBean)
@@ -969,7 +971,7 @@ class InitialWalker(ast.NodeVisitor):
         operandBean = self.nameSpace[operand.varType]
         op = self.visit(node.op)
         if operandBean.hasFun(op):
-            return operandBean.funs[op].returnType
+            return operandBean.dataMembers[op].returnType
         else:
             Exceptions.MissingMethodException(operandBean, op, node.lineno)
 
