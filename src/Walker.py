@@ -1110,16 +1110,34 @@ class ClassDefWalker(InitialWalker):
     
     def createClassBean(self):
         bean = Bean.ClassDefBean(self.name, self.scope, self.dataMembers, self.parent)
-        bean.initFun = self.initFun
-        bean.interClasses = self.interClasses
         
         if self.superClass:
             superClass = self.nameSpace[self.superClass] #Get the new class
+            for funDict in superClass.dataMembers.levels:
+                for funName in funDict:
+                    func = funDict[funName]
+                    if type(func) == Bean.FunDefBean:
+                        if bean.hasFun(func.name):
+                            pass
+                        else:
+                            if func.name == '__init__':
+                                self.initFun = func
+                                self.initFun.returnType = Bean.VarBean(self.name)       
+                    #             self.funs.put(initFun.name, self.initFun) 
+                                self.dataMembers.append(self.initFun) #this should be what to do instead of the two above it.
+                            else:
+                                self.dataMembers.append(func)                        
+                        pass #If we're in this loop we know it's a function.
+                    pass
             #Need to access outer namespace here
             #Not sure how to do that
             
             pass #dostuff
             
+
+        bean.initFun = self.initFun
+        bean.interClasses = self.interClasses
+        
         return bean
             
 class FunDefWalker(InitialWalker):
