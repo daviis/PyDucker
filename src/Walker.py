@@ -1116,17 +1116,15 @@ class ClassDefWalker(InitialWalker):
             for funDict in superClass.dataMembers.levels:
                 for funName in funDict:
                     func = funDict[funName]
-                    if type(func) == Bean.FunDefBean:
-                        if bean.hasFun(func.name):
-                            pass
+                    if bean.hasFun(func.name):
+                        pass
+                    else:
+                        if func.name == '__init__':
+                            self.initFun = func
+                            self.initFun.returnType = Bean.VarBean(self.name)  
+                            self.dataMembers.append(self.initFun)
                         else:
-                            if func.name == '__init__':
-                                self.initFun = func
-                                self.initFun.returnType = Bean.VarBean(self.name)       
-                    #             self.funs.put(initFun.name, self.initFun) 
-                                self.dataMembers.append(self.initFun) #this should be what to do instead of the two above it.
-                            else:
-                                self.dataMembers.append(func)   
+                            self.dataMembers.append(func)   
             pass #dostuff
             
 

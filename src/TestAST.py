@@ -89,7 +89,7 @@ def _testAll(listOfFiles):
 
     
 if __name__ == '__main__':
-    #testOne("../Test/Correct/simpleSuper.py")
-    testAllCorrect()
+    testOne("../Test/Correct/simpleSuper.py")
+    #testAllCorrect()
     #testAllIncorrect()
     print("out main")
