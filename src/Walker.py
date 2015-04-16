@@ -190,7 +190,30 @@ class InitialWalker(ast.NodeVisitor):
         Value is the varType of the object the function is being called on. node.attr is the str rep of 
         the method name
         """
-        return node.attr
+        store = self.visit(node.ctx)
+        name = self.visit(node.value)
+        #currently inside a classdef so it will be an internal data member
+        if name.name == "self":
+            if store:
+                #look up in classdefbean to see if the variable is in scope,
+                try:
+                    return self.containingClass.dataMembers[node.attr]
+                except Exceptions.OutOfScopeException:
+                    #look up failed
+                    if self.name == "__init__":
+                        varBean = Bean.VarBean(None, node.attr)
+                        self.containingClass.dataMembers.append(varBean)
+                        return varBean #todo check which one gets copied into in visit_assign
+                    else:
+                        raise Exceptions.DataMemberDecOutsideInit(self.name, name, node.lineno)
+            else:
+                return self.containingClass.dataMembers[node.attr]
+        #this is just an object that is having something within it referenced
+        else:
+            #no need to look at load or store becuase if it isn't there then it shouldn't be added.
+            #grad the classdefbean out of the namespace then grab the data member out of it
+            return self.nameSpace[name.varType].dataMembers[node.attr]
+
     
     def visit_AugAssign(self, node):
         """
@@ -283,7 +306,7 @@ class InitialWalker(ast.NodeVisitor):
         @node:ast.ast
         """
         try:
-            funcName = self.visit(node.func) #this will be an ast.Attribute for `'a'.upper()` or a ast.Name for `'a'() or print()`
+            funcBean = self.visit(node.func) #this will be an ast.Attribute for `'a'.upper()` or a ast.Name for `'a'() or print()`
 
             args = []
             for arg in node.args:
@@ -297,30 +320,20 @@ class InitialWalker(ast.NodeVisitor):
                 keywords.update(self._unpackCallKwargs(node.kwargs)) #update does clobbar existing keys. todo check if that breaks things
                 
             starargs = self.visit(node.starargs) #these should be unpacked into the args list
-#             args.extned(starargs.compType) #but len is important so we cant really do this
-            
+
             try:
-                #assume that the function will be part of a class, so try to look up the class type, then see if it has the function.
-                cls = self.visit(node.func.value)
-                clsBean = self.nameSpace[cls.varType]
-                funBean = Bean.FunDefBean(args, None, funcName, keywords, starargs)
-                return clsBean.acceptsFun(funBean, self.nameSpace)
-            
-            except AttributeError:
-                if funcName.varType == "$funs":
-                    codedFun = Bean.FunDefBean(args, None, funcName.name, keywords, starargs)
-                    funsClass = self.nameSpace["$funs"] 
-                    return funsClass.acceptsFun(codedFun, self.nameSpace)
-                elif funcName.varType == "$classes":
-                    classesClsBean = self.nameSpace["$classes"]
-                    myClassBean = classesClsBean.funs[funcName.name]
-                    funBean = Bean.FunDefBean(args, None, "__init__")
-                    return myClassBean.acceptsFun(funBean, self.nameSpace) 
+                codedFun = Bean.FunDefBean(args, None, funcBean.name, keywords, starargs)
+                if funcBean.equals(self.nameSpace, codedFun):
+                    return funcBean.returnType
                 else:
-                    codedFun = Bean.FunDefBean(args, None, "__call__")
-                    self.nameSpace.duckCallable(funcName)
-                    codedClass = self.nameSpace[funcName.varType]
-                    return codedClass.acceptsFun(codedFun, self.nameSpace)
+                    raise Exceptions.IncorrectMethodException(codedFun.name, args, aCls = Bean.VarBean("$first class functions$"), kws = keywords, star = starargs)
+            except AttributeError:
+                codedFun = Bean.FunDefBean(args, None, "__call__")
+                self.nameSpace.duckCallable(funcBean)
+                codedClass = self.nameSpace[funcBean.varType]
+                return codedClass.acceptsFun(codedFun, self.nameSpace)
+                
+            
         except Exceptions.PyDuckerException as ex:
                 ex.lineNum = node.lineno
                 raise ex
@@ -958,7 +971,7 @@ class InitialWalker(ast.NodeVisitor):
         operandBean = self.nameSpace[operand.varType]
         op = self.visit(node.op)
         if operandBean.hasFun(op):
-            return operandBean.funs[op].returnType
+            return operandBean.dataMembers[op].returnType
         else:
             Exceptions.MissingMethodException(operandBean, op, node.lineno)
 
@@ -1025,12 +1038,7 @@ class InitialWalker(ast.NodeVisitor):
         self.nameSpace.put(clsWalker.name, clsBean)
         
         self.scope.goUpLevel()
-        self.scope.append(Bean.VarBean("$classes", clsBean.name))
-#         initFun = clsBean.initFun
-#         self.nameSpace.addClassesClass(initFun)
-        self.nameSpace.addClassesClass(clsBean)
-        #initFun.name = "__call__"
-        #self.nameSpace.addClassesClass(initFun)
+        self.scope.addClassInit(clsWalker)
          
     def visit_FunctionDef(self, node):
         """
@@ -1042,8 +1050,7 @@ class InitialWalker(ast.NodeVisitor):
         funWalker.walk()
              
         self.scope.goUpLevel()
-        self.nameSpace.addFirstClassFun(funWalker.createFunBean())
-        self.scope.append(Bean.VarBean("$funs", funWalker.name))
+        self.scope.append(funWalker.createFunBean())
             
 class ClassDefWalker(InitialWalker):
     
@@ -1056,9 +1063,10 @@ class ClassDefWalker(InitialWalker):
         super().__init__(classRoot, nameSp, scopeCopy)
         self.initFun = None
         self.parent = None
-        self.funs = Bean.NameSpaceBean()
+#         self.funs = Bean.NameSpaceBean()
         self.name = classRoot.name
         self.interClasses = []
+        self.dataMembers = Bean.ScopeLevelBean()
        
     def walk(self):
         
@@ -1072,18 +1080,19 @@ class ClassDefWalker(InitialWalker):
         """
         self.scope.goDownLevel()
         
-        funWalker = FunDefWalker(node, self.nameSpace, self.scope)   
+        funWalker = FunDefWalker(node, self.nameSpace, self.scope, contClass = self)   
         funWalker.walk()
         self.scope.goUpLevel()
-#         self.scope.append(Bean.VarBean("$funs", funWalker.name))
-#         self.funs.put(funWalker.name,Bean.VarBean("$funs", funWalker.name))
 
         if funWalker.name == '__init__':
             self.initFun = funWalker.createFunBean()
-            self.initFun.returnType = Bean.VarBean(self.name)        
-            self.funs.put(funWalker.name, self.initFun) #this should be what to do instead of the two above it.
+            self.initFun.returnType = Bean.VarBean(self.name)       
+#             self.funs.put(initFun.name, self.initFun) 
+            self.dataMembers.append(self.initFun) #this should be what to do instead of the two above it.
         else:
-            self.funs.put(funWalker.name, funWalker.createFunBean()) #this should be what to do instead of the two above it.
+            self.dataMembers.append(funWalker.createFunBean())
+#             self.funs.put(funWalker.name, funWalker.createFunBean()) #this should be what to do instead of the two above it.
+    
     def visit_ClassDef(self, node):
         """
         @node:ast.AST
@@ -1095,20 +1104,19 @@ class ClassDefWalker(InitialWalker):
         self.interClasses.append(clsBean)
     
     def createClassBean(self):
-        bean = Bean.ClassDefBean(self.name, self.scope, self.parent)
-        for i in self.funs.vars:
-            bean.funs[i] = self.funs.vars[i]
+        bean = Bean.ClassDefBean(self.name, self.scope, self.dataMembers, self.parent)
         bean.initFun = self.initFun
         bean.interClasses = self.interClasses
             
         return bean
             
 class FunDefWalker(InitialWalker):
-    def __init__(self, funRoot, nameSp, scopeLevel):
+    def __init__(self, funRoot, nameSp, scopeLevel, contClass = None):
         """
         @funRoot:ast.ast
         @nameSp:bean.NameSpaceBean
         @scopeLevel:bean.ScopeLevelBean
+        @contClass:ClassDefWalker
         """
         super().__init__(funRoot, nameSp, scopeLevel)
         self._findParamTypes()
@@ -1118,11 +1126,9 @@ class FunDefWalker(InitialWalker):
         self.kwargs = {}
         self.starargs = []
         self.minNumParams = 0
+        self.containingClass = contClass
         
     def walk(self):
-        for preVar in self._findParamTypes():
-            self.scope.append(preVar)
-            
         try:
             self.visit(self.root.args)
         except Exceptions.PyDuckerException as ex:
@@ -1163,6 +1169,15 @@ class FunDefWalker(InitialWalker):
         else:
             self.retType = self.visit(node.value)
         
+    def visit_arg(self, node):
+        """
+        @node:ast.arg
+        """
+        if self.containingClass:
+            return Bean.VarBean(self.containingClass.name, node.arg)
+        else:
+            return Bean.VarBean(None)
+        
     def visit_arguments(self, node):
         """
         @node:ast.ast
@@ -1177,7 +1192,13 @@ class FunDefWalker(InitialWalker):
         #these are just the regular args without default values
         for arg in defaultValuedArgs:
             self.scope.append(defaultValuedArgs[arg])
-        if node.args:    
+        if node.args:
+            #figure out if the first paramiter is self, if it is then 
+            selfParam =  self.visit(node.args[0])
+            if selfParam.name == "self":
+                self.scope.append(selfParam)
+                #reduce the number of min params because self is implicit
+                self.minNumParams -= 1
             if ast.get_docstring(self.root):
                 arguments = parseDocString(ast.get_docstring(self.root))
                 for i in arguments:

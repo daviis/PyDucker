@@ -17,12 +17,14 @@ The exception hierarchy for PyDucker is
         |--- NonlocalReferenceException
         |--- GlobalReferenceException
         |--- PyDuckerSyntaxError
+        |--- DataMemberDecOutsideInit
     |--- PyDuckerWarning
          |--- TypeMismatchException
          |--- HeteroCollecionException
          |--- ScopeNotFoundException
          |--- KeyWordFromAVariable
          |--- MultiReturnTypeException
+         
 '''
 
 class PyDuckerException(Exception):
@@ -320,6 +322,25 @@ class MultiReturnTypeException(PyDuckerWarning):
         ret = super().__str__()
         ret += "\n\tOld type: " + self.oldType.varType
         ret += "\n\tNew type: " + self.newType.varType
+        return ret
+
+class DataMemberDecOutsideInit(PyDuckerError):
+    
+    def __init__(self, funName, varName, lineNo=-1):
+        """
+        @funName:str
+        @varName:str
+        @lineNo:int
+        """
+        super().__init__(lineNo)
+        self.fun = funName
+        self.var = varName
+        
+    def __str__(self):
+        ret = super().__str__()
+        ret += "\n\tData members are only allowed to be declaired in the __init__ function to be typed by pyducker"
+        ret += "\n\tFunction Name: " + self.fun
+        ret += "\n\tVariable Name: " + self.var
         return ret
 
 class NonIndexableException(PyDuckerError):

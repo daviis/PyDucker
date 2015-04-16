@@ -6,10 +6,8 @@ Created on Sep 19, 2014
 This file is where the command line option parser should direct to for the heavy lifting of static analysis. It will also be used for testing.
 '''
 import ast
-import sys
 
 
-import Bean
 import Exceptions
 from Walker import InitialWalker
 from NameSpaceBeans import handMakeNameSpace, handMakeScope
@@ -90,7 +88,7 @@ def _testAll(listOfFiles):
 
     
 if __name__ == '__main__':
-    testOne("../Test/Incorrect/Yield.py")
-    #testAllCorrect()
+#     testOne("../Test/Incorrect/MethodDef.py")
+    testAllCorrect()
     #testAllIncorrect()
     print("out main")
