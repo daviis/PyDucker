@@ -1114,6 +1114,10 @@ class ClassDefWalker(InitialWalker):
         bean.interClasses = self.interClasses
         
         if self.superClass:
+            superClass = self.nameSpace[self.superClass] #Get the new class
+            #Need to access outer namespace here
+            #Not sure how to do that
+            
             pass #dostuff
             
         return bean
