@@ -1067,12 +1067,17 @@ class ClassDefWalker(InitialWalker):
         self.name = classRoot.name
         self.interClasses = []
         self.dataMembers = Bean.ScopeLevelBean()
+        self.superClass = None
        
     def walk(self):
         
         #first call should be a quick walk to snag all of the fun names and self var names
         for bod in self.root.body:
             self.visit(bod)
+            
+        if self.root.bases:
+            for base in self.root.bases:
+                self.superClass = base.id
         
     def visit_FunctionDef(self, node):
         """
@@ -1107,6 +1112,9 @@ class ClassDefWalker(InitialWalker):
         bean = Bean.ClassDefBean(self.name, self.scope, self.dataMembers, self.parent)
         bean.initFun = self.initFun
         bean.interClasses = self.interClasses
+        
+        if self.superClass:
+            pass #dostuff
             
         return bean
             
