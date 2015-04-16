@@ -1126,12 +1126,7 @@ class ClassDefWalker(InitialWalker):
                     #             self.funs.put(initFun.name, self.initFun) 
                                 self.dataMembers.append(self.initFun) #this should be what to do instead of the two above it.
                             else:
-                                self.dataMembers.append(func)                        
-                        pass #If we're in this loop we know it's a function.
-                    pass
-            #Need to access outer namespace here
-            #Not sure how to do that
-            
+                                self.dataMembers.append(func)   
             pass #dostuff
             
 
