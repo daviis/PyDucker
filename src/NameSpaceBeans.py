@@ -78,17 +78,19 @@ def handMakeNameSpace():
 
     listClass = ClassDefBean('list' , None, ScopeLevelBean())
     listClass.dataMembers.append(FunDefBean([VarBean('obj')], VarBean('bool'), '__contains__'))
-    listClass.dataMembers.append(FunDefBean(['self'], 'obj', '__iter__'))
+    listClass.dataMembers.append(FunDefBean([VarBean('self')], 'obj', '__iter__'))
+    listClass.dataMembers.append(FunDefBean([VarBean('obj')], VarBean("None"), 'append'))
     nameSpace.put(listClass.name , listClass)
 
     setClass = ClassDefBean('set' , None, ScopeLevelBean())
     setClass.dataMembers.append(FunDefBean([VarBean('obj')], VarBean('bool'), '__contains__'))
-    setClass.dataMembers.append(FunDefBean(['self'], 'obj', '__iter__'))
+    setClass.dataMembers.append(FunDefBean([VarBean('self')], VarBean('obj'), '__iter__'))
+    setClass.dataMembers.append(FunDefBean([VarBean('range')], VarBean('None'), 'update'))
     nameSpace.put(setClass.name , setClass)
 
     tupleClass = ClassDefBean('tuple' , None, ScopeLevelBean())
     tupleClass.dataMembers.append(FunDefBean([VarBean('obj')], VarBean('bool'), '__contains__'))
-    tupleClass.dataMembers.append(FunDefBean(['self'], 'obj', '__iter__'))
+    tupleClass.dataMembers.append(FunDefBean([VarBean('self')], 'obj', '__iter__'))
     nameSpace.put(tupleClass.name , tupleClass)
 
     dictClass = ClassDefBean('dict' , None, ScopeLevelBean())
@@ -129,6 +131,7 @@ def handMakeScope():
     rangeType = VarBean('range')
     rangeType.homo = True
     rangeType.compType = [VarBean("int")]
+    
     scope.append(FunDefBean([VarBean('int')], rangeType, "range"))
     scope.append(FunDefBean([VarBean('str'), VarBean('str')], VarBean("file"), "open"))
     scope.append(FunDefBean([VarBean('str')], VarBean('None'), "write"))
@@ -136,5 +139,6 @@ def handMakeScope():
     scope.append(VarBean("Exception", "ValueError"))
     
     scope.append(FunDefBean([], VarBean("byte"), "byte"))
+    scope.append(FunDefBean([VarBean('list')], VarBean('set'), 'set', minParams = 0))
         
     return scope
