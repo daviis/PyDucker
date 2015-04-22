@@ -447,7 +447,9 @@ class NameSpaceBean(GenericBean):
         """
         if typeFound.varType == typeNeeded.varType:
             return True
-        #elif check to see if the super class works  
+        #elif check to see if the super class works
+        elif self.vars[typeFound.varType].parent:
+            pass
         else:
             foundCls = self.vars[typeFound.varType]
             neededConverter = "__" + typeNeeded.varType + "__"
