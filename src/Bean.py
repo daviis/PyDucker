@@ -449,14 +449,22 @@ class NameSpaceBean(GenericBean):
             return True
         #elif check to see if the super class works
         elif self.vars[typeFound.varType].parent:
-            pass
-        else:
-            foundCls = self.vars[typeFound.varType]
-            neededConverter = "__" + typeNeeded.varType + "__"
-            if foundCls.hasFun(neededConverter):
-                return True
-            else:
-                return False
+            newVarType = self.vars[typeFound.varType].parent
+            done = False
+            while not done:
+                if newVarType == typeNeeded.varType:
+                    return True
+                else:
+                    if self.vars[typeFound.varType].parent:
+                        newVarType = self.vars[typeFound.varType].parent
+                    else:
+                        done = True
+                        foundCls = self.vars[typeFound.varType]
+                        neededConverter = "__" + typeNeeded.varType + "__"
+                        if foundCls.hasFun(neededConverter):
+                            return True
+                        else:
+                            return False
     
         
     def addClassesClass(self, funDefClass):

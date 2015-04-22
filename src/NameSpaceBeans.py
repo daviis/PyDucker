@@ -77,22 +77,22 @@ def handMakeNameSpace():
     nameSpace.put(boolClass.name, boolClass)
 
     listClass = ClassDefBean('list' , None, ScopeLevelBean())
-    listClass.dataMembers.append(FunDefBean([VarBean('obj')], VarBean('bool'), '__contains__'))
-    listClass.dataMembers.append(FunDefBean(['self'], 'obj', '__iter__'))
+    listClass.dataMembers.append(FunDefBean([VarBean('object')], VarBean('bool'), '__contains__'))
+    listClass.dataMembers.append(FunDefBean(['self'], 'objectect', '__iter__'))
     nameSpace.put(listClass.name , listClass)
 
     setClass = ClassDefBean('set' , None, ScopeLevelBean())
-    setClass.dataMembers.append(FunDefBean([VarBean('obj')], VarBean('bool'), '__contains__'))
-    setClass.dataMembers.append(FunDefBean(['self'], 'obj', '__iter__'))
+    setClass.dataMembers.append(FunDefBean([VarBean('object')], VarBean('bool'), '__contains__'))
+    setClass.dataMembers.append(FunDefBean(['self'], 'object', '__iter__'))
     nameSpace.put(setClass.name , setClass)
 
     tupleClass = ClassDefBean('tuple' , None, ScopeLevelBean())
-    tupleClass.dataMembers.append(FunDefBean([VarBean('obj')], VarBean('bool'), '__contains__'))
-    tupleClass.dataMembers.append(FunDefBean(['self'], 'obj', '__iter__'))
+    tupleClass.dataMembers.append(FunDefBean([VarBean('object')], VarBean('bool'), '__contains__'))
+    tupleClass.dataMembers.append(FunDefBean(['self'], 'object', '__iter__'))
     nameSpace.put(tupleClass.name , tupleClass)
 
     dictClass = ClassDefBean('dict' , None, ScopeLevelBean())
-    dictClass.dataMembers.append(FunDefBean([VarBean('obj')], VarBean('bool'), '__contains__'))
+    dictClass.dataMembers.append(FunDefBean([VarBean('object')], VarBean('bool'), '__contains__'))
     nameSpace.put(dictClass.name, dictClass) 
     
     bytesClass = ClassDefBean('bytes' , None, ScopeLevelBean())
@@ -107,7 +107,7 @@ def handMakeNameSpace():
     nameSpace.put(floatClass.name, floatClass)
 
     generatorClass = ClassDefBean("generator", None, ScopeLevelBean())
-    generatorClass.dataMembers.append(FunDefBean([], VarBean('obj'), '__iter__'))
+    generatorClass.dataMembers.append(FunDefBean([], VarBean('object'), '__iter__'))
     nameSpace.put(generatorClass.name, generatorClass)
 
     fileClass = ClassDefBean("file", None, ScopeLevelBean())
