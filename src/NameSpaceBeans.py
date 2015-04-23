@@ -11,7 +11,7 @@ from Bean import NameSpaceBean, ScopeLevelBean, ClassDefBean , FunDefBean, VarBe
 
 def handMakeNameSpace():
     nameSpace = NameSpaceBean()
-    intClass = ClassDefBean('int', None, ScopeLevelBean())
+    intClass = ClassDefBean('int', None, ScopeLevelBean(), rent="num")
     intClass.dataMembers.append(FunDefBean([VarBean('int')],  VarBean('int'), '__add__'))
     intClass.dataMembers.append(FunDefBean([VarBean('int')],  VarBean('int'), '__div__'))
     intClass.dataMembers.append(FunDefBean([VarBean('int')],  VarBean('int'), '__mod__'))
@@ -42,7 +42,7 @@ def handMakeNameSpace():
     
     
     strClass = ClassDefBean('str', None, ScopeLevelBean())
-    strClass.dataMembers.append(FunDefBean([VarBean('str')] , VarBean('str'), '__add__'))
+    strClass.dataMembers.append(FunDefBean([VarBean('str')] , VarBean('str'), '__add__', minParams=1))
     strClass.dataMembers.append(FunDefBean([VarBean('str')] , VarBean('bool'), '__contains__'))
     strClass.dataMembers.append(FunDefBean([VarBean('str')] , VarBean('bool'), '__eq__'))
     strClass.dataMembers.append(FunDefBean([VarBean('str')] , VarBean('bool'), '__ge__'))
@@ -71,6 +71,9 @@ def handMakeNameSpace():
     strClass.dataMembers.append(FunDefBean([] ,  VarBean('str'), 'upper'))
     nameSpace.put(strClass.name, strClass)
     
+    numClass = ClassDefBean('num', None, ScopeLevelBean())
+    nameSpace.put(numClass.name, numClass)
+    
     boolClass = ClassDefBean('bool', None, ScopeLevelBean())
     boolClass.dataMembers.append(FunDefBean([VarBean('bool')], VarBean('bool'), '__eq__'))
     boolClass.dataMembers.append(FunDefBean([VarBean('bool')], VarBean('bool'), '__bool__'))
@@ -78,17 +81,19 @@ def handMakeNameSpace():
 
     listClass = ClassDefBean('list' , None, ScopeLevelBean())
     listClass.dataMembers.append(FunDefBean([VarBean('object')], VarBean('bool'), '__contains__'))
-    listClass.dataMembers.append(FunDefBean(['self'], 'object', '__iter__'))
+    listClass.dataMembers.append(FunDefBean([VarBean('self')], VarBean('object'), '__iter__'))
+    listClass.dataMembers.append(FunDefBean([VarBean('object')], VarBean("None"), 'append'))
     nameSpace.put(listClass.name , listClass)
 
     setClass = ClassDefBean('set' , None, ScopeLevelBean())
     setClass.dataMembers.append(FunDefBean([VarBean('object')], VarBean('bool'), '__contains__'))
-    setClass.dataMembers.append(FunDefBean(['self'], 'object', '__iter__'))
+    setClass.dataMembers.append(FunDefBean([VarBean('self')], VarBean('object'), '__iter__'))
+    setClass.dataMembers.append(FunDefBean([VarBean('range')], VarBean('None'), 'update'))
     nameSpace.put(setClass.name , setClass)
 
     tupleClass = ClassDefBean('tuple' , None, ScopeLevelBean())
     tupleClass.dataMembers.append(FunDefBean([VarBean('object')], VarBean('bool'), '__contains__'))
-    tupleClass.dataMembers.append(FunDefBean(['self'], 'object', '__iter__'))
+    tupleClass.dataMembers.append(FunDefBean([VarBean('self')], VarBean('object'), '__iter__'))
     nameSpace.put(tupleClass.name , tupleClass)
 
     dictClass = ClassDefBean('dict' , None, ScopeLevelBean())
@@ -101,7 +106,7 @@ def handMakeNameSpace():
     exceptionClass = ClassDefBean("Exception", None, ScopeLevelBean())
     nameSpace.put(exceptionClass.name, exceptionClass)
     
-    floatClass = ClassDefBean('float', None, ScopeLevelBean())
+    floatClass = ClassDefBean('float', None, ScopeLevelBean(), rent="num")
     floatClass.dataMembers.append(FunDefBean([VarBean('float')], VarBean('float'), '__add__'))
     floatClass.dataMembers.append(FunDefBean([VarBean('float')], VarBean('float'), '__sub__'))
     nameSpace.put(floatClass.name, floatClass)
@@ -129,6 +134,7 @@ def handMakeScope():
     rangeType = VarBean('range')
     rangeType.homo = True
     rangeType.compType = [VarBean("int")]
+    
     scope.append(FunDefBean([VarBean('int')], rangeType, "range"))
     scope.append(FunDefBean([VarBean('str'), VarBean('str')], VarBean("file"), "open"))
     scope.append(FunDefBean([VarBean('str')], VarBean('None'), "write"))
@@ -136,5 +142,6 @@ def handMakeScope():
     scope.append(VarBean("Exception", "ValueError"))
     
     scope.append(FunDefBean([], VarBean("byte"), "byte"))
+    scope.append(FunDefBean([VarBean('list')], VarBean('set'), 'set', minParams = 0))
         
     return scope

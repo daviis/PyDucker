@@ -53,14 +53,14 @@ class FunDefBean(GenericBean):
             else:
                 return self.typesparams[-1]
             
-    def equals(self, namespace, fun):
+    def equals(self, namespace, fun, dontConvert = False):
         """
         @namespace:NameSpaceBean
         @fun:FunDefBean
         """
-        return self._takes(namespace, fun.typesparams, fun.kwargs, fun.starargs)
+        return self._takes(namespace, fun.typesparams, fun.kwargs, fun.starargs, dontConvert)
 
-    def _takes(self, namespace, paramList, kwargs, starargs):
+    def _takes(self, namespace, paramList, kwargs, starargs, dontConvert):
         """
         @namespace:NameSpaceBean
         @paramList:VarBean*
@@ -72,13 +72,13 @@ class FunDefBean(GenericBean):
         #there were starred arguments passed into the called function but, we can't check the length of them yet so just kind of go with the flow. 
         if starargs:
             for bothIdx in range(len(paramList)):
-                if not namespace.checkImplicitTypeConversion(paramList[bothIdx], self.getParamType(bothIdx)):
+                if not namespace.checkImplicitTypeConversion(paramList[bothIdx], self.getParamType(bothIdx), dontConvert):
                     return False
             bothIdx += 1
             if bothIdx == len(self.typesparams) and self.typesparams[-1] != VarBean("$rept"): #there are too many args when the starred args are unpacked. Figure that out here and return false because of it
                 return False
             for selfIdx in range(bothIdx, len(self.typesparams)):
-                if not namespace.checkImplicitTypeConversion(starargs.nextSubType(), self.getParamType(selfIdx)):
+                if not namespace.checkImplicitTypeConversion(starargs.nextSubType(), self.getParamType(selfIdx), dontConvert):
                     return False
             return True
         #there are not any starred arguments so just check the args one for one. 
@@ -87,7 +87,7 @@ class FunDefBean(GenericBean):
             if len(paramList) < self.minNumParams:
                 return False #could possibly make a more helpful statemetn here, but its functional for now.
             for bothIdx in range(len(paramList)):
-                if not namespace.checkImplicitTypeConversion(paramList[bothIdx], self.getParamType(bothIdx)):
+                if not namespace.checkImplicitTypeConversion(paramList[bothIdx], self.getParamType(bothIdx), dontConvert ):
                     return False
             return True
     
@@ -337,17 +337,19 @@ class ClassDefBean(GenericBean):
         """
         return op in self.dataMembers
     
-    def acceptsFun(self, fun, namespace):
+    def acceptsFun(self, fun, namespace, dontConvert = False):
         """
         @fun:FunDefBean
         """
         try:
-            if self.dataMembers[fun.name].equals(namespace, fun):
+            if self.dataMembers[fun.name].equals(namespace, fun, dontConvert):
                 return self.dataMembers[fun.name].returnType
             else:
                 raise Exceptions.IncorrectMethodException(fun.name, fun.typesparams, aCls = VarBean(self.name), kws = fun.kwargs, star = fun.starargs)
         except KeyError:
             raise Exceptions.MissingMethodException(self, fun.name)
+        except Exceptions.OutOfScopeException:
+            raise Exceptions.IncorrectMethodException(fun.name, fun.typesparams, aCls = VarBean(self.name), kws = fun.kwargs, star = fun.starargs)
         except Exceptions.IncorrectMethodKeywordException as ex:
             ex.fun = fun.name
             ex.cls = VarBean(self.name)
@@ -440,7 +442,7 @@ class NameSpaceBean(GenericBean):
         funsClass = self.vars["$funs"]
         funsClass.funs[funDefBean.name] = funDefBean
     
-    def checkImplicitTypeConversion(self, typeFound, typeNeeded):
+    def checkImplicitTypeConversion(self, typeFound, typeNeeded, dontConvert):
         """
         @typeFound:VarBean
         @typeNeeded:VarBean
@@ -456,9 +458,11 @@ class NameSpaceBean(GenericBean):
                     return True
                 else:
                     if newVarType != 'object' and self.vars[newVarType].parent:
-                        newVarType = self.vars[typeFound.varType].parent
+                        newVarType = self.vars[newVarType].parent
                     else:
                         done = True
+                        if dontConvert: #some magic methods shouldn't attempt to implicitly convert between types.
+                            return False
                         foundCls = self.vars[typeFound.varType]
                         neededConverter = "__" + typeNeeded.varType + "__"
                         if foundCls.hasFun(neededConverter):
@@ -490,8 +494,12 @@ class NameSpaceBean(GenericBean):
         #if so, then return the return varType of the function
         #if not, raise missingMagicMethodException
         for bean, fun in ((lbean, fstFun), (rbean, sndFun)):
+            if bean.varType == "str" and fun.name == "__add__": #todo expand this to a hashtable look up for all funs which shound't be implicitly converted
+                dontConvert = True
+            else:
+                dontConvert = False
             try:
-                resultType = self.vars[bean.varType].acceptsFun(fun, self)
+                resultType = self.vars[bean.varType].acceptsFun(fun, self, dontConvert)
                 return resultType
             except Exceptions.MissingMethodException:
                 pass
