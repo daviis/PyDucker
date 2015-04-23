@@ -78,7 +78,7 @@ def handMakeNameSpace():
 
     listClass = ClassDefBean('list' , None, ScopeLevelBean())
     listClass.dataMembers.append(FunDefBean([VarBean('object')], VarBean('bool'), '__contains__'))
-    listClass.dataMembers.append(FunDefBean(['self'], 'objectect', '__iter__'))
+    listClass.dataMembers.append(FunDefBean(['self'], 'object', '__iter__'))
     nameSpace.put(listClass.name , listClass)
 
     setClass = ClassDefBean('set' , None, ScopeLevelBean())

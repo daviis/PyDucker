@@ -455,7 +455,7 @@ class NameSpaceBean(GenericBean):
                 if newVarType == typeNeeded.varType:
                     return True
                 else:
-                    if self.vars[typeFound.varType].parent:
+                    if newVarType != 'object' and self.vars[newVarType].parent:
                         newVarType = self.vars[typeFound.varType].parent
                     else:
                         done = True
