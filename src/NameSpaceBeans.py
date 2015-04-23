@@ -42,7 +42,7 @@ def handMakeNameSpace():
     
     
     strClass = ClassDefBean('str', None, ScopeLevelBean())
-    strClass.dataMembers.append(FunDefBean([VarBean('str')] , VarBean('str'), '__add__'))
+    strClass.dataMembers.append(FunDefBean([VarBean('str')] , VarBean('str'), '__add__', minParams=1))
     strClass.dataMembers.append(FunDefBean([VarBean('str')] , VarBean('bool'), '__contains__'))
     strClass.dataMembers.append(FunDefBean([VarBean('str')] , VarBean('bool'), '__eq__'))
     strClass.dataMembers.append(FunDefBean([VarBean('str')] , VarBean('bool'), '__ge__'))
@@ -79,7 +79,7 @@ def handMakeNameSpace():
     listClass = ClassDefBean('list' , None, ScopeLevelBean())
     listClass.dataMembers.append(FunDefBean([VarBean('object')], VarBean('bool'), '__contains__'))
     listClass.dataMembers.append(FunDefBean([VarBean('self')], VarBean('object'), '__iter__'))
-    listClass.dataMembers.append(FunDefBean([VarBean('obj')], VarBean("None"), 'append'))
+    listClass.dataMembers.append(FunDefBean([VarBean('object')], VarBean("None"), 'append'))
     nameSpace.put(listClass.name , listClass)
 
     setClass = ClassDefBean('set' , None, ScopeLevelBean())

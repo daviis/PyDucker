@@ -69,16 +69,21 @@ class FunDefBean(GenericBean):
         todo clean up this wayyyyyyyy to complicated logic
         """
         self._checkKwargs(kwargs)
+        #check to see if the function being called is a magic method, if is then it shoundn't try to implicitly convert types. 
+        if self.name[:2] == "__":
+            isMagicMethod = True
+        else:
+            isMagicMethod = False
         #there were starred arguments passed into the called function but, we can't check the length of them yet so just kind of go with the flow. 
         if starargs:
             for bothIdx in range(len(paramList)):
-                if not namespace.checkImplicitTypeConversion(paramList[bothIdx], self.getParamType(bothIdx)):
+                if not namespace.checkImplicitTypeConversion(paramList[bothIdx], self.getParamType(bothIdx), isMagicMethod):
                     return False
             bothIdx += 1
             if bothIdx == len(self.typesparams) and self.typesparams[-1] != VarBean("$rept"): #there are too many args when the starred args are unpacked. Figure that out here and return false because of it
                 return False
             for selfIdx in range(bothIdx, len(self.typesparams)):
-                if not namespace.checkImplicitTypeConversion(starargs.nextSubType(), self.getParamType(selfIdx)):
+                if not namespace.checkImplicitTypeConversion(starargs.nextSubType(), self.getParamType(selfIdx), isMagicMethod):
                     return False
             return True
         #there are not any starred arguments so just check the args one for one. 
@@ -87,7 +92,7 @@ class FunDefBean(GenericBean):
             if len(paramList) < self.minNumParams:
                 return False #could possibly make a more helpful statemetn here, but its functional for now.
             for bothIdx in range(len(paramList)):
-                if not namespace.checkImplicitTypeConversion(paramList[bothIdx], self.getParamType(bothIdx)):
+                if not namespace.checkImplicitTypeConversion(paramList[bothIdx], self.getParamType(bothIdx), isMagicMethod):
                     return False
             return True
     
@@ -348,6 +353,8 @@ class ClassDefBean(GenericBean):
                 raise Exceptions.IncorrectMethodException(fun.name, fun.typesparams, aCls = VarBean(self.name), kws = fun.kwargs, star = fun.starargs)
         except KeyError:
             raise Exceptions.MissingMethodException(self, fun.name)
+        except Exceptions.OutOfScopeException:
+            raise Exceptions.IncorrectMethodException(fun.name, fun.typesparams, aCls = VarBean(self.name), kws = fun.kwargs, star = fun.starargs)
         except Exceptions.IncorrectMethodKeywordException as ex:
             ex.fun = fun.name
             ex.cls = VarBean(self.name)
@@ -440,7 +447,7 @@ class NameSpaceBean(GenericBean):
         funsClass = self.vars["$funs"]
         funsClass.funs[funDefBean.name] = funDefBean
     
-    def checkImplicitTypeConversion(self, typeFound, typeNeeded):
+    def checkImplicitTypeConversion(self, typeFound, typeNeeded, isMagicMethod):
         """
         @typeFound:VarBean
         @typeNeeded:VarBean
@@ -459,6 +466,8 @@ class NameSpaceBean(GenericBean):
                         newVarType = self.vars[typeFound.varType].parent
                     else:
                         done = True
+                        if isMagicMethod: #magic methods shouldn't attempt to implicitly convert between types.
+                            return False
                         foundCls = self.vars[typeFound.varType]
                         neededConverter = "__" + typeNeeded.varType + "__"
                         if foundCls.hasFun(neededConverter):
