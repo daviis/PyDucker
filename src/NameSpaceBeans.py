@@ -11,7 +11,7 @@ from Bean import NameSpaceBean, ScopeLevelBean, ClassDefBean , FunDefBean, VarBe
 
 def handMakeNameSpace():
     nameSpace = NameSpaceBean()
-    intClass = ClassDefBean('int', None, ScopeLevelBean())
+    intClass = ClassDefBean('int', None, ScopeLevelBean(), rent="num")
     intClass.dataMembers.append(FunDefBean([VarBean('int')],  VarBean('int'), '__add__'))
     intClass.dataMembers.append(FunDefBean([VarBean('int')],  VarBean('int'), '__div__'))
     intClass.dataMembers.append(FunDefBean([VarBean('int')],  VarBean('int'), '__mod__'))
@@ -71,6 +71,9 @@ def handMakeNameSpace():
     strClass.dataMembers.append(FunDefBean([] ,  VarBean('str'), 'upper'))
     nameSpace.put(strClass.name, strClass)
     
+    numClass = ClassDefBean('num', None, ScopeLevelBean())
+    nameSpace.put(numClass.name, numClass)
+    
     boolClass = ClassDefBean('bool', None, ScopeLevelBean())
     boolClass.dataMembers.append(FunDefBean([VarBean('bool')], VarBean('bool'), '__eq__'))
     boolClass.dataMembers.append(FunDefBean([VarBean('bool')], VarBean('bool'), '__bool__'))
@@ -103,7 +106,7 @@ def handMakeNameSpace():
     exceptionClass = ClassDefBean("Exception", None, ScopeLevelBean())
     nameSpace.put(exceptionClass.name, exceptionClass)
     
-    floatClass = ClassDefBean('float', None, ScopeLevelBean())
+    floatClass = ClassDefBean('float', None, ScopeLevelBean(), rent="num")
     floatClass.dataMembers.append(FunDefBean([VarBean('float')], VarBean('float'), '__add__'))
     floatClass.dataMembers.append(FunDefBean([VarBean('float')], VarBean('float'), '__sub__'))
     nameSpace.put(floatClass.name, floatClass)
