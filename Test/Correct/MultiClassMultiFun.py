@@ -36,7 +36,5 @@ def main():
 	aCat = makeCat(ctr)
 	aCat.speak()
 
-if __name__ == '__main__':
-	main()
-	
+main()
 a = 1

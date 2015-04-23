@@ -36,11 +36,17 @@ def testAllCorrect():
     #Non-working tests are commented out    
     files = [
             '../Test/Correct/Call.py',
+            '../Test/Correct/classes.py',
             '../Test/Correct/Collections.py',
             '../Test/Correct/control.py',
             '../Test/Correct/MethodDef.py',
-#             '../Test/Correct/MultiClassMultiFun.py',
+            '../Test/Correct/MultiClassMultiFun.py',
+            '../Test/Correct/NonlocalGlobal.py',
             '../Test/Correct/Ops.py',
+            '../Test/Correct/ScopeLevels.py',
+            '../Test/Correct/simpleSuper.py',
+            '../Test/Correct/SingleClass.py',
+            '../Test/Correct/slice.py',
             '../Test/Correct/tryRaiseExcept.py',
             '../Test/Correct/With.py',
             '../Test/Correct/Yield.py',
