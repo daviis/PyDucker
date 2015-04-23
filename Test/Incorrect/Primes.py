@@ -1,4 +1,4 @@
-def primes2(n):
+def primeFinder(n):
     """
     @n:int
     """
@@ -11,4 +11,4 @@ def primes2(n):
     return primes
 
 numOfPrimes = 25
-print("The first " + numOfPrimes + " " + primes2(numOfPrimes))
+print("The first " + numOfPrimes + " " + primeFinder(numOfPrimes))
