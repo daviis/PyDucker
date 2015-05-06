@@ -275,7 +275,7 @@ class PyDuckerSyntaxError(PyDuckerError):
     
 class ScopeNotFoundException(PyDuckerWarning):
     
-    def __inti__(self, globNonLoc, aVarBean, lineNo=-1):
+    def __init__(self, globNonLoc, aVarBean, lineNo=-1):
         """
         @globNonLoc:str
         @aVarBean:Bean.VarBean

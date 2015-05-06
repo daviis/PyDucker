@@ -294,6 +294,7 @@ class ScopeLevelBean(GenericBean):
                     raise Exceptions.ScopeNotFoundException("Global", nameBean)
                 else:
                     nameBean.scopeModifier = "global"
+                    nameBean.recursiveClone(globSpace[nameBean.name])
                     self.append(nameBean)
                  
         

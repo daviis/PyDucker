@@ -11,5 +11,4 @@ def primeFinder(n):
     return primes
 
 numOfPrimes = 25
-print("The first " + numOfPrimes)
-# print("The first " + numOfPrimes + " " + primeFinder(numOfPrimes))
+print("The first " + str(numOfPrimes) + " " + str(primeFinder(numOfPrimes)))
